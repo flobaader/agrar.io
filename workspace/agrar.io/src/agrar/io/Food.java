@@ -1,18 +1,16 @@
 package agrar.io;
 
+import java.awt.Color;
 import java.awt.Point;
 
 public class Food extends Circle {
-	private static int food_size = 20;
 	
-	public Food(Point loc){
-		location = loc;
-		
-		//Sets fixed size of food
-		size = food_size;
-		
-		//Sets Random Color
-		color = Utility.getRandomColor();
+	public Food(Controller parent, Point loc, int size, Color col) {
+		super(parent, loc, size, col);
 	}
-	
+
+	public boolean isPlayer() {
+		return false;
+		
+	}
 }

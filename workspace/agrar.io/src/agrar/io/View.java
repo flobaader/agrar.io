@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import javax.swing.WindowConstants;
 
 public class View {
 	private JFrame frame;
@@ -16,6 +17,7 @@ public class View {
 		parent = p;
 		frame = new JFrame();
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		frame.setVisible(true);
 	}
