@@ -10,70 +10,131 @@ import javax.swing.Timer;
 
 public class Controller {
 	private ArrayList<Circle> components;
-	private Player local_player;
+	private ArrayList<Circle> CirclesToDelete = new ArrayList<Circle>();
+	private LocalPlayer local_player;
 	private static int view_range;
-	private static int KI_Players;
+	private static int KI_Players = 10;
 	private Timer GameRate;
-	private View view;
-	
-	
-	public Controller(){
+	private Timer GraphicsRate;
+	private Timer FoodSpawner;
+	private Window window;
+
+	public Controller() {
 		components = new ArrayList<Circle>();
-		view = new View(this);
+		window = new Window(this);
 	}
-	
-	public void StartGame(){
-		//Loads Players
+
+	public void StartGame() {
+		// Loads Players
 		InitializePlayers();
+
+		GraphicsRate = new Timer(30, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				window.refresh();
+			}
+		});
 		
-		//Starts Game Refresh Timer
-		GameRate = new Timer(100, new ActionListener(){
+		GraphicsRate.start();
+
+		// Starts Game Refresh Timer
+		GameRate = new Timer(5, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				RunGameCycle();
 			}
 		});
 		GameRate.start();
-		
-		//Starts view
-		view.StartView();
-		
+
+		FoodSpawner = new Timer(1000, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SpawnFood();
+			}
+
+		});
+		FoodSpawner.start();
+
+	}
+
+	private void SpawnFood() {
+		Food f = new Food(this, Utility.getRandomPoint(0, 2000), 20, Utility.getRandomColor());
+		components.add(f);
+	}
+
+	private void InitializePlayers() {
+		local_player = new LocalPlayer(this, new Point(0, 0), 50, Color.blue, "LocalPlayer");
+		components.add(local_player);
 	}
 	
-	private void InitializePlayers(){
-		components.add(new LocalPlayer(this, new Point(0,0), 100, Color.blue ));
+	public int getLocalPlayerScore(){
+		return local_player.getSize();
 	}
-	
-	private void RunGameCycle(){
-		for(Circle c: components){
-			if(c.isPlayer()){
-				Player p = (Player)c;
+
+	private void RunGameCycle() {
+		for (Circle c : components) {
+			if (c.isPlayer()) {
+				Player p = (Player) c;
 				p.moveToNewPosition();
 			}
 		}
 		
+		//Deletes removed circles
+		for(Circle c: CirclesToDelete){
+			components.remove(c);
+		}
+		CirclesToDelete.clear();
 	}
-	
-	public ArrayList<Circle> getNearObjects(Circle c){
+
+	public ArrayList<Circle> getNearObjects(Circle c) {
 		ArrayList<Circle> returntargets = new ArrayList<Circle>();
-		
-		for(Circle target: components){
-			if(Utility.getDistance(c, target) < view_range){
+
+		for (Circle target : components) {
+			if (Utility.getDistance(c, target) < view_range) {
 				returntargets.add(target);
 			}
 		}
-		
+
 		return returntargets;
 	}
-	
-	public ArrayList<Circle> getAllComponents(){
+
+	public ArrayList<Circle> getAllComponents() {
 		return components;
 	}
-	
-	public void getMousePosition(){
-		
-		
+
+	public void deleteCircle(Circle c1) {
+		CirclesToDelete.add(c1);
 	}
-	
-	
-	
+
+	public Player getNearestPlayer(Circle c1) {
+		Player p1 = null;
+		int nearest_distance = Integer.MAX_VALUE;
+		for (Circle c : components) {
+			if (c.isPlayer()) {
+				if (Utility.getDistance(c1, c) < nearest_distance) {
+					nearest_distance = (int) Utility.getDistance(c1, c);
+					p1 = (Player) c;
+				}
+			}
+		}
+		return p1;
+
+	}
+
+	public Circle getNearestObject(Circle c1) {
+		Circle c2 = null;
+		int nearest_distance = Integer.MAX_VALUE;
+		for (Circle c : components) {
+			if(c != c1){
+				if (Utility.getDistance(c1, c) < nearest_distance) {
+					nearest_distance = (int) Utility.getDistance(c1, c);
+					c2 = c;
+				}	
+			}
+			
+		}
+		return c2;
+
+	}
 }

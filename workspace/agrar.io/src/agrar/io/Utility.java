@@ -1,6 +1,7 @@
 package agrar.io;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.Random;
 
 public class Utility {
@@ -20,6 +21,39 @@ public class Utility {
 	
 	public static Color getRandomColor(){
 		return new Color(getRandom(0,255),getRandom(0,255),getRandom(0,255));
+	}
+	
+	public static Point nextStepTowards(Point p1, Point p2){
+		// m * x + t
+		//First Step ... calculate m
+		Point p3 = new Point();
+		
+		if(p2.x > p1.x){
+			p3.x = p1.x + 1;
+		}else if(p2.x == p1.x){
+			p3.x = p1.x;
+		}else{
+			p3.x = p1.x -1;
+		}
+		
+		if(p2.y > p1.y){
+			p3.y = p1.y +1;
+		}else if( p2.y == p1.y){
+			p3.y = p1.y;
+		}else{
+			p3.y = p1.y -1;
+		}
+		
+		return p3;
+		
+	}
+	
+	public static Point getRandomPoint(int min, int max){
+		Point p = new Point();
+		p.x = getRandom(min, max);
+		p.y = getRandom(min, max);
+		return p;
+		
 	}
 
 }
