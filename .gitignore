@@ -4,6 +4,7 @@ tmp/
 *.tmp
 *.bak
 *.swp
+*.index
 *~.nib
 local.properties
 .settings/
@@ -12,6 +13,8 @@ local.properties
 
 workspace/.recommenders/
 workspace/.metadata/
+workspace/.recommenders
+workspace/.metadata
 
 
 # Eclipse Core
