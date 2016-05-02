@@ -9,11 +9,12 @@ public abstract class Circle {
 	protected Color color;
 	protected Controller parent;
 	protected boolean visible;
+	protected float radius;
 	
 	public Circle(Controller parent, Point loc, int size, Color col){
 		this.parent = parent;
 		this.location = loc;
-		this.size = size;
+		this.setSize(size);
 		this.color = col;
 		this.visible = true;
 	}
@@ -24,6 +25,15 @@ public abstract class Circle {
 	
 	public int getSize(){
 		return size;
+	}
+	
+	public void setSize(int newsize){
+		this.size = newsize;
+		this.radius = (float) Math.sqrt((float)newsize/(Math.PI*2F));
+	}
+	
+	public float getRadius(){
+		return radius;
 	}
 	
 	public Color getColor(){

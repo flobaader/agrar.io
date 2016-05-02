@@ -8,19 +8,20 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
+import agrar.io.interfaces.GameStateListener;
 import agrar.io.model.Circle;
 import agrar.io.model.Food;
 import agrar.io.view.Window;
 
-public class Controller {
+public class Controller implements GameStateListener{
 	private ArrayList<Circle> components;
-	private ArrayList<Circle> CirclesToDelete = new ArrayList<Circle>();
-	private LocalPlayer local_player;
-	private static int view_range;
-	private static int KI_Players = 10;
-	private Timer GameRate;
-	private Timer GraphicsRate;
-	private Timer FoodSpawner;
+	private ArrayList<Circle> circlesToDelete = new ArrayList<Circle>();
+	private LocalPlayer localPlayer;
+	private static int VIEW_RANGE;
+	private static int KI_PLAYERS = 10;
+	private Timer gameRate;
+	private Timer graphicsRate;
+	private Timer foodSpawner;
 	private Window window;
 
 	public Controller() {
@@ -32,7 +33,7 @@ public class Controller {
 		// Loads Players
 		InitializePlayers();
 
-		GraphicsRate = new Timer(30, new ActionListener() {
+		graphicsRate = new Timer(16, new ActionListener() { //TODO: performance test, set back to 30
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -40,17 +41,17 @@ public class Controller {
 			}
 		});
 		
-		GraphicsRate.start();
+		graphicsRate.start();
 
 		// Starts Game Refresh Timer
-		GameRate = new Timer(5, new ActionListener() {
+		gameRate = new Timer(5, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				RunGameCycle();
 			}
 		});
-		GameRate.start();
+		gameRate.start();
 
-		FoodSpawner = new Timer(1000, new ActionListener() {
+		foodSpawner = new Timer(1000, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -58,26 +59,30 @@ public class Controller {
 			}
 
 		});
-		FoodSpawner.start();
+		foodSpawner.start();
 
 	}
 
 	private void SpawnFood() {
-		Food f = new Food(this, Utility.getRandomPoint(0, 2000), 20, Utility.getRandomColor());
+		Food f = new Food(this, Utility.getRandomPoint(0, 2000), 200, Utility.getRandomColor());
 		components.add(f);
 	}
 
 	private void InitializePlayers() {
-		local_player = new LocalPlayer(this, new Point(0, 0), 50, Color.blue, "LocalPlayer");
-		components.add(local_player);
+		localPlayer = new LocalPlayer(this, new Point(0, 0), 500, Color.blue, "LocalPlayer");
+		components.add(localPlayer);
 		
 		for(int x = 0; x < 10; x++){
-			components.add(new KIPlayer(this, Utility.getRandomPoint(0, 1000), 50, Utility.getRandomColor(), "KI-Player"));
+			components.add(new KIPlayer(this, Utility.getRandomPoint(0, 1000), 500, Utility.getRandomColor(), "KI-Player"));
 		}
 	}
 	
 	public int getLocalPlayerScore(){
-		return local_player.getSize();
+		return localPlayer.getSize();
+	}
+	
+	public Circle getLocalPlayer(){
+		return localPlayer;
 	}
 
 	private void RunGameCycle() {
@@ -89,17 +94,17 @@ public class Controller {
 		}
 		
 		//Deletes removed circles
-		for(Circle c: CirclesToDelete){
+		for(Circle c: circlesToDelete){
 			components.remove(c);
 		}
-		CirclesToDelete.clear();
+		circlesToDelete.clear();
 	}
 
 	public ArrayList<Circle> getNearObjects(Circle c) {
 		ArrayList<Circle> returntargets = new ArrayList<Circle>();
 
 		for (Circle target : components) {
-			if (Utility.getDistance(c, target) < view_range) {
+			if (Utility.getDistance(c, target) < VIEW_RANGE) {
 				returntargets.add(target);
 			}
 		}
@@ -112,7 +117,7 @@ public class Controller {
 	}
 
 	public void deleteCircle(Circle c1) {
-		CirclesToDelete.add(c1);
+		circlesToDelete.add(c1);
 	}
 
 	public Player getNearestPlayer(Circle c1) {
@@ -144,5 +149,24 @@ public class Controller {
 		}
 		return c2;
 
+	}
+
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
 	}
 }
