@@ -5,24 +5,25 @@ import java.awt.event.WindowListener;
 
 import agrar.io.interfaces.GameStateListener;
 
-
 /**
  * A WindowListener that rewrites window events to game state changes
+ * 
  * @author Matthias
  *
  */
 public class ViewWindowListener implements WindowListener {
 
 	private GameStateListener listener;
-	
+
 	/**
 	 * 
-	 * @param l The GameStateListener to redirect the state changes to
+	 * @param l
+	 *            The GameStateListener to redirect the state changes to
 	 */
-	public ViewWindowListener(GameStateListener l){
+	public ViewWindowListener(GameStateListener l) {
 		this.listener = l;
 	}
-	
+
 	@Override
 	public void windowActivated(WindowEvent arg0) {
 		System.out.println("windowActivated");

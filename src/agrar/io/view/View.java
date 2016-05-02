@@ -19,11 +19,10 @@ public class View extends JPanel {
 	private Controller controller;
 	private Circle localPlayer;
 
-	
 	public View(Controller p) {
 		controller = p;
 		localPlayer = p.getLocalPlayer();
-	
+
 	}
 
 	@Override
@@ -34,11 +33,11 @@ public class View extends JPanel {
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
 		Point offset = controller.getLocalPlayer().getLocation();
-		int offsetX = offset.x - this.getWidth()/2;
-		int offsetY = offset.y - this.getHeight()/2;
-		
+		int offsetX = offset.x - this.getWidth() / 2;
+		int offsetY = offset.y - this.getHeight() / 2;
+
 		paintGrid(g2d, Math.abs(offsetX), Math.abs(offsetY));
-		
+
 		g2d.drawString("FPS: " + FPS, 50, 50);
 		for (Circle c : controller.getAllComponents()) {
 
@@ -46,7 +45,7 @@ public class View extends JPanel {
 			int radius = (int) c.getRadius();
 			int x = c.getLocation().x;
 			int y = c.getLocation().y;
-			g2d.fillOval(x - radius - offsetX, y - radius- offsetY, radius * 2, radius * 2 );
+			g2d.fillOval(x - radius - offsetX, y - radius - offsetY, radius * 2, radius * 2);
 
 			// TODO: Display name and size
 		}
@@ -60,23 +59,27 @@ public class View extends JPanel {
 		lastPaint = System.currentTimeMillis();
 
 	}
-	
+
 	/**
 	 * Draws the grid for the game arena with a given offset
-	 * @param g The graphics to draw with
-	 * @param offsetX The offset in x direction
-	 * @param offsetY The offset in y direction
+	 * 
+	 * @param g
+	 *            The graphics to draw with
+	 * @param offsetX
+	 *            The offset in x direction
+	 * @param offsetY
+	 *            The offset in y direction
 	 */
-	private void paintGrid(Graphics2D g, int offsetX, int offsetY){
+	private void paintGrid(Graphics2D g, int offsetX, int offsetY) {
 		g.setColor(Color.GRAY);
-		
-		offsetX =  (offsetX % 20);
+
+		offsetX = (offsetX % 20);
 		offsetY = (offsetY % 20);
-		
-		for(int x = offsetX; x < this.getWidth(); x += 20){
+
+		for (int x = offsetX; x < this.getWidth(); x += 20) {
 			g.drawLine(x, 0, x, this.getHeight());
 		}
-		for(int y = offsetX; y < this.getHeight(); y += 20){
+		for (int y = offsetX; y < this.getHeight(); y += 20) {
 			g.drawLine(0, y, this.getWidth(), y);
 		}
 	}
