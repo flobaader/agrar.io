@@ -16,10 +16,6 @@ workspace/.metadata/
 workspace/.recommenders
 workspace/.metadata
 
-
-# Eclipse Core
-.project
-
 # External tool builders
 .externalToolBuilders/
 
