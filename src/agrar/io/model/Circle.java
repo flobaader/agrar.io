@@ -1,17 +1,18 @@
 package agrar.io.model;
 import java.awt.*;
 
+import agrar.io.vector;
 import agrar.io.controller.Controller;
 
 public abstract class Circle {
-	protected Point location;
+	protected vector location;
 	protected int size;
 	protected Color color;
 	protected Controller parent;
 	protected boolean visible;
 	protected float radius;
 	
-	public Circle(Controller parent, Point loc, int size, Color col){
+	public Circle(Controller parent, vector loc, int size, Color col){
 		this.parent = parent;
 		this.location = loc;
 		this.setSize(size);
@@ -19,7 +20,7 @@ public abstract class Circle {
 		this.visible = true;
 	}
 	
-	public Point getLocation(){
+	public vector getLocation(){
 		return location;
 	}
 	

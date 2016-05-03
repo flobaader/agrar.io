@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+import agrar.io.vector;
 import agrar.io.controller.Controller;
 import agrar.io.model.Circle;
 
@@ -33,7 +34,7 @@ public class View extends JPanel {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
-		Point offset = controller.getLocalPlayer().getLocation();
+		Point offset = vector.vectorToPoint(controller.getLocalPlayer().getLocation());
 		int offsetX = offset.x - this.getWidth()/2;
 		int offsetY = offset.y - this.getHeight()/2;
 		
@@ -44,8 +45,8 @@ public class View extends JPanel {
 
 			g2d.setColor(c.getColor());
 			int radius = (int) c.getRadius();
-			int x = c.getLocation().x;
-			int y = c.getLocation().y;
+			int x = c.getLocation().getRoundedX();
+			int y = c.getLocation().getRoundedY();
 			g2d.fillOval(x - radius - offsetX, y - radius- offsetY, radius * 2, radius * 2 );
 
 			// TODO: Display name and size

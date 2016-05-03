@@ -1,14 +1,15 @@
 package agrar.io.controller;
 
 import java.awt.Color;
-import java.awt.Point;
 
+import agrar.io.vector;
 import agrar.io.model.Circle;
 
 public abstract class Player extends Circle {
 	protected String name;
+	protected vector movement_direction;
 	
-	public Player(Controller parent, Point loc, int size, Color col, String name) {
+	public Player(Controller parent, vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col);
 		this.name = name;
 	}
@@ -27,6 +28,10 @@ public abstract class Player extends Circle {
 				c1.delete();
 			}	
 		}
+	}
+
+	public vector getMovement_direction() {
+		return movement_direction;
 	} 
 	
 }
