@@ -17,12 +17,9 @@ public class View extends JPanel {
 	private double FPS;
 
 	private Controller controller;
-	private Circle localPlayer;
 
 	public View(Controller p) {
 		controller = p;
-		localPlayer = p.getLocalPlayer();
-
 	}
 
 	@Override
@@ -36,7 +33,7 @@ public class View extends JPanel {
 		int offsetX = offset.x - this.getWidth() / 2;
 		int offsetY = offset.y - this.getHeight() / 2;
 
-		paintGrid(g2d, Math.abs(offsetX), Math.abs(offsetY));
+		paintGrid(g2d, offsetX, offsetY);
 
 		g2d.drawString("FPS: " + FPS, 50, 50);
 		for (Circle c : controller.getAllComponents()) {
@@ -73,13 +70,13 @@ public class View extends JPanel {
 	private void paintGrid(Graphics2D g, int offsetX, int offsetY) {
 		g.setColor(Color.GRAY);
 
-		offsetX = (offsetX % 20);
-		offsetY = (offsetY % 20);
+		offsetX = (offsetX * -1) % 40;
+		offsetY = (offsetY * -1) % 40;
 
-		for (int x = offsetX; x < this.getWidth(); x += 20) {
+		for (int x = offsetX; x < this.getWidth(); x += 40) {
 			g.drawLine(x, 0, x, this.getHeight());
 		}
-		for (int y = offsetX; y < this.getHeight(); y += 20) {
+		for (int y = offsetY; y < this.getHeight(); y += 40) {
 			g.drawLine(0, y, this.getWidth(), y);
 		}
 	}

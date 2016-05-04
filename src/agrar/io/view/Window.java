@@ -16,6 +16,7 @@ public class Window extends JFrame {
 		view = new View(parent);
 		this.add(view);
 		this.setExtendedState(MAXIMIZED_BOTH);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
 		this.addWindowListener(new ViewWindowListener(parent));
