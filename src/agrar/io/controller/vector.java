@@ -1,4 +1,4 @@
-package agrar.io;
+package agrar.io.controller;
 
 public class vector {
 	private double xCor;
