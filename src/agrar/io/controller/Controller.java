@@ -58,31 +58,11 @@ public class Controller implements GameStateListener {
 		});
 		gameRate.start();
 
-		// foodSpawner = new Timer(200, new ActionListener() {
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent arg0) {
-		// SpawnFood();
-		// }
-		//
-		// });
-		// foodSpawner.start();
-		//
-		// KISpawner = new Timer(100, new ActionListener(){
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent arg0) {
-		// SpawnPlayer();
-		// }
-		//
-		// });
-		// KISpawner.start();
-
 	}
 
 	private void SpawnPlayer() {
 		// Count KIPlayers
-		KIPlayer p = new KIPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Utility.getRandomColor(), "KI-Player");
+		KIPlayer p = new KIPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Utility.getRandomColor(), "KI-Player");
 		players.add(p);
 	}
 
@@ -92,7 +72,7 @@ public class Controller implements GameStateListener {
 	}
 
 	private void InitializePlayer() {
-		localPlayer = new LocalPlayer(this, new vector(0, 0), 5000, Color.blue, "LocalPlayer");
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Color.blue, "LocalPlayer");
 		players.add(localPlayer);
 	}
 
@@ -106,6 +86,17 @@ public class Controller implements GameStateListener {
 
 	private void RunGameCycle() {
 		// One Game Cycle
+		
+		// Spawns Players if necessary
+		if (players.size() < 11) {
+			SpawnPlayer();
+		}
+
+		// Spawns Food if necessary
+		if (food.size() < 200) {
+			SpawnFood();
+		}
+		
 
 		// Every player can move one step
 		for (Player p : players) {
@@ -119,29 +110,9 @@ public class Controller implements GameStateListener {
 		}
 		circlesToDelete.clear();
 
-		// Spawns Players if necessary
-		if (players.size() < 11) {
-			SpawnPlayer();
-		}
 
-		// Spawns Food if necessary
-		if (food.size() < 200) {
-			SpawnFood();
-		}
 
 	}
-
-	// public ArrayList<Circle> getNearObjects(Circle c) {
-	// ArrayList<Circle> returntargets = new ArrayList<Circle>();
-	//
-	// for (Circle target : components) {
-	// if (Utility.getDistance(c, target) < VIEW_RANGE) {
-	// returntargets.add(target);
-	// }
-	// }
-	//
-	// return returntargets;
-	// }
 
 	public ArrayList<Circle> getAllComponents() {
 		ArrayList<Circle> comp = new ArrayList<Circle>();
@@ -160,37 +131,44 @@ public class Controller implements GameStateListener {
 
 	public Player getNearestPlayer(Circle c1) {
 		Player p1 = null;
-		int nearest_distance = Integer.MAX_VALUE;
+		double nearest_distance = Double.MAX_VALUE;
 		for (Player p : players){
 				if (Utility.getDistance(c1, p) < nearest_distance) {
-					nearest_distance = (int) Utility.getDistance(c1, p);
+					nearest_distance = Utility.getDistance(c1, p);
 					p1 = p;
 				}
 		}
-		return p1;
+		
+		if(p1 != null){
+			return p1;
+		}else{
+			return localPlayer;
+		}
+		
 
 	}
 
 	public Food getNearestFood(Circle c1) {
 		Food f1 = null;
-		int nearest_distance = Integer.MAX_VALUE;
+		double nearest_distance = Double.MAX_VALUE;
 		for (Food f : food) {
 			if (Utility.getDistance(c1, f) < nearest_distance) {
-				nearest_distance = (int) Utility.getDistance(c1, f);
+				nearest_distance = Utility.getDistance(c1, f);
 				f1 = f;
 			}
 		}
 		return f1;
+		
 
 	}
 
 	public Circle getNearestObject(Circle c1) {
 		Circle c2 = null;
-		int nearest_distance = Integer.MAX_VALUE;
+		double nearest_distance = Double.MAX_VALUE;
 		for (Circle c : getAllComponents()) {
 			if (c != c1) {
 				if (Utility.getDistance(c1, c) < nearest_distance) {
-					nearest_distance = (int) Utility.getDistance(c1, c);
+					nearest_distance = Utility.getDistance(c1, c);
 					c2 = c;
 				}
 			}

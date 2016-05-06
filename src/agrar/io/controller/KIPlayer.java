@@ -1,8 +1,6 @@
 package agrar.io.controller;
 
 import java.awt.Color;
-import java.awt.Point;
-
 import agrar.io.vector;
 
 public class KIPlayer extends Player {
@@ -17,26 +15,24 @@ public class KIPlayer extends Player {
 
 		// Trys to get nearest Player
 		Player nearPlayer = parent.getNearestPlayer(this);
-		double distance = vector.vectorFromTo(this.getLocation(), nearPlayer.getLocation()).getLength();
+		double distance = Utility.getDistance(this, nearPlayer) - nearPlayer.getRadius() - this.getRadius();
 
-		boolean isNear = ((distance - nearPlayer.getSize() - this.getSize()) < 100);
-		boolean isBigger = ((nearPlayer.getSize() - this.size) > 10);
+		boolean isNear = distance < (this.getRadius() * 3);
+		boolean isSmaller = (nearPlayer.getSize() - this.size) < 10;
 
-		if (isNear && isBigger) {
+		if (isNear && !isSmaller) {
+			// Flee
 			targetLocation = vector.reverseVector(vector.vectorFromTo(this.getLocation(), nearPlayer.getLocation()));
-		} else if (isNear && !isBigger) {
-			targetLocation = vector.vectorFromTo(this.getLocation(), nearPlayer.getLocation());
+			this.color = Color.yellow;
+		} else if (isNear && isSmaller) {
+			// Attack
+			targetLocation = nearPlayer.getLocation();
+			this.color = Color.red;
 		} else {
 			// Searches for food
-			if (parent.getNearestFood(this) != null) {
-				targetLocation = parent.getNearestFood(this).getLocation();
-			}
-
-		}
-
-		// Searches for food
-		if (parent.getNearestFood(this) != null) {
 			targetLocation = parent.getNearestFood(this).getLocation();
+			this.color = Color.green;
+
 		}
 
 	}
