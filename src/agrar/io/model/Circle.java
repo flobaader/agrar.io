@@ -9,7 +9,6 @@ public abstract class Circle {
 	protected int size;
 	protected Color color;
 	protected Controller parent;
-	protected boolean visible;
 	protected float radius;
 	
 	public Circle(Controller parent, vector loc, int size, Color col){
@@ -17,7 +16,6 @@ public abstract class Circle {
 		this.location = loc;
 		this.setSize(size);
 		this.color = col;
-		this.visible = true;
 	}
 	
 	public vector getLocation(){
@@ -43,17 +41,9 @@ public abstract class Circle {
 	
 	public void delete(){
 		parent.deleteCircle(this);
-		//this.visible = false;
 	}
 	
-	public void setVisible(boolean visible){
-		this.visible = visible;
-	}
-	
-	public boolean isVisible(){
-		return visible;
-	}
-	
+		
 	public abstract boolean isPlayer();
 	
 }

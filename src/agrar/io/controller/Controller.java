@@ -31,6 +31,7 @@ public class Controller implements GameStateListener {
 	public Controller() {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
+		circlesToDelete = new ArrayList<Circle>();
 		window = new Window(this);
 	}
 
@@ -86,21 +87,23 @@ public class Controller implements GameStateListener {
 
 	private void RunGameCycle() {
 		// One Game Cycle
-		
+
 		// Spawns Players if necessary
-		if (players.size() < 11) {
+		while (players.size() < 20) {
 			SpawnPlayer();
 		}
 
 		// Spawns Food if necessary
-		if (food.size() < 200) {
+		while (food.size() < 200) {
 			SpawnFood();
 		}
-		
 
 		// Every player can move one step
+		int ind = 0;
 		for (Player p : players) {
 			p.moveToNewPosition();
+			System.out.println("Simulated Player " + ind);
+			ind++;
 		}
 
 		// Deletes removed circles
@@ -109,8 +112,6 @@ public class Controller implements GameStateListener {
 			food.remove(c);
 		}
 		circlesToDelete.clear();
-
-
 
 	}
 
@@ -132,19 +133,18 @@ public class Controller implements GameStateListener {
 	public Player getNearestPlayer(Circle c1) {
 		Player p1 = null;
 		double nearest_distance = Double.MAX_VALUE;
-		for (Player p : players){
-				if (Utility.getDistance(c1, p) < nearest_distance) {
-					nearest_distance = Utility.getDistance(c1, p);
-					p1 = p;
-				}
+		for (Player p : players) {
+			if (Utility.getDistance(c1, p) < nearest_distance) {
+				nearest_distance = Utility.getDistance(c1, p);
+				p1 = p;
+			}
 		}
-		
-		if(p1 != null){
+
+		if (p1 != null) {
 			return p1;
-		}else{
+		} else {
 			return localPlayer;
 		}
-		
 
 	}
 
@@ -158,7 +158,6 @@ public class Controller implements GameStateListener {
 			}
 		}
 		return f1;
-		
 
 	}
 
