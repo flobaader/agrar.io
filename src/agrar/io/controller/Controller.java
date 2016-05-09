@@ -99,11 +99,8 @@ public class Controller implements GameStateListener {
 		}
 
 		// Every player can move one step
-		int ind = 0;
 		for (Player p : players) {
 			p.moveToNewPosition();
-			System.out.println("Simulated Player " + ind);
-			ind++;
 		}
 
 		// Deletes removed circles
@@ -134,7 +131,7 @@ public class Controller implements GameStateListener {
 		Player p1 = null;
 		double nearest_distance = Double.MAX_VALUE;
 		for (Player p : players) {
-			if (Utility.getDistance(c1, p) < nearest_distance) {
+			if (c1 != p && Utility.getDistance(c1, p) < nearest_distance) {
 				nearest_distance = Utility.getDistance(c1, p);
 				p1 = p;
 			}
@@ -152,7 +149,7 @@ public class Controller implements GameStateListener {
 		Food f1 = null;
 		double nearest_distance = Double.MAX_VALUE;
 		for (Food f : food) {
-			if (Utility.getDistance(c1, f) < nearest_distance) {
+			if (c1 != f && Utility.getDistance(c1, f) < nearest_distance) {
 				nearest_distance = Utility.getDistance(c1, f);
 				f1 = f;
 			}
