@@ -1,12 +1,12 @@
 package agrar.io.controller;
 
 import java.awt.Color;
-import agrar.io.vector;
+import agrar.io.Vector;
 
 public class KIPlayer extends Player {
-	private vector targetLocation;
+	private Vector targetLocation;
 
-	public KIPlayer(Controller parent, vector loc, int size, Color col, String name) {
+	public KIPlayer(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col, name);
 		// TODO Auto-generated constructor stub
 	}
@@ -22,7 +22,7 @@ public class KIPlayer extends Player {
 
 		if (isNear && !isSmaller) {
 			// Flee
-			targetLocation = vector.reverseVector(vector.vectorFromTo(this.getLocation(), nearPlayer.getLocation()));
+			targetLocation = Vector.reverseVector(Vector.vectorFromTo(this.getLocation(), nearPlayer.getLocation()));
 			this.color = Color.yellow;
 		} else if (isNear && isSmaller) {
 			// Attack

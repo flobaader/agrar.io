@@ -2,13 +2,13 @@ package agrar.io.controller;
 
 import java.awt.Color;
 
-import agrar.io.vector;
+import agrar.io.Vector;
 import agrar.io.model.Circle;
 
 public class Utility {
 
 	public static double getDistance(Circle c1, Circle c2) {
-		vector distance = vector.substractVector(c2.getLocation(), c1.getLocation());
+		Vector distance = Vector.substractVector(c2.getLocation(), c1.getLocation());
 		return distance.getLength();
 	}
 
@@ -20,15 +20,15 @@ public class Utility {
 		return new Color(getRandom(0, 255), getRandom(0, 255), getRandom(0, 255));
 	}
 
-	public static vector nextStepTowards(vector loc, vector target) {
-		vector nextStep = vector.vectorFromTo(loc, target);
-		nextStep = vector.addVector(loc, vector.getUnitVector(nextStep));
+	public static Vector nextStepTowards(Vector loc, Vector target) {
+		Vector nextStep = Vector.vectorFromTo(loc, target);
+		nextStep = Vector.addVector(loc, Vector.getUnitVector(nextStep));
 		return nextStep;
 
 	}
 
-	public static vector getRandomPoint(int min, int max) {
-		return new vector(getRandom(min, max), getRandom(min, max));
+	public static Vector getRandomPoint(int min, int max) {
+		return new Vector(getRandom(min, max), getRandom(min, max));
 	}
 
 }

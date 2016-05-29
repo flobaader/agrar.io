@@ -5,11 +5,11 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
 
-import agrar.io.vector;
+import agrar.io.Vector;
 
 public class LocalPlayer extends Player {
 
-	public LocalPlayer(Controller parent, vector loc, int size, Color col, String name) {
+	public LocalPlayer(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col, name);
 		// TODO Auto-generated constructor stub
 	}
@@ -21,9 +21,9 @@ public class LocalPlayer extends Player {
 		PointerInfo a = MouseInfo.getPointerInfo();
 		Point mouseLocation = a.getLocation();
 
-		vector offset = parent.getOffset();
-		movement_direction = vector.substractVector(vector.pointToVector(mouseLocation), offset);
-		vector realVector = vector.addVector(movement_direction, this.location);
+		Vector offset = parent.getOffset();
+		movement_direction = Vector.substractVector(Vector.pointToVector(mouseLocation), offset);
+		Vector realVector = Vector.addVector(movement_direction, this.location);
 		// Moves one step towards the mouse location
 		
 		this.location = Utility.nextStepTowards(this.location, realVector);
