@@ -24,6 +24,7 @@ public class LocalPlayer extends Player {
 		Vector offset = parent.getOffset();
 		movement_direction = new Vector(mouseLocation).substractVector(offset);
 		Vector realVector = movement_direction.addVector(this.location);
+
 		// Moves one step towards the mouse location
 		
 		this.location = Utility.nextStepTowards(this.location, realVector);
