@@ -2,13 +2,23 @@ package agrar.io;
 
 import java.awt.Point;
 
-public class vector {
+public class Vector {
 	private double xCor;
 	private double yCor;
 
-	public vector(double x, double y) {
+	public Vector(double x, double y) {
 		xCor = x;
 		yCor = y;
+	}
+	
+	public Vector(Point p){
+		xCor = p.getX();
+		yCor = p.getY();
+	}
+	
+	public Vector(Vector locFrom, Vector locTo){
+		xCor = locTo.substractVector(locFrom).getX();
+		yCor = locTo.substractVector(locFrom).getY();
 	}
 
 	public double getX() {
@@ -19,7 +29,7 @@ public class vector {
 		return yCor;
 	}
 	
-	public boolean equals(vector v1){
+	public boolean equals(Vector v1){
 		if(v1 != null){
 			return (this.getX() == v1.getX() && this.getY() == v1.getY());
 		}else{
@@ -40,43 +50,35 @@ public class vector {
 		return Math.sqrt(Math.pow(xCor, 2) + Math.pow(yCor, 2));
 	}
 
-	public static vector addVector(vector v1, vector v2) {
-		return new vector(v1.getX() + v2.getX(), v1.getY() + v2.getY());
+	public  Vector addVector(Vector v2) {
+		return new Vector(this.getX() + v2.getX(), this.getY() + v2.getY());
 	}
 
-	public static vector substractVector(vector v1, vector v2) {
-		return new vector(v1.getX() - v2.getX(), v1.getY() - v2.getY());
+	public Vector substractVector(Vector v2) {
+		return new Vector(this.getX() - v2.getX(), this.getY() - v2.getY());
 	}
 
-	public static vector multiplyVector(vector v1, double figure) {
-		return new vector(v1.getX() * figure, v1.getY() * figure);
+	public Vector multiplyVector(double figure) {
+		return new Vector(this.getX() * figure, this.getY() * figure);
 	}
 
-	public static vector divideVector(vector v1, double figure) {
-		return new vector(v1.getX() / figure, v1.getY() / figure);
+	public Vector divideVector(double figure) {
+		return new Vector(this.getX() / figure, this.getY() / figure);
 	}
 
-	public static vector reverseVector(vector v1) {
-		return multiplyVector(v1, -1);
+	public Vector reverseVector() {
+		return this.multiplyVector(-1);
 	}
 
-	public static vector getUnitVector(vector v1) {
-		return divideVector(v1, v1.getLength());
+	public Vector getUnitVector() {
+		return this.divideVector(this.getLength());
 	}
 	
-	public static vector pointToVector(Point p){
-		return new vector(p.getX(), p.getY());
-	}
-	
-	public static Point vectorToPoint(vector v1){
+	public Point ToPoint(){
 		Point p = new Point();
-		p.setLocation(v1.getX(), v1.getY());
+		p.setLocation(this.getX(), this.getY());
 		return p;
 	}
 	
-	public static vector vectorFromTo(vector locFrom, vector locTo){
-		return vector.substractVector(locTo, locFrom);
-	}
 	
-
 }

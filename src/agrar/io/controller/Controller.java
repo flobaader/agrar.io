@@ -1,23 +1,24 @@
 package agrar.io.controller;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import agrar.io.vector;
+import agrar.io.Vector;
 import agrar.io.interfaces.GameStateListener;
+import agrar.io.interfaces.InputListener;
 import agrar.io.model.Circle;
 import agrar.io.model.Food;
-import agrar.io.view.Window;
+import agrar.io.view.GameWindow;
 
-public class Controller implements GameStateListener {
+public class Controller implements GameStateListener, InputListener {
 	// Game Window
-	private Window window;
+	private GameWindow window;
 
+	
 	// Timers
 	private Timer gameRate;
 	private Timer graphicsRate;
@@ -32,7 +33,7 @@ public class Controller implements GameStateListener {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
-		window = new Window(this);
+		window = new GameWindow(this);
 	}
 
 	public void StartGame() {
@@ -123,8 +124,8 @@ public class Controller implements GameStateListener {
 		circlesToDelete.add(c1);
 	}
 
-	public vector getOffset() {
-		return new vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
+	public Vector getOffset() {
+		return new Vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
 	}
 
 	public Player getNearestPlayer(Circle c1) {
@@ -190,5 +191,16 @@ public class Controller implements GameStateListener {
 	public void onPause() {
 		// TODO Auto-generated method stub
 
+	}
+
+	
+	@Override
+	public void updateMovementVector(Vector v) {
+		
+	}
+
+	@Override
+	public void keyPress() {
+		
 	}
 }

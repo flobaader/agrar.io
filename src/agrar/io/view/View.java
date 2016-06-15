@@ -1,15 +1,18 @@
 package agrar.io.view;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
-import agrar.io.vector;
+import agrar.io.Vector;
 import agrar.io.controller.Controller;
 import agrar.io.controller.Player;
 import agrar.io.model.Circle;
@@ -25,6 +28,19 @@ public class View extends JPanel {
 	public View(Controller p) {
 		controller = p;
 		offset = new Point();
+
+		this.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				Vector v = new Vector(e.getX() - getWidth() / 2, e.getY() - getHeight() / 2);
+				controller.updateMovementVector(v);
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			}
+		});
 	}
 
 	@Override
@@ -37,6 +53,8 @@ public class View extends JPanel {
 
 		calcOffsets(controller.getLocalPlayer());
 
+		//TODO: scale view to fit circle
+		
 		// Draw Background
 		paintGrid(g2d);
 
@@ -49,11 +67,14 @@ public class View extends JPanel {
 			if (c.isPlayer()) {
 				paintName(g2d, c);
 			}
+			
 			// TODO: view size?
 		}
 
 		// Draw HUD
+		g2d.setColor(Color.BLACK);
 		g2d.drawString("FPS: " + FPS, 50, 50);
+		drawPlayerScore(g2d, controller.getLocalPlayer());
 
 		// Recalc fps
 		int millis_passed = (int) (System.currentTimeMillis() - lastPaint);
@@ -92,23 +113,23 @@ public class View extends JPanel {
 
 	/**
 	 * Paints the name of a Circle above it
-	 * @param c the circle to paint the name of
-	 * @param g Graphics used for drawing
+	 * 
+	 * @param c
+	 *            the circle to paint the name of
+	 * @param g
+	 *            Graphics used for drawing
 	 */
-	private void paintName(Graphics2D g, Circle c){
-		
-		//Get FontMetrics
-		FontMetrics metrics = g.getFontMetrics();
-		
-		String name = ((Player)c).getName();
-		vector playerLocation = c.getLocation();
-		float width = metrics.stringWidth(name);
-		
-		int x = (int) (playerLocation.getX() - (int)(((float) width) /2F) - offset.x);
+	private void paintName(Graphics2D g, Circle c) {
+		// Measure String first to draw it centered above the player
+		String name = ((Player) c).getName();
+		Vector playerLocation = c.getLocation();
+		float width = measureString(g, name);
+
+		int x = (int) (playerLocation.getX() - (int) (((float) width) / 2F) - offset.x);
 		int y = (int) (playerLocation.getY() - c.getRadius() - 10 - offset.y);
-		
+
 		g.drawString(name, x, y);
-		
+
 	}
 
 	/**
@@ -134,9 +155,36 @@ public class View extends JPanel {
 	 *            Circle that represents local player
 	 */
 	private void calcOffsets(Circle player) {
-		vector playerOffset = controller.getLocalPlayer().getLocation();
+		Vector playerOffset = controller.getLocalPlayer().getLocation();
 		offset.x = (int) (playerOffset.getX() - this.getWidth() / 2);
 		offset.y = (int) (playerOffset.getY() - this.getHeight() / 2);
 	}
 
+	/**
+	 * Draw the score of the local player in the bottom left corner
+	 * 
+	 * @param player
+	 *            the local player
+	 */
+	private void drawPlayerScore(Graphics2D g, Circle player) {
+		String score = String.valueOf(player.getSize());
+		g.setFont(new Font("Arial", Font.BOLD, 25));
+
+		int width = measureString(g, score);
+		
+		g.drawString(score, getWidth()-(width+10), getHeight()-35);
+	}
+
+	/**
+	 * @param g
+	 *            the graphics to measure the string with
+	 * @param s
+	 *            the string to measure
+	 * @return the width of the string in pixels
+	 */
+	private int measureString(Graphics2D g, String s) {
+		FontMetrics metrics = g.getFontMetrics();
+		return metrics.stringWidth(s);
+
+	}
 }
