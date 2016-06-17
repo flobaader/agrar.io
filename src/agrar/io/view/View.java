@@ -12,10 +12,10 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
-import agrar.io.Vector;
 import agrar.io.controller.Controller;
-import agrar.io.controller.Player;
 import agrar.io.model.Circle;
+import agrar.io.model.Player;
+import agrar.io.util.Vector;
 
 public class View extends JPanel {
 	private static final long serialVersionUID = 2126792581772053659L;
@@ -34,7 +34,7 @@ public class View extends JPanel {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				Vector v = new Vector(e.getX() - getWidth() / 2, e.getY() - getHeight() / 2);
-				controller.updateMovementVector(v);
+				//controller.updateMovementVector(v);
 			}
 
 			@Override
@@ -175,6 +175,10 @@ public class View extends JPanel {
 		g.drawString(score, getWidth()-(width+10), getHeight()-35);
 	}
 
+	private void drawHUD(Graphics2D g){
+		
+	}
+	
 	/**
 	 * @param g
 	 *            the graphics to measure the string with
@@ -182,7 +186,7 @@ public class View extends JPanel {
 	 *            the string to measure
 	 * @return the width of the string in pixels
 	 */
-	private int measureString(Graphics2D g, String s) {
+	private static int measureString(Graphics2D g, String s) {
 		FontMetrics metrics = g.getFontMetrics();
 		return metrics.stringWidth(s);
 

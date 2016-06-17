@@ -1,4 +1,4 @@
-package agrar.io;
+package agrar.io.util;
 
 import java.awt.Point;
 

@@ -1,8 +1,8 @@
 package agrar.io.model;
 import java.awt.*;
 
-import agrar.io.Vector;
 import agrar.io.controller.Controller;
+import agrar.io.util.Vector;
 
 public abstract class Circle {
 	protected Vector location;

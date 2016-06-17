@@ -1,8 +1,9 @@
 package agrar.io.model;
 
 import java.awt.Color;
-import agrar.io.Vector;
+
 import agrar.io.controller.Controller;
+import agrar.io.util.Vector;
 
 public class Food extends Circle {
 	
