@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import javax.swing.Timer;
 
 import agrar.io.Vector;
-import agrar.io.interfaces.GameStateListener;
-import agrar.io.interfaces.InputListener;
 import agrar.io.model.Circle;
 import agrar.io.model.Food;
 import agrar.io.view.GameWindow;
 
-public class Controller implements GameStateListener, InputListener {
+public class Controller {
 	// Game Window
 	private GameWindow window;
 
@@ -173,34 +171,5 @@ public class Controller implements GameStateListener, InputListener {
 		}
 		return c2;
 
-	}
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	
-	@Override
-	public void updateMovementVector(Vector v) {
-		
-	}
-
-	@Override
-	public void keyPress() {
-		
 	}
 }

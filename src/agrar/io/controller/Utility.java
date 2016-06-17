@@ -8,9 +8,7 @@ import agrar.io.model.Circle;
 public class Utility {
 
 	public static double getDistance(Circle c1, Circle c2) {
-
 		Vector distance = c2.getLocation().substractVector(c1.getLocation());
-
 		return distance.getLength();
 	}
 
@@ -25,7 +23,6 @@ public class Utility {
 	public static Vector nextStepTowards(Vector loc, Vector target) {
 		Vector nextStep = new Vector(loc, target);
 		nextStep = loc.addVector(nextStep.getUnitVector());
-
 		return nextStep;
 	}
 

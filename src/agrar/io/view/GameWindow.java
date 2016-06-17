@@ -2,10 +2,7 @@ package agrar.io.view;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
+
 
 import javax.swing.JFrame;
 
@@ -31,11 +28,6 @@ public class GameWindow extends JFrame {
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
 		
-		//Report any window state changes to the controller
-		GameWindowListener listener = new GameWindowListener();
-		this.addWindowListener(listener);
-		this.addWindowFocusListener(listener);
-		this.addWindowStateListener(listener);
 		
 		//Report all keystrokes to the controller
 		this.addKeyListener(new KeyListener() {
@@ -62,66 +54,4 @@ public class GameWindow extends JFrame {
 		view.repaint();
 	}
 
-	/**
-	 * Implements all three Window interfaces, similar to WindowAdapter. Reports any (important) changes in the window's state to the controller.
-	 * @author Matthias
-	 *
-	 */
-	private class GameWindowListener implements WindowListener, WindowFocusListener, WindowStateListener {
-
-		@Override
-		public void windowActivated(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowClosed(WindowEvent e) {
-			System.exit(0);
-		}
-
-		@Override
-		public void windowClosing(WindowEvent e) {
-			controller.onStop();
-		}
-
-		@Override
-		public void windowDeactivated(WindowEvent e) {
-			controller.onPause();
-		}
-
-		@Override
-		public void windowDeiconified(WindowEvent e) {
-			controller.onResume();
-		}
-
-		@Override
-		public void windowIconified(WindowEvent e) {
-			controller.onPause();	
-		}
-
-		@Override
-		public void windowOpened(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowStateChanged(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void windowGainedFocus(WindowEvent arg0) {
-			controller.onResume();
-		}
-
-		@Override
-		public void windowLostFocus(WindowEvent arg0) {
-			controller.onPause();
-		}
-		
-
-			}
 }
