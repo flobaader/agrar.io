@@ -25,6 +25,8 @@ public class Controller {
 	private ArrayList<Food> food;
 	private ArrayList<Circle> circlesToDelete = new ArrayList<Circle>();
 	private LocalPlayer localPlayer;
+	
+	private DatabaseAdapter dbAdapter;
 
 	public Controller() {
 		players = new ArrayList<Player>();
@@ -79,7 +81,7 @@ public class Controller {
 		return localPlayer.getSize();
 	}
 
-	public Circle getLocalPlayer() {
+	public Player getLocalPlayer() {
 		return localPlayer;
 	}
 
@@ -170,5 +172,12 @@ public class Controller {
 		}
 		return c2;
 
+	}
+	
+	public DatabaseAdapter getDatabaseAdapter(){
+		if(dbAdapter == null){
+			dbAdapter = new DatabaseAdapter();
+		}
+		return dbAdapter;
 	}
 }
