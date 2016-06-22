@@ -7,16 +7,15 @@ import java.util.ArrayList;
 
 import javax.swing.Timer;
 
-import agrar.io.Vector;
-import agrar.io.model.Circle;
-import agrar.io.model.Food;
+import agrar.io.model.*;
+import agrar.io.util.Utility;
+import agrar.io.util.Vector;
 import agrar.io.view.GameWindow;
 
 public class Controller {
 	// Game Window
 	private GameWindow window;
 
-	
 	// Timers
 	private Timer gameRate;
 	private Timer graphicsRate;
@@ -61,8 +60,8 @@ public class Controller {
 	}
 
 	private void SpawnPlayer() {
-		// Count KIPlayers
-		KIPlayer p = new KIPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Utility.getRandomColor(), "KI-Player");
+		// Count AIPlayers
+		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Utility.getRandomColor(), "AI-Player");
 		players.add(p);
 	}
 
@@ -99,7 +98,7 @@ public class Controller {
 
 		// Every player can move one step
 		for (Player p : players) {
-			p.moveToNewPosition();
+			
 		}
 
 		// Deletes removed circles

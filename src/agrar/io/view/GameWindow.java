@@ -27,6 +27,7 @@ public class GameWindow extends JFrame {
 		this.setExtendedState(MAXIMIZED_BOTH);
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
 		//Report all keystrokes to the controller
