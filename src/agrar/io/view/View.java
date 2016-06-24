@@ -32,7 +32,10 @@ public class View extends JPanel {
 	private double FPS;
 	private boolean showFPS = true;
 
+	//Controller
 	private Controller controller;
+	
+	//Objects for drawing
 	private BufferedImage scoreBackground;
 	private Rectangle scoreBackgroundSize;
 
@@ -180,7 +183,7 @@ public class View extends JPanel {
 		String name = ((Player) c).getName();
 		Dimension d = measureString(g, name);
 
-		Point pos = getTranslatedPosition(c);
+		Point pos = getTransformedPosition(c);
 
 		int x = pos.x - (int) (d.width / 2F);
 		int y = pos.y - (int) ((c.getRadius() * zoomFactor) + 10);
@@ -203,7 +206,7 @@ public class View extends JPanel {
 		int radius = (int) (c.getRadius() * zoomFactor);
 		int diameter = (int) (radius * 2F);
 
-		Point pos = getTranslatedPosition(c);
+		Point pos = getTransformedPosition(c);
 
 		g.fillOval(pos.x - radius, pos.y - radius, diameter, diameter);
 	}
@@ -286,7 +289,6 @@ public class View extends JPanel {
 	 * @param src
 	 *            Region on the canvas to draw to
 	 */
-
 	private void drawImage(Graphics2D g, BufferedImage i, Rectangle dest, Rectangle src) {
 		g.drawImage(i, dest.x, dest.y, dest.x + dest.width, dest.y + dest.height, src.x, src.y, src.x + src.width,
 				src.y + src.height, null);
@@ -311,7 +313,12 @@ public class View extends JPanel {
 
 	}
 
-	private Point getTranslatedPosition(Circle c) {
+	/**
+	 * Applies translate and scale to the position of the circle
+	 * @param c the circle to transform
+	 * @return a Point that contains the transformed position
+	 */
+	private Point getTransformedPosition(Circle c) {
 
 		int x = (int) c.getLocation().getX();
 		int y = (int) c.getLocation().getY();
