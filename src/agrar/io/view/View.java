@@ -11,6 +11,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -23,20 +24,24 @@ import agrar.io.model.Player;
 import agrar.io.util.Vector;
 
 public class View extends JPanel {
+
 	private static final long serialVersionUID = 2126792581772053659L;
+
+	// Fps counter
 	private long lastPaint = 0;
 	private double FPS;
+	private boolean showFPS = true;
 
 	private Controller controller;
-	private Point offset;
 	private BufferedImage scoreBackground;
 	private Rectangle scoreBackgroundSize;
 
-	private boolean showFPS = true;
+	// Arena Translations
+	private float offsetX, offsetY;
+	private float zoomFactor;
 
 	public View(Controller p) {
 		controller = p;
-		offset = new Point();
 
 		scoreBackgroundSize = new Rectangle();
 		scoreBackgroundSize.height = 40;
@@ -54,10 +59,13 @@ public class View extends JPanel {
 			}
 		});
 
+		// load the images for the HUD
 		try {
 			scoreBackground = ImageIO.read(View.class.getResource("/bottom_left.png"));
 		} catch (IOException e1) {
 		}
+
+		zoomFactor = 1.0F; // No zoom per default
 	}
 
 	@Override
@@ -68,24 +76,31 @@ public class View extends JPanel {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
+		// The zoom must be calculated first
+		calculateZoom(controller.getLocalPlayer());
 		calcOffsets(controller.getLocalPlayer());
 
-		// TODO: scale view to fit circle
+		// Testing the Zoom
+		controller.getLocalPlayer().setSize(controller.getLocalPlayerScore() + 5);
 
-		drawGrid(g2d);
+		drawArena(g2d); // Drawing the Game
+		drawHUD(g2d); // Drawing the HUD on top
 
-		// Draw circles
-		for (Circle c : controller.getAllComponents()) {
+	}
 
-			drawCircle(g2d, c);
+	/**
+	 * Calculate the amount of zoom necessary to fit the local player in the
+	 * view. The View is always zoomed that the player is 15% of the length of
+	 * the shorter side of the view.
+	 * 
+	 * @param localPlayer
+	 *            the local Player
+	 */
+	private void calculateZoom(Player localPlayer) {
 
-			// only players have a name
-			if (c.isPlayer()) {
-				drawName(g2d, c);
-			}
-		}
-
-		drawHUD(g2d);
+		// Target size on Screen is 10% of the shorter side of the view
+		float displaySize = Math.min(this.getHeight() * 0.10F, this.getWidth() * 0.10F);
+		zoomFactor = displaySize / localPlayer.getRadius();
 
 	}
 
@@ -96,14 +111,31 @@ public class View extends JPanel {
 	 *            GraphicsD for drawing
 	 */
 	private void drawHUD(Graphics2D g) {
-		drawPlayerScore(g, controller.getLocalPlayer());
+		drawPlayerScore(g);
 		drawFPS(g);
 	}
 
-	private void drawArena(Graphics2D g){
-		
+	/**
+	 * Draw the Game arena with all players
+	 * 
+	 * @param g
+	 */
+	private void drawArena(Graphics2D g) {
+
+		drawGrid(g);
+
+		// Draw circles
+		for (Circle c : controller.getAllComponents()) {
+
+			drawCircle(g, c);
+			// only players have a name
+			if (c.isPlayer()) {
+				drawName(g, c);
+			}
+		}
+
 	}
-	
+
 	/**
 	 * Draws the grid for the game arena with a given offset
 	 * 
@@ -117,14 +149,20 @@ public class View extends JPanel {
 	private void drawGrid(Graphics2D g) {
 		g.setColor(Color.GRAY);
 
-		int offsetX = (offset.x * -1) % 40;
-		int offsetY = (offset.y * -1) % 40;
+		float oX = (offsetX) % (40F * zoomFactor);
+		float oY = (offsetY) % (40F * zoomFactor);
 
-		for (int x = offsetX; x < this.getWidth(); x += 40) {
-			g.drawLine(x, 0, x, this.getHeight());
+		Line2D line = new Line2D.Float();
+
+		for (float x = oX; x < (float) (this.getWidth()) * zoomFactor; x += 40F * zoomFactor) {
+
+			line.setLine(x, 0, x, this.getHeight());
+			g.draw(line);
 		}
-		for (int y = offsetY; y < this.getHeight(); y += 40) {
-			g.drawLine(0, y, this.getWidth(), y);
+		for (float y = oY; y < (float) (this.getHeight()) * zoomFactor; y += 40F * zoomFactor) {
+
+			line.setLine(0, y, this.getWidth(), y);
+			g.draw(line);
 		}
 	}
 
@@ -137,13 +175,15 @@ public class View extends JPanel {
 	 *            Graphics used for drawing
 	 */
 	private void drawName(Graphics2D g, Circle c) {
+
 		// Measure String first to draw it centered above the player
 		String name = ((Player) c).getName();
-		Vector playerLocation = c.getLocation();
 		Dimension d = measureString(g, name);
 
-		int x = (int) (playerLocation.getX() - (int) (((float) d.width) / 2F) - offset.x);
-		int y = (int) (playerLocation.getY() - c.getRadius() - 10 - offset.y);
+		Point pos = getTranslatedPosition(c);
+
+		int x = pos.x - (int) (d.width / 2F);
+		int y = pos.y - (int) ((c.getRadius() * zoomFactor) + 10);
 
 		g.drawString(name, x, y);
 
@@ -159,10 +199,13 @@ public class View extends JPanel {
 	 */
 	private void drawCircle(Graphics2D g, Circle c) {
 		g.setColor(c.getColor());
-		int radius = (int) c.getRadius();
-		int x = (int) c.getLocation().getX();
-		int y = (int) c.getLocation().getY();
-		g.fillOval(x - radius - offset.x, y - radius - offset.y, radius * 2, radius * 2);
+
+		int radius = (int) (c.getRadius() * zoomFactor);
+		int diameter = (int) (radius * 2F);
+
+		Point pos = getTranslatedPosition(c);
+
+		g.fillOval(pos.x - radius, pos.y - radius, diameter, diameter);
 	}
 
 	/**
@@ -173,8 +216,8 @@ public class View extends JPanel {
 	 */
 	private void calcOffsets(Circle player) {
 		Vector playerOffset = controller.getLocalPlayer().getLocation();
-		offset.x = (int) (playerOffset.getX() - this.getWidth() / 2);
-		offset.y = (int) (playerOffset.getY() - this.getHeight() / 2);
+		offsetX = ((this.getWidth() / 2) - (float) playerOffset.getX() * zoomFactor);
+		offsetY = ((this.getHeight() / 2) - (float) playerOffset.getY() * zoomFactor);
 	}
 
 	/**
@@ -183,9 +226,9 @@ public class View extends JPanel {
 	 * @param localPlayer
 	 *            the local player
 	 */
-	private void drawPlayerScore(Graphics2D g, Player localPlayer) {
+	private void drawPlayerScore(Graphics2D g) {
 
-		String score = String.valueOf(localPlayer.getSize());
+		String score = String.valueOf(controller.getLocalPlayerScore());
 
 		g.setFont(new Font("Arial", Font.BOLD, 25));
 		Dimension stringSize = measureString(g, score);
@@ -234,6 +277,7 @@ public class View extends JPanel {
 	}
 
 	/**
+	 * Draw src region of BufferedImage to dest region on canvas
 	 * 
 	 * @param i
 	 *            buffered image to draw
@@ -264,6 +308,20 @@ public class View extends JPanel {
 		source.height = i.getHeight();
 
 		drawImage(g, i, dest, source);
+
+	}
+
+	private Point getTranslatedPosition(Circle c) {
+
+		int x = (int) c.getLocation().getX();
+		int y = (int) c.getLocation().getY();
+
+		// Translated position is the difference of localplayer and original
+		// Position multiplied with zoomFactor, then translated by the offset
+		float tX = (x * zoomFactor) + offsetX;
+		float tY = (y * zoomFactor) + offsetY;
+
+		return new Point((int) tX, (int) tY);
 
 	}
 }

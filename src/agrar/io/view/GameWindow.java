@@ -1,5 +1,6 @@
 package agrar.io.view;
 
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -28,6 +29,8 @@ public class GameWindow extends JFrame {
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.setMinimumSize(new Dimension(640, 460));
 		
 		
 		//Report all keystrokes to the controller
