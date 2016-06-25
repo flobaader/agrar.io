@@ -12,6 +12,11 @@ import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 import agrar.io.view.GameWindow;
 
+/**
+ * The controller of the game, which starts, stops and manages the whole game
+ * @author Flo
+ *
+ */
 public class Controller {
 	// Game Window
 	private GameWindow window;
@@ -100,7 +105,7 @@ public class Controller {
 
 		// Every player can move one step
 		for (Player p : players) {
-			
+			p.getBehavior().update(1);
 		}
 
 		// Deletes removed circles
@@ -174,10 +179,32 @@ public class Controller {
 
 	}
 	
+	public ArrayList<Circle> getObjectsInSight(Circle c1){
+		ArrayList<Circle> inSight = new ArrayList<Circle>();
+		
+		for (Circle f : food){
+			if(Utility.getDistance(f, c1) < 500){
+				inSight.add(f);
+			}
+		}
+		
+		for (Circle p : players){
+			if(Utility.getDistance(p, c1) < 500){
+				inSight.add(p);
+			}
+		}
+		
+		return inSight;
+	}
+	
 	public DatabaseAdapter getDatabaseAdapter(){
 		if(dbAdapter == null){
 			dbAdapter = new DatabaseAdapter();
 		}
 		return dbAdapter;
+	}
+	
+	public Vector getMouseVector(){
+		return window.getView().getMouseVector();
 	}
 }

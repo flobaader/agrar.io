@@ -1,13 +1,18 @@
 package agrar.io.controller;
 
+import agrar.io.model.LocalPlayer;
+
 public class LocalPlayerBehavior extends PlayerBehavior {
 
-	public LocalPlayerBehavior() {
+	
+	public LocalPlayerBehavior(LocalPlayer parent, Controller controller) {
+		super(parent, controller);
 	}
 
 	@Override
 	public void update(float deltaT) {
-
+		nextTarget = controller.getMouseVector();
+		moveToNewPosition();
 	}
 
 }

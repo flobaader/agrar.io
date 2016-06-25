@@ -42,6 +42,10 @@ public class View extends JPanel {
 	// Arena Translations
 	private float offsetX, offsetY;
 	private float zoomFactor;
+	
+	//Mouse Location
+	private Vector mouseMovement;
+	
 
 	public View(Controller p) {
 		controller = p;
@@ -54,7 +58,7 @@ public class View extends JPanel {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				Vector v = new Vector(e.getX() - getWidth() / 2, e.getY() - getHeight() / 2);
-				// controller.updateMovementVector(v);
+				setMouseMovement(v);
 			}
 
 			@Override
@@ -331,4 +335,13 @@ public class View extends JPanel {
 		return new Point((int) tX, (int) tY);
 
 	}
+	
+	private void setMouseMovement(Vector v){
+		mouseMovement = v;
+	}
+	
+	public Vector getMouseVector(){
+		return mouseMovement;
+	}
+	
 }
