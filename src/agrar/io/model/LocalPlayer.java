@@ -6,6 +6,11 @@ import agrar.io.controller.Controller;
 import agrar.io.controller.LocalPlayerBehavior;
 import agrar.io.util.Vector;
 
+/**
+ * Represents a LocalPlayer
+ * @author FBaader
+ *
+ */
 public class LocalPlayer extends Player {
 
 	public LocalPlayer(Controller parent, Vector loc, int size, Color col, String name) {

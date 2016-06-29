@@ -11,7 +11,7 @@ public class LocalPlayerBehavior extends PlayerBehavior {
 
 	@Override
 	public void update(float deltaT) {
-		nextTarget = controller.getMouseVector();
+		nextTarget = parent.getLocation().addVector(controller.getMouseVector());
 		moveToNewPosition();
 	}
 

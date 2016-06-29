@@ -11,8 +11,6 @@ import agrar.io.util.Utility;
  *
  */
 public class AIPlayerBehavior extends PlayerBehavior {
-	private AIPlayer parent;
-	private Controller contr;
 
 	/**
 	 * Creates new behavior for the given AIPlayer
@@ -32,7 +30,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		Circle bestTarget = null;
 		
 		//Iterates trough all given Objects in Sight and saves the best one 
-		for (Circle c : contr.getObjectsInSight(parent)) {
+		for (Circle c : controller.getObjectsInSight(parent)) {
 			double val = evaluateCircle(c) + evaluateLocationOfCircle(c);
 			if (val > value) {
 				value = val;
@@ -75,7 +73,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 	public double evaluateLocationOfCircle(Circle c) {
 		double value = 0;
 
-		for (Circle c1 : contr.getObjectsInSight(c)) {
+		for (Circle c1 : controller.getObjectsInSight(c)) {
 			value += evaluateCircle(c1);
 		}
 		return value;

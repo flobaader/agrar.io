@@ -16,6 +16,9 @@ public class Food extends Circle {
 		super(parent, loc, size, col);
 	}
 
+	/**
+	 * Specifies that food is not a Player
+	 */
 	public boolean isPlayer() {
 		return false;
 	}
