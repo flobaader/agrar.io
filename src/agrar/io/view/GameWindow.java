@@ -57,5 +57,9 @@ public class GameWindow extends JFrame {
 	public void refresh() {
 		view.repaint();
 	}
+	
+	public View getView(){
+		return view;
+	}
 
 }

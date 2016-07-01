@@ -12,6 +12,12 @@ import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 import agrar.io.view.GameWindow;
 
+/**
+ * The controller of the game, which starts, stops and manages the whole game
+ * 
+ * @author Flo
+ *
+ */
 public class Controller {
 	// Game Window
 	private GameWindow window;
@@ -25,7 +31,7 @@ public class Controller {
 	private ArrayList<Food> food;
 	private ArrayList<Circle> circlesToDelete = new ArrayList<Circle>();
 	private LocalPlayer localPlayer;
-	
+
 	private DatabaseAdapter dbAdapter;
 
 	public Controller() {
@@ -39,20 +45,24 @@ public class Controller {
 		// Loads Players
 		InitializePlayer();
 
-		graphicsRate = new Timer(16, new ActionListener() { // TODO: performance
+		//Spawns Food and AI
+		SpawnObjects();
+
+		graphicsRate = new Timer(1, new ActionListener() { // TODO: performance
 															// test, set back to
 															// 30
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				window.refresh();
-			}
-		});
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						window.refresh();
+					}
+				});
 
 		graphicsRate.start();
 
 		// Starts Game Refresh Timer
-		gameRate = new Timer(5, new ActionListener() {
+		gameRate = new Timer(500, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				RunGameCycle();
 			}
@@ -63,17 +73,20 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
-		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Utility.getRandomColor(), "AI-Player");
+		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 1000), 5000,
+				Utility.getRandomColor(), "AI-Player");
 		players.add(p);
 	}
 
 	private void SpawnFood() {
-		Food f = new Food(this, Utility.getRandomPoint(0, 2000), 200, Utility.getRandomColor());
+		Food f = new Food(this, Utility.getRandomPoint(0, 1000), 200,
+				Utility.getRandomColor());
 		food.add(f);
 	}
 
 	private void InitializePlayer() {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 2000), 5000, Color.blue, "LocalPlayer");
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 1000),
+				5000, Color.blue, "LocalPlayer");
 		players.add(localPlayer);
 	}
 
@@ -85,9 +98,7 @@ public class Controller {
 		return localPlayer;
 	}
 
-	private void RunGameCycle() {
-		// One Game Cycle
-
+	private void SpawnObjects() {
 		// Spawns Players if necessary
 		while (players.size() < 20) {
 			SpawnPlayer();
@@ -98,15 +109,22 @@ public class Controller {
 			SpawnFood();
 		}
 
+	}
+
+	private void RunGameCycle() {
+		// One Game Cycle
+		SpawnObjects();
+
 		// Every player can move one step
 		for (Player p : players) {
-			
+			p.getBehavior().update(1);
 		}
 
 		// Deletes removed circles
 		for (Circle c : circlesToDelete) {
 			players.remove(c);
 			food.remove(c);
+			System.out.println("Deleted Circle!");
 		}
 		circlesToDelete.clear();
 
@@ -124,7 +142,8 @@ public class Controller {
 	}
 
 	public Vector getOffset() {
-		return new Vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
+		return new Vector(window.getSize().getWidth() / 2, window.getSize()
+				.getHeight() / 2);
 	}
 
 	public Player getNearestPlayer(Circle c1) {
@@ -173,11 +192,33 @@ public class Controller {
 		return c2;
 
 	}
-	
-	public DatabaseAdapter getDatabaseAdapter(){
-		if(dbAdapter == null){
+
+	public ArrayList<Circle> getObjectsInSight(Circle c1) {
+		ArrayList<Circle> inSight = new ArrayList<Circle>();
+
+		for (Circle f : food) {
+			if (Utility.getDistance(f, c1) < 500) {
+				inSight.add(f);
+			}
+		}
+
+		for (Circle p : players) {
+			if (Utility.getDistance(p, c1) < 500) {
+				inSight.add(p);
+			}
+		}
+
+		return inSight;
+	}
+
+	public DatabaseAdapter getDatabaseAdapter() {
+		if (dbAdapter == null) {
 			dbAdapter = new DatabaseAdapter();
 		}
 		return dbAdapter;
+	}
+
+	public Vector getMouseVector() {
+		return window.getView().getMouseVector();
 	}
 }

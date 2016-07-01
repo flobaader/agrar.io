@@ -27,21 +27,24 @@ public class View extends JPanel {
 
 	private static final long serialVersionUID = 2126792581772053659L;
 
-	// Fps counter
+	// FPS counter
 	private long lastPaint = 0;
 	private double FPS;
 	private boolean showFPS = true;
 
-	//Controller
+	// Controller
 	private Controller controller;
-	
-	//Objects for drawing
+
+	// Objects for drawing
 	private BufferedImage scoreBackground;
 	private Rectangle scoreBackgroundSize;
 
 	// Arena Translations
 	private float offsetX, offsetY;
 	private float zoomFactor;
+
+	// Mouse Location
+	private Vector mouseMovement;
 
 	public View(Controller p) {
 		controller = p;
@@ -53,8 +56,12 @@ public class View extends JPanel {
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				Vector v = new Vector(e.getX() - getWidth() / 2, e.getY() - getHeight() / 2);
-				// controller.updateMovementVector(v);
+				// Subtracts the half Screen Size of the Vector to get a
+				// normalized vector, which start point is located at the center
+				// of the screen
+				Vector v = new Vector(e.getX() - getWidth() / 2, e.getY()
+						- getHeight() / 2);
+				setMouseMovement(v);
 			}
 
 			@Override
@@ -63,11 +70,11 @@ public class View extends JPanel {
 		});
 
 		// load the images for the HUD
-		try {
-			scoreBackground = ImageIO.read(View.class.getResource("/bottom_left.png"));
-		} catch (IOException e1) {
-		}
-
+		/*
+		 * try { scoreBackground =
+		 * ImageIO.read(View.class.getResource("/bottom_left.png")); } catch
+		 * (IOException e1) { }
+		 */
 		zoomFactor = 1.0F; // No zoom per default
 	}
 
@@ -76,7 +83,8 @@ public class View extends JPanel {
 
 		// Setup drawing canvas
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
 		// The zoom must be calculated first
@@ -84,7 +92,8 @@ public class View extends JPanel {
 		calcOffsets(controller.getLocalPlayer());
 
 		// Testing the Zoom
-		controller.getLocalPlayer().setSize(controller.getLocalPlayerScore() + 5);
+		// controller.getLocalPlayer().setSize(controller.getLocalPlayerScore()
+		// + 5);
 
 		drawArena(g2d); // Drawing the Game
 		drawHUD(g2d); // Drawing the HUD on top
@@ -102,7 +111,8 @@ public class View extends JPanel {
 	private void calculateZoom(Player localPlayer) {
 
 		// Target size on Screen is 10% of the shorter side of the view
-		float displaySize = Math.min(this.getHeight() * 0.10F, this.getWidth() * 0.10F);
+		float displaySize = Math.min(this.getHeight() * 0.10F,
+				this.getWidth() * 0.10F);
 		zoomFactor = displaySize / localPlayer.getRadius();
 
 	}
@@ -219,8 +229,10 @@ public class View extends JPanel {
 	 */
 	private void calcOffsets(Circle player) {
 		Vector playerOffset = controller.getLocalPlayer().getLocation();
-		offsetX = ((this.getWidth() / 2) - (float) playerOffset.getX() * zoomFactor);
-		offsetY = ((this.getHeight() / 2) - (float) playerOffset.getY() * zoomFactor);
+		offsetX = ((this.getWidth() / 2) - (float) playerOffset.getX()
+				* zoomFactor);
+		offsetY = ((this.getHeight() / 2) - (float) playerOffset.getY()
+				* zoomFactor);
 	}
 
 	/**
@@ -237,12 +249,15 @@ public class View extends JPanel {
 		Dimension stringSize = measureString(g, score);
 
 		scoreBackgroundSize.height = (int) ((stringSize.height + 20) * 1.25);
-		scoreBackgroundSize.y = (int) (this.getHeight() - scoreBackgroundSize.getHeight());
+		scoreBackgroundSize.y = (int) (this.getHeight() - scoreBackgroundSize
+				.getHeight());
 		scoreBackgroundSize.width = (int) ((stringSize.width + 30) * 1.0833);
-		scoreBackgroundSize.x = (int) (this.getWidth() - scoreBackgroundSize.getWidth());
+		scoreBackgroundSize.x = (int) (this.getWidth() - scoreBackgroundSize
+				.getWidth());
 
-		drawImage(g, scoreBackground, scoreBackgroundSize);
-		g.drawString(score, getWidth() - (stringSize.width + 10), (int) (getHeight() - 10));
+		// drawImage(g, scoreBackground, scoreBackgroundSize);
+		g.drawString(score, getWidth() - (stringSize.width + 10),
+				(int) (getHeight() - 10));
 
 	}
 
@@ -289,9 +304,11 @@ public class View extends JPanel {
 	 * @param src
 	 *            Region on the canvas to draw to
 	 */
-	private void drawImage(Graphics2D g, BufferedImage i, Rectangle dest, Rectangle src) {
-		g.drawImage(i, dest.x, dest.y, dest.x + dest.width, dest.y + dest.height, src.x, src.y, src.x + src.width,
-				src.y + src.height, null);
+	private void drawImage(Graphics2D g, BufferedImage i, Rectangle dest,
+			Rectangle src) {
+		g.drawImage(i, dest.x, dest.y, dest.x + dest.width, dest.y
+				+ dest.height, src.x, src.y, src.x + src.width, src.y
+				+ src.height, null);
 	}
 
 	/**
@@ -315,7 +332,9 @@ public class View extends JPanel {
 
 	/**
 	 * Applies translate and scale to the position of the circle
-	 * @param c the circle to transform
+	 * 
+	 * @param c
+	 *            the circle to transform
 	 * @return a Point that contains the transformed position
 	 */
 	private Point getTransformedPosition(Circle c) {
@@ -331,4 +350,13 @@ public class View extends JPanel {
 		return new Point((int) tX, (int) tY);
 
 	}
+
+	private void setMouseMovement(Vector v) {
+		mouseMovement = v;
+	}
+
+	public Vector getMouseVector() {
+		return mouseMovement;
+	}
+
 }
