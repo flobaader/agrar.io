@@ -105,7 +105,7 @@ public class Controller {
 		}
 
 		// Spawns Food if necessary
-		while (food.size() < 10) {
+		while (food.size() < 50) {
 			SpawnFood();
 		}
 
@@ -124,7 +124,7 @@ public class Controller {
 		for (Circle c : circlesToDelete) {
 			players.remove(c);
 			food.remove(c);
-			System.out.println("Deleted Circle!");
+			//System.out.println("Deleted Circle!");
 		}
 		circlesToDelete.clear();
 

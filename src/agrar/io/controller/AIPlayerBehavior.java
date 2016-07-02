@@ -36,7 +36,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 		// Iterates trough all given Objects in Sight and saves the best one
 		for (Circle c : controller.getObjectsInSight(parent)) {
-			double curVal = evaluateCircle(c) + 0.5 * evaluateLocationOfCircle(c);
+			double curVal = evaluateCircle(c);// + 0.5 * evaluateLocationOfCircle(c);
 			if (curVal > bestValue) {
 				bestValue = curVal;
 				bestTarget = c;
@@ -51,6 +51,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			parent.setColor(Color.RED);
 		}
 
+		
 		tryToEatNearestCircle();
 
 	}
@@ -71,9 +72,11 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		double isSmaller = 1;
 		if (c.getSize() > parent.getSize()) {
 			isSmaller = -1;
+		}else if(c.getSize() == parent.getSize()){
+			isSmaller = 0;
 		}
 
-		double sizeFactor = Math.abs(c.getSize() - parent.getSize());
+		double sizeFactor = c.getSize();
 		double distanceFactor = (1 / Math.pow(Utility.getDistance(parent, c), 2));
 
 		return (isSmaller * sizeFactor * distanceFactor);
