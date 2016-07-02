@@ -65,7 +65,7 @@ public class Controller {
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
 		
-		menuController = new MenuController(this);
+		menuController = new MenuController(this, window.getMenuView());
 	}
 
 	/**
@@ -402,6 +402,6 @@ public class Controller {
 	}
 
 	public void start() {
-		window.showMenu(menuController.getNameMenu());
+		menuController.showNameMenu();
 	}
 }

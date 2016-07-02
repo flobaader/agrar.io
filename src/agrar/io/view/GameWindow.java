@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import agrar.io.controller.Controller;
-import agrar.io.model.menu.Menu;
+
 import agrar.io.util.Vector;
 
 public class GameWindow extends JFrame {
@@ -33,9 +33,9 @@ public class GameWindow extends JFrame {
 		super();
 
 		controller = c;
-		
+
 		cardPanel = new JPanel();
-		
+
 		cl = new CardLayout();
 		cardPanel.setLayout(cl);
 		this.getContentPane().add(cardPanel);
@@ -45,9 +45,9 @@ public class GameWindow extends JFrame {
 
 		cardPanel.add(gameView, GAME);
 		cardPanel.add(menuView, MENU);
-		
+
 		cl.show(cardPanel, GAME);
-		
+
 		this.setExtendedState(MAXIMIZED_BOTH);
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
@@ -99,16 +99,20 @@ public class GameWindow extends JFrame {
 		return gameView;
 	}
 
-	public void showMenu(Menu nameMenu) {
+	public void showMenu() {
 		cl.show(cardPanel, MENU);
 	}
-	
-	public void hideMenu(){
+
+	public void hideMenu() {
 		cl.show(cardPanel, GAME);
 	}
 
 	public Vector getMouseVector() {
 		return mouseMovement;
+	}
+
+	public MenuView getMenuView() {
+		return menuView;
 	}
 
 }

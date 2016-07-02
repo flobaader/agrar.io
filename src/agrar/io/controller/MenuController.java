@@ -5,35 +5,31 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import agrar.io.model.Score;
-import agrar.io.model.menu.ButtonItem;
-import agrar.io.model.menu.ImageItem;
-import agrar.io.model.menu.LabelItem;
-import agrar.io.model.menu.Menu;
-import agrar.io.model.menu.PasswordFieldItem;
-import agrar.io.model.menu.TextFieldItem;
+import agrar.io.view.MenuView;
 
 public class MenuController {
 
 	private Controller parent;
+	private MenuView menuView;
 
-	public MenuController(Controller parent) {
+	public MenuController(Controller parent, MenuView menuView) {
 		this.parent = parent;
+		this.menuView = menuView;
 	}
 
 	/**
 	 * 
 	 * @return The main menu of the game
 	 */
-	public Menu getMainMenu() {
-		Menu mainMenu = new Menu(this.parent);
+	public void showMainMenu() {
 
-		ImageItem banner = new ImageItem("resources/banner.png");
-		mainMenu.add(banner);
+		menuView.addImage("resources/banner.png");
 
-		ButtonItem startButton = new ButtonItem("Start");
-		startButton.setAction(new ActionListener() {
+		menuView.addButton("Start", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -41,8 +37,7 @@ public class MenuController {
 			}
 		});
 
-		ButtonItem quitButton = new ButtonItem("Beenden");
-		quitButton.setAction(new ActionListener() {
+		menuView.addButton("Beenden", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -50,31 +45,25 @@ public class MenuController {
 			}
 		});
 
-		return mainMenu;
 	}
 
 	/**
 	 * 
 	 * @return A menu to display when the game is paused
 	 */
-	public Menu getPauseMenu() {
-		Menu pauseMenu = new Menu(this.parent);
+	public void showPauseMenu() {
 
-		LabelItem pausedLabel = new LabelItem("Pausiert");
-		pauseMenu.add(pausedLabel);
+		menuView.addLabel("Pausiert");
 
-		ButtonItem continueButton = new ButtonItem("Weiter");
-		continueButton.setAction(new ActionListener() {
+		menuView.addButton("Weiter", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				parent.resumeGame();
 			}
 		});
-		pauseMenu.add(continueButton);
 
-		ButtonItem mainMenuButton = new ButtonItem("Zum Hauptmenu");
-		mainMenuButton.setAction(new ActionListener() {
+		menuView.addButton("Hauptmenu", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -82,8 +71,7 @@ public class MenuController {
 			}
 		});
 
-		ButtonItem quitButton = new ButtonItem("Beenden");
-		quitButton.setAction(new ActionListener() {
+		menuView.addButton("Beenden", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -96,28 +84,20 @@ public class MenuController {
 			}
 		});
 
-		return pauseMenu;
 	}
 
-	public Menu getNameMenu() {
-		Menu nameMenu = new Menu(parent);
+	public void showNameMenu() {
 
-		LabelItem title = new LabelItem("Namen aussuchen");
-		nameMenu.add(title);
+		JTextField nameField = menuView.addTextField("Name");
 
-		TextFieldItem nameField = new TextFieldItem("Name");
-		nameMenu.add(nameField);
+		JPasswordField passwordField = menuView.addPasswordField("Passwort");
 
-		PasswordFieldItem passwordField = new PasswordFieldItem("Passwort");
-		nameMenu.add(passwordField);
-
-		ButtonItem confirmButton = new ButtonItem("OK");
-		confirmButton.setAction(new ActionListener() {
+		menuView.addButton("OK", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String name = nameField.getText();
-				String passwd = passwordField.getText();
+				String passwd = String.valueOf(passwordField.getPassword());
 				Score s = new Score(0, name, passwd);
 
 				DatabaseAdapter dbAdapter = parent.getDatabaseAdapter();
@@ -142,12 +122,11 @@ public class MenuController {
 			}
 
 		});
-		nameMenu.add(confirmButton);
 
-		return nameMenu;
 	}
 
 	private void startGame(Score s) {
 		parent.StartGame(s);
 	}
+
 }
