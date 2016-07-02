@@ -143,10 +143,9 @@ public class View extends JPanel {
 			// only players have a name
 			if (c.isPlayer()) {
 				drawName(g, c);
-			}
-			if (c.isPlayer() && !(c == controller.getLocalPlayer())) {
 				drawTargetLine(g, c);
 			}
+			
 		}
 
 	}
@@ -182,8 +181,14 @@ public class View extends JPanel {
 	}
 
 	private void drawTargetLine(Graphics2D g, Circle c) {
-		Point start = getTransformedPosition(c);
-		Point end = getTransformedPosition(((Player) c).getBehavior().getTarget());
+
+		Vector target = ((Player) c).getBehavior().getTarget();
+
+		if (target != null) {
+			Point start = getTransformedPosition(c);
+			Vector end = getTransformedPosition(target);
+			g.drawLine(start.x, start.y, (int) end.getX(), (int) end.getY());
+		}
 	}
 
 	/**
@@ -257,7 +262,6 @@ public class View extends JPanel {
 		scoreBackgroundSize.y = (int) (this.getHeight() - scoreBackgroundSize.getHeight());
 		scoreBackgroundSize.width = (int) ((stringSize.width + 30) * 1.0833);
 		scoreBackgroundSize.x = (int) (this.getWidth() - scoreBackgroundSize.getWidth());
-
 
 		drawImage(g, scoreBackground, scoreBackgroundSize);
 		g.setColor(Color.white);
@@ -352,6 +356,19 @@ public class View extends JPanel {
 
 		return new Point((int) tX, (int) tY);
 
+	}
+
+	private Vector getTransformedPosition(Vector v) {
+
+		int x = (int) v.getX();
+		int y = (int) v.getY();
+
+		// Translated position is the difference of localplayer and original
+		// Position multiplied with zoomFactor, then translated by the offset
+		float tX = (x * zoomFactor) + offsetX;
+		float tY = (y * zoomFactor) + offsetY;
+
+		return new Vector(tX, tY);
 	}
 
 	private void setMouseMovement(Vector v) {
