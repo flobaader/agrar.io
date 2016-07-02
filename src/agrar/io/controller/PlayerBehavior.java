@@ -1,6 +1,10 @@
 package agrar.io.controller;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
 
 import agrar.io.model.Circle;
 import agrar.io.model.Player;
@@ -22,9 +26,16 @@ public abstract class PlayerBehavior {
 
 	// The Location of the nextTarget to move to
 	protected Vector nextTarget;
-	
-	//The original Color
+
+	// The original Color
 	protected Color orgColor;
+
+	// The size of the player reduces if he does not get enough food
+	private int gainedSize = 0;
+	private Timer monitorFeedingTimer;
+
+	// Saves the maximum Size of the Player
+	private int maxSize = 0;
 
 	/**
 	 * Create new Behavior for the selected player
@@ -38,6 +49,16 @@ public abstract class PlayerBehavior {
 		this.parent = player;
 		this.controller = controller;
 		orgColor = player.getColor();
+
+		monitorFeedingTimer = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				monitorFeeding();
+			}
+
+		});
+		monitorFeedingTimer.start();
+
 	}
 
 	/**
@@ -58,7 +79,13 @@ public abstract class PlayerBehavior {
 			double distance = Utility.getDistance(parent, c1);
 			if (c1.getSize() < parent.getSize() && (distance - parent.getRadius() <= 0)) {
 				// Adds size of other circle to this oneF
+				gainedSize += c1.getSize();
 				parent.setSize(parent.getSize() + c1.getSize());
+
+				if (parent.getSize() > maxSize) {
+					maxSize = parent.getSize();
+				}
+
 				controller.deleteCircle(c1);
 			}
 		}
@@ -96,4 +123,22 @@ public abstract class PlayerBehavior {
 		}
 
 	}
+
+	private void monitorFeeding() {
+		// Size decreases if the feeding is less than 5% per Second
+		if ((gainedSize) < parent.getSize() * 0.05) {
+			parent.setSize((int) (parent.getSize() * 0.95));
+		}
+
+		gainedSize = 0;
+
+	}
+
+	/**
+	 * @return the biggest size that the Player had
+	 */
+	public int getMaxSize() {
+		return maxSize;
+	}
+
 }
