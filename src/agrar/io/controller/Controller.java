@@ -3,6 +3,7 @@ package agrar.io.controller;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,13 +35,14 @@ public class Controller {
 	private ArrayList<Circle> circlesToDelete = new ArrayList<Circle>();
 	private LocalPlayer localPlayer;
 
-	private DatabaseAdapter dbAdapter;
+	private DatabaseAdapter dbAdapter = new DatabaseAdapter();
 
 	public Controller() {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
+		
 	}
 
 	public void StartGame() {
@@ -220,14 +222,19 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
+	/**
+	 * Get the best players in the current game
+	 * 
+	 * @return An array of the 5 (or less) best players in the game
+	 */
 	public Score[] getLocalHighscores() {
 
-		//Sort the players so the best players are first
+		// Sort the players so the best players are first
 		Collections.sort(players, new Comparator<Player>() {
 
-			//-1 => p1 < p2
-			//0  => p1 == p2
-			//1  => p1 > p2
+			// -1 => p1 < p2
+			// 0 => p1 == p2
+			// 1 => p1 > p2
 			@Override
 			public int compare(Player p1, Player p2) {
 
@@ -243,13 +250,27 @@ public class Controller {
 
 		});
 
-		Score[] bestplayers = new Score[5];
-		
-		//Convert players to Scores 
-		for(int i = 0; i < Math.min(5, players.size()); i++){
+		Score[] bestplayers = new Score[Math.min(5, players.size())];
+
+		// Convert players to Scores
+		for (int i = 0; i < bestplayers.length; i++) {
 			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i).getName(), "baum");
 		}
-		
+
 		return bestplayers;
+	}
+
+	/**
+	 * Get the best players of all time from the database
+	 * 
+	 * @return the 5 or less best players from the database
+	 */
+	public Score[] getGlobalHighscores() {
+		try {
+			return dbAdapter.getHighscores();
+		} catch (SQLException e) {
+			// TODO handle errors properly
+			return null;
+		}
 	}
 }

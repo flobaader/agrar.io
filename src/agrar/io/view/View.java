@@ -37,8 +37,7 @@ public class View extends JPanel {
 	private Controller controller;
 
 	// Objects for drawing
-	private BufferedImage scoreBackground;
-	private BufferedImage localHighscoreBackground;
+	private BufferedImage bottomRight, topRight, bottomLeft;
 	private Rectangle scoreBackgroundSize;
 
 	// Arena Translations
@@ -71,11 +70,13 @@ public class View extends JPanel {
 		});
 
 		// load the images for the HUD
-
 		try {
-			scoreBackground = ImageIO.read(View.class.getResource("/bottom_left.png"));
-			localHighscoreBackground = ImageIO.read(View.class.getResource("/top_right.png"));
+			bottomRight = ImageIO.read(View.class.getResource("/bottom_right.png"));
+			topRight = ImageIO.read(View.class.getResource("/top_right.png"));
+			bottomLeft = ImageIO.read(View.class.getResource("/bottom_left.png"));
 		} catch (IOException e1) {
+			// This should only happen if the images are not present or not
+			// correctly packaged in the jar, so no need to handle it
 		}
 
 		zoomFactor = 1.0F; // No zoom per default
@@ -128,7 +129,8 @@ public class View extends JPanel {
 		drawPlayerScore(g);
 		// drawHighscoreList(g);
 		drawFPS(g);
-		drawLocalHighscoreList(g);
+		drawScoreList(g);
+		drawHighscoreList(g);
 	}
 
 	/**
@@ -267,58 +269,131 @@ public class View extends JPanel {
 		scoreBackgroundSize.width = (int) ((stringSize.width + 30) * 1.0833);
 		scoreBackgroundSize.x = (int) (this.getWidth() - scoreBackgroundSize.getWidth());
 
-		drawImage(g, scoreBackground, scoreBackgroundSize);
+		drawImage(g, bottomRight, scoreBackgroundSize);
 		g.setColor(Color.white);
 
 		g.drawString(score, getWidth() - (stringSize.width + 10), (int) (getHeight() - 10));
 
 	}
 
-	private void drawLocalHighscoreList(Graphics2D g) {
-		Score[] highscores = controller.getLocalHighscores();
+	/**
+	 * Draws the score list with the best players in the current game, including
+	 * background
+	 * 
+	 * @param g
+	 */
+	private void drawScoreList(Graphics2D g) {
+
+		// Create an array of score strings
+		String[] scores = createScoreList(controller.getLocalHighscores());
 
 		// calculate the width of the background needed
-		int minwidth = 0; // the minimum width of the score list
-		int minheight = 0; // The minimum height of the score list
+		Dimension listSize = measureScoreList(g, scores);
 
-		for (int i = 0; i < highscores.length; i++) {
-			if (null != highscores[i]) {
+		double textheight = measureString(g, scores[0]).getHeight();
 
-				Dimension d = measureString(g, highscores[i].getName() + ": " + highscores[i].getScore());
+		// Add padding for the Background:
 
-				minwidth = (int) Math.max(minwidth, d.getWidth());
-				minheight += d.getHeight() + 10;
-			}
-		}
-
-		int x = this.getWidth() - (minwidth + 15);
-		// widht + 30 px of padding multiplied by 110% because of the margin in
+		// width + 30 px of padding multiplied by 110% because of the margin in
 		// the image
-		minwidth = (int) ((minwidth + 30) * 1.1F);
+		int width = (int) ((listSize.getWidth() + 30) * 1.1F);
 
 		// height + 10 px of vertical padding * 5/70 because of the margin in
 		// the image
-		minheight = (int) ((minheight + 30) * (1 + (1F / 7F)));
+		int height = (int) ((listSize.getHeight() + 30) * (1 + (1F / 7F)));
 
-		// Create bounds for background
-		Rectangle dest = new Rectangle(this.getWidth() - minwidth, 0, minwidth, minheight);
+		Rectangle dest = new Rectangle(this.getWidth() - width, 0, width, height);
 
 		// Draw background for list
-		drawImage(g, localHighscoreBackground, dest);
+		drawImage(g, topRight, dest);
 
-		int y = 0;
+		int y = (int) (textheight + 5); // Baseline of the first string
+		// X coordinate for Score strings
+		int x = (int) (this.getWidth() - (listSize.getWidth() + 15));
 
-		Score s;
-		for (int i = 0; i < highscores.length; i++) {
+		// Draw the score strings
+		for (String s : scores) {
+			g.drawString(s, x, y);
 
-			if (highscores[i] != null) {
-				s = highscores[i];
-				String str = s.getName() + ": " + s.getScore();
-
-				y += measureString(g, str).getHeight() + 10;
-				g.drawString(str, x, y);
-			}
+			// Next String will be drawn one line height lower + 10 px padding
+			y += textheight + 10;
 		}
+	}
+
+	/**
+	 * Draws a list of the 5 best players in the Database
+	 * 
+	 * @param g
+	 */
+	private void drawHighscoreList(Graphics2D g) {
+		String[] scores = createScoreList(controller.getGlobalHighscores());
+
+		Dimension listSize = measureScoreList(g, scores);
+
+		double lineHeight = measureString(g, scores[0]).getHeight();
+
+		// Add padding for the background
+		int width = (int) ((listSize.getWidth() + 30) * 1.1F);
+		int height = (int) ((listSize.getHeight() + 30) * (1 + (1F / 7F)));
+
+		Rectangle dest = new Rectangle(0, this.getHeight() - height, width, height);
+
+		// Draw Background
+		drawImage(g, bottomLeft, dest);
+
+		// Start coordinates for the list
+		int x = 15; // 15 px of padding left
+		int y = (int) ((this.getHeight() - listSize.getHeight()) + lineHeight);
+		
+		for(String s: scores){
+			g.drawString(s, x, y);
+			
+			y += lineHeight + 10;
+		}
+	}
+
+	/**
+	 * Turns an Array of Scores into an array of Strings corresponding to the
+	 * scores. The format is [name]: [score].
+	 * 
+	 * @param highscores
+	 *            the Scores to convert
+	 * @return Array of Strings based on the scores
+	 */
+	private String[] createScoreList(Score[] highscores) {
+
+		String[] scoreStr = new String[highscores.length];
+
+		for (int i = 0; i < highscores.length; i++) {
+			scoreStr[i] = highscores[i].getName() + ": " + highscores[i].getScore();
+
+		}
+
+		return scoreStr;
+
+	}
+
+	/**
+	 * Measures the space required to draw the score list
+	 * 
+	 * @param g
+	 * @param scoreStr
+	 *            Array of the score strings
+	 * @return a Dimension that represents the space required for the list
+	 */
+	private Dimension measureScoreList(Graphics2D g, String[] scoreStr) {
+
+		int width = 0; // the minimum width of the score list
+		int height = 0; // The minimum height of the score list
+
+		for (int i = 0; i < scoreStr.length; i++) {
+
+			Dimension d = measureString(g, scoreStr[i]);
+			width = (int) Math.max(width, d.getWidth());
+			height += d.getHeight() + 10;
+		}
+
+		return new Dimension(width, height);
 	}
 
 	/**
@@ -355,7 +430,7 @@ public class View extends JPanel {
 	}
 
 	/**
-	 * Draw src region of BufferedImage to dest region on canvas
+	 * Draw src region of BufferedImage to destination region on canvas
 	 * 
 	 * @param i
 	 *            buffered image to draw

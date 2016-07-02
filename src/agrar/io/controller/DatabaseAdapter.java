@@ -23,7 +23,7 @@ public class DatabaseAdapter {
 	 *         scores
 	 * @throws SQLException
 	 */
-	private Score[] getHighscores() throws SQLException {
+	public Score[] getHighscores() throws SQLException {
 
 		Score[] scores = new Score[5];
 		int count = 0;
