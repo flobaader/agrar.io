@@ -10,7 +10,7 @@ public class AIPlayer extends Player{
 
 	public AIPlayer(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col, name);
-		this.behavior = new AIPlayerBehavior(this, parent);
+		this.behavior = new AIPlayerBehavior(this, parent,1);
 	}
 
 

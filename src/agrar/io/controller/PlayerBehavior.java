@@ -1,5 +1,7 @@
 package agrar.io.controller;
 
+import java.awt.Color;
+
 import agrar.io.model.Circle;
 import agrar.io.model.Player;
 import agrar.io.util.Utility;
@@ -20,6 +22,9 @@ public abstract class PlayerBehavior {
 
 	// The Location of the nextTarget to move to
 	protected Vector nextTarget;
+	
+	//The original Color
+	protected Color orgColor;
 
 	/**
 	 * Create new Behavior for the selected player
@@ -32,6 +37,7 @@ public abstract class PlayerBehavior {
 	public PlayerBehavior(Player player, Controller controller) {
 		this.parent = player;
 		this.controller = controller;
+		orgColor = player.getColor();
 	}
 
 	/**
@@ -50,7 +56,7 @@ public abstract class PlayerBehavior {
 			// Bigger Circle eats smaller Circle, when half of the smaller
 			// circle is covered
 			double distance = Utility.getDistance(parent, c1);
-			if (c1.getSize() < parent.getSize() && (distance - c1.getRadius()) <= parent.getRadius()) {
+			if (c1.getSize() < parent.getSize() && (distance - parent.getRadius() <= 0)) {
 				// Adds size of other circle to this oneF
 				parent.setSize(parent.getSize() + c1.getSize());
 				controller.deleteCircle(c1);
