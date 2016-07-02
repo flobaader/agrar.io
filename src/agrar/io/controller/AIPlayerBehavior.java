@@ -17,6 +17,7 @@ import agrar.io.util.Vector;
 public class AIPlayerBehavior extends PlayerBehavior {
 
 	private int LEVEL;
+	private int FLEE_THRESHOLD;
 	
 	/**
 	 * Creates new behavior for the given AIPlayer
@@ -29,12 +30,15 @@ public class AIPlayerBehavior extends PlayerBehavior {
 	public AIPlayerBehavior(AIPlayer player, Controller controller, int Level) {
 		super(player, controller);
 		
-		
+		//Ensures that the level argument is in the range
 		if(Level < 0 || Level > 10){
 			Level = 1;
 		}else{
 			LEVEL = Level;	
 		}
+		
+		//Ramdomizes the point, where 
+		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
 		
 	}
 	
@@ -92,7 +96,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			nextTarget = Utility.getRandomPoint(controller.getFIELD_SIZE(), controller.getFIELD_SIZE());
 			parent.setColor(Color.BLACK);
 			
-		}else if (bestValue > 0 && worstValue > -2){
+		}else if (bestValue > 0 && worstValue > FLEE_THRESHOLD){
 			
 			//Found a good Circle and is not in Danger
 			nextTarget = bestTarget.getLocation();

@@ -32,11 +32,11 @@ public class Controller {
 	private static int FOOD_SIZE = 200;
 	private static int VIEWRANGE = 500;
 	private static int AI_PLAYER_COUNT = 10;
-	private static int FOOD_COUNT = 100;
-	private static int FIELD_SIZE = 1000;
+	private static int FOOD_COUNT = 200;
+	private static int FIELD_SIZE = 2000;
 	private static int VIEW_REFRESH_RATE = 1;
-	private static int GAME_REFERSH_RATE = 8;
-	private static double MOVEMENT_SPEED = 0.1;
+	private static int GAME_REFERSH_RATE = 1;
+	private static float MOVEMENT_SPEED = 0.4;
 
 	// Lists of Game Objects
 	private ArrayList<Player> players;
@@ -45,8 +45,7 @@ public class Controller {
 	private LocalPlayer localPlayer;
 
 	private DatabaseAdapter dbAdapter;
-	
-	
+
 	private long lastUpdateTime;
 
 	public Controller() {
@@ -63,9 +62,10 @@ public class Controller {
 		// Spawns Food and AI
 		SpawnObjects();
 
-		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() { // TODO: performance
-															// test, set back to
-															// 30
+		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() { // TODO:
+																			// performance
+			// test, set back to
+			// 30
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -75,9 +75,9 @@ public class Controller {
 
 		graphicsRate.start();
 
-		//Sets First Update Time
+		// Sets First Update Time
 		lastUpdateTime = System.currentTimeMillis();
-		
+
 		// Starts Game Refresh Timer
 		gameRate = new Timer(GAME_REFERSH_RATE, new ActionListener() {
 			@Override
@@ -93,7 +93,7 @@ public class Controller {
 		// Count AIPlayers
 
 		int level = Utility.getRandom(0, 10);
-		
+
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
 				Utility.getRandomColor(), "AI-Player", level);
 		players.add(p);
@@ -133,16 +133,23 @@ public class Controller {
 	}
 
 	private void RunGameCycle() {
-		long timePassedSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
-		
+		long millisSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
+
 		// One Game Cycle
 		SpawnObjects();
 
 		// Every player can move one step
 		for (Player p : players) {
-			p.getBehavior().update(timePassedSinceLastUpdate);
+			p.getBehavior().update(millisSinceLastUpdate);
 		}
+		
+		ClearDeletedCircles();
 
+		lastUpdateTime = System.currentTimeMillis();
+
+	}
+
+	private void ClearDeletedCircles() {
 		// Deletes removed circles
 		for (Circle c : circlesToDelete) {
 			players.remove(c);
@@ -150,8 +157,6 @@ public class Controller {
 			// System.out.println("Deleted Circle!");
 		}
 		circlesToDelete.clear();
-		
-		lastUpdateTime = System.currentTimeMillis();
 
 	}
 
@@ -245,15 +250,14 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
-
 	public Score[] getLocalHighscores() {
 
-		//Sort the players so the best players are first
+		// Sort the players so the best players are first
 		Collections.sort(players, new Comparator<Player>() {
 
-			//-1 => p1 < p2
-			//0  => p1 == p2
-			//1  => p1 > p2
+			// -1 => p1 < p2
+			// 0 => p1 == p2
+			// 1 => p1 > p2
 			@Override
 			public int compare(Player p1, Player p2) {
 
@@ -270,14 +274,15 @@ public class Controller {
 		});
 
 		Score[] bestplayers = new Score[5];
-		
-		//Convert players to Scores 
-		for(int i = 0; i < Math.min(5, players.size()); i++){
+
+		// Convert players to Scores
+		for (int i = 0; i < Math.min(5, players.size()); i++) {
 			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i).getName(), "baum");
 		}
-		
+
 		return bestplayers;
 	}
+
 	/**
 	 * @return the pLAYER_START_SIZE
 	 */

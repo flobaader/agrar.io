@@ -106,10 +106,9 @@ public abstract class PlayerBehavior {
 	 */
 	protected void moveToNewPosition(float deltaT) {
 		// The relative location of the target
-		float sizeDifference = Math.abs(parent.getSize() - controller.getPLAYER_START_SIZE()) / 1000;
+		float sizeFactor = (float) parent.getSize() / (float) controller.getPLAYER_START_SIZE();
 
-		float movementFactor = (float) ((deltaT / (0.5 * (Math.sqrt(sizeDifference) + 1)))
-				* controller.getMOVEMENT_SPEED());
+		float movementFactor = (float) ((deltaT / Math.pow(sizeFactor, 2)) * controller.getMOVEMENT_SPEED());
 
 		// Creates the unit vector and multiplies it with the speed ( =
 		// movementFactor)
@@ -130,6 +129,7 @@ public abstract class PlayerBehavior {
 			parent.setSize((int) (parent.getSize() * 0.95));
 		}
 
+		//Resets gained Size
 		gainedSize = 0;
 
 	}
