@@ -72,6 +72,14 @@ public abstract class Circle {
 	}
 	
 	/**
+	 * Sets the color of the circle to the given one
+	 * @param c The new Color
+	 */
+	public void setColor(Color c){
+		this.color = c;
+	}
+	
+	/**
 	 * Returns if the Circle represents a Player or not
 	 * @return is Circle a Player?
 	 */

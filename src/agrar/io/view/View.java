@@ -123,7 +123,7 @@ public class View extends JPanel {
 	 */
 	private void drawHUD(Graphics2D g) {
 		drawPlayerScore(g);
-	//	drawHighscoreList(g);
+		// drawHighscoreList(g);
 		drawFPS(g);
 	}
 
@@ -144,15 +144,13 @@ public class View extends JPanel {
 			if (c.isPlayer()) {
 				drawName(g, c);
 			}
-			if(c.isPlayer() && !(c == controller.getLocalPlayer())){
+			if (c.isPlayer() && !(c == controller.getLocalPlayer())) {
 				drawTargetLine(g, c);
 			}
 		}
 
 	}
 
-	
-	
 	/**
 	 * Draws the grid for the game arena with a given offset
 	 * 
@@ -182,10 +180,10 @@ public class View extends JPanel {
 			g.draw(line);
 		}
 	}
-	
-	private void drawTargetLine(Graphics2D g, Circle c){
+
+	private void drawTargetLine(Graphics2D g, Circle c) {
 		Point start = getTransformedPosition(c);
-		Point end = getTransformedPosition(((Player)c).getBehavior().getTarget());
+		Point end = getTransformedPosition(((Player) c).getBehavior().getTarget());
 	}
 
 	/**
@@ -260,8 +258,10 @@ public class View extends JPanel {
 		scoreBackgroundSize.width = (int) ((stringSize.width + 30) * 1.0833);
 		scoreBackgroundSize.x = (int) (this.getWidth() - scoreBackgroundSize.getWidth());
 
+
 		drawImage(g, scoreBackground, scoreBackgroundSize);
 		g.setColor(Color.white);
+
 		g.drawString(score, getWidth() - (stringSize.width + 10), (int) (getHeight() - 10));
 
 	}

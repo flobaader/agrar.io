@@ -61,7 +61,7 @@ public class Controller {
 		graphicsRate.start();
 
 		// Starts Game Refresh Timer
-		gameRate = new Timer(500, new ActionListener() {
+		gameRate = new Timer(16, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				RunGameCycle();
@@ -100,12 +100,12 @@ public class Controller {
 
 	private void SpawnObjects() {
 		// Spawns Players if necessary
-		while (players.size() < 20) {
+		while (players.size() < 5) {
 			SpawnPlayer();
 		}
 
 		// Spawns Food if necessary
-		while (food.size() < 200) {
+		while (food.size() < 10) {
 			SpawnFood();
 		}
 
@@ -195,15 +195,15 @@ public class Controller {
 
 	public ArrayList<Circle> getObjectsInSight(Circle c1) {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
-
+		//TODO: View Range
 		for (Circle f : food) {
-			if (Utility.getDistance(f, c1) < 500) {
+			if (f != c1 && Utility.getDistance(f, c1) < 500) {
 				inSight.add(f);
 			}
 		}
 
 		for (Circle p : players) {
-			if (Utility.getDistance(p, c1) < 500) {
+			if (p != c1 && Utility.getDistance(p, c1) < 500) {
 				inSight.add(p);
 			}
 		}

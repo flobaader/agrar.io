@@ -44,7 +44,7 @@ public class Utility {
 	}
 
 	/**
-	 * Generates the unit vector of the vector between the first circle and the target
+	 * Generates the unit vector of the vector between the first circle and the target and adds it to the location of the first vector
 	 * @param loc The Location of the first Vector
 	 * @param target The Location of the Target
 	 * @return The Unitvector between those two locations

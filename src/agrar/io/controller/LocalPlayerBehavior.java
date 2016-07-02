@@ -13,6 +13,7 @@ public class LocalPlayerBehavior extends PlayerBehavior {
 	public void update(float deltaT) {
 		nextTarget = parent.getLocation().addVector(controller.getMouseVector());
 		moveToNewPosition();
+		tryToEatNearestCircle();
 	}
 
 }
