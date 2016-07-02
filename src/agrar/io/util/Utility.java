@@ -47,11 +47,12 @@ public class Utility {
 	 * Generates the unit vector of the vector between the first circle and the target and adds it to the location of the first vector
 	 * @param loc The Location of the first Vector
 	 * @param target The Location of the Target
+	 * @param length The length of the next Step / the Speed of the Circle
 	 * @return The Unitvector between those two locations
 	 */
-	public static Vector nextStepTowards(Vector loc, Vector target) {
+	public static Vector nextStepTowards(Vector loc, Vector target, double length) {
 		Vector nextStep = new Vector(loc, target);
-		nextStep = loc.addVector(nextStep.getUnitVector());
+		nextStep = loc.addVector(nextStep.getUnitVector().multiplyVector(length));
 		return nextStep;
 	}
 

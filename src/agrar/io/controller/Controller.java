@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.swing.Timer;
-
 import agrar.io.model.*;
 import agrar.io.util.Utility;
 import agrar.io.util.Vector;
@@ -28,6 +27,17 @@ public class Controller {
 	private Timer gameRate;
 	private Timer graphicsRate;
 
+	// Game Statics
+	private static int PLAYER_START_SIZE = 5000;
+	private static int FOOD_SIZE = 200;
+	private static int VIEWRANGE = 500;
+	private static int AI_PLAYER_COUNT = 10;
+	private static int FOOD_COUNT = 100;
+	private static int FIELD_SIZE = 1000;
+	private static int VIEW_REFRESH_RATE = 1;
+	private static int GAME_REFERSH_RATE = 8;
+	private static double MOVEMENT_SPEED = 0.1;
+
 	// Lists of Game Objects
 	private ArrayList<Player> players;
 	private ArrayList<Food> food;
@@ -35,6 +45,9 @@ public class Controller {
 	private LocalPlayer localPlayer;
 
 	private DatabaseAdapter dbAdapter;
+	
+	
+	private long lastUpdateTime;
 
 	public Controller() {
 		players = new ArrayList<Player>();
@@ -50,7 +63,7 @@ public class Controller {
 		// Spawns Food and AI
 		SpawnObjects();
 
-		graphicsRate = new Timer(1, new ActionListener() { // TODO: performance
+		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() { // TODO: performance
 															// test, set back to
 															// 30
 
@@ -62,8 +75,11 @@ public class Controller {
 
 		graphicsRate.start();
 
+		//Sets First Update Time
+		lastUpdateTime = System.currentTimeMillis();
+		
 		// Starts Game Refresh Timer
-		gameRate = new Timer(16, new ActionListener() {
+		gameRate = new Timer(GAME_REFERSH_RATE, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				RunGameCycle();
@@ -75,17 +91,33 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
+<<<<<<< HEAD
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Utility.getRandomColor(), "AI-Player");
+=======
+		int level = Utility.getRandom(0, 10);
+		
+		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
+				Utility.getRandomColor(), "AI-Player", level);
+>>>>>>> refs/remotes/origin/master
 		players.add(p);
 	}
 
 	private void SpawnFood() {
+<<<<<<< HEAD
 		Food f = new Food(this, Utility.getRandomPoint(0, 1000), 200, Utility.getRandomColor());
+=======
+		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE), FOOD_SIZE, Utility.getRandomColor());
+>>>>>>> refs/remotes/origin/master
 		food.add(f);
 	}
 
 	private void InitializePlayer() {
+<<<<<<< HEAD
 		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Color.blue, "LocalPlayer");
+=======
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
+				"LocalPlayer");
+>>>>>>> refs/remotes/origin/master
 		players.add(localPlayer);
 	}
 
@@ -99,33 +131,37 @@ public class Controller {
 
 	private void SpawnObjects() {
 		// Spawns Players if necessary
-		while (players.size() < 5) {
+		while (players.size() < AI_PLAYER_COUNT) {
 			SpawnPlayer();
 		}
 
 		// Spawns Food if necessary
-		while (food.size() < 10) {
+		while (food.size() < FOOD_COUNT) {
 			SpawnFood();
 		}
 
 	}
 
 	private void RunGameCycle() {
+		long timePassedSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
+		
 		// One Game Cycle
 		SpawnObjects();
 
 		// Every player can move one step
 		for (Player p : players) {
-			p.getBehavior().update(1);
+			p.getBehavior().update(timePassedSinceLastUpdate);
 		}
 
 		// Deletes removed circles
 		for (Circle c : circlesToDelete) {
 			players.remove(c);
 			food.remove(c);
-			System.out.println("Deleted Circle!");
+			// System.out.println("Deleted Circle!");
 		}
 		circlesToDelete.clear();
+		
+		lastUpdateTime = System.currentTimeMillis();
 
 	}
 
@@ -193,15 +229,18 @@ public class Controller {
 
 	public ArrayList<Circle> getObjectsInSight(Circle c1) {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
+<<<<<<< HEAD
 		// TODO: View Range
+=======
+>>>>>>> refs/remotes/origin/master
 		for (Circle f : food) {
-			if (f != c1 && Utility.getDistance(f, c1) < 500) {
+			if (f != c1 && Utility.getDistance(f, c1) < VIEWRANGE) {
 				inSight.add(f);
 			}
 		}
 
 		for (Circle p : players) {
-			if (p != c1 && Utility.getDistance(p, c1) < 500) {
+			if (p != c1 && Utility.getDistance(p, c1) < VIEWRANGE) {
 				inSight.add(p);
 			}
 		}
@@ -220,6 +259,7 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
+<<<<<<< HEAD
 	public Score[] getLocalHighscores() {
 
 		//Sort the players so the best players are first
@@ -251,5 +291,40 @@ public class Controller {
 		}
 		
 		return bestplayers;
+=======
+	/**
+	 * @return the pLAYER_START_SIZE
+	 */
+	public int getPLAYER_START_SIZE() {
+		return PLAYER_START_SIZE;
+	}
+
+	/**
+	 * @return the vIEWRANGE
+	 */
+	public int getVIEWRANGE() {
+		return VIEWRANGE;
+	}
+
+	/**
+	 * @return the aI_PLAYER_COUNT
+	 */
+	public int getAI_PLAYER_COUNT() {
+		return AI_PLAYER_COUNT;
+	}
+
+	/**
+	 * @return the length and width of the game field
+	 */
+	public int getFIELD_SIZE() {
+		return FIELD_SIZE;
+	}
+
+	/**
+	 * @return the mOVEMENT_SPEED
+	 */
+	public double getMOVEMENT_SPEED() {
+		return MOVEMENT_SPEED;
+>>>>>>> refs/remotes/origin/master
 	}
 }

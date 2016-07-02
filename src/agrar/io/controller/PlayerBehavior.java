@@ -1,5 +1,7 @@
 package agrar.io.controller;
 
+import java.awt.Color;
+
 import agrar.io.model.Circle;
 import agrar.io.model.Player;
 import agrar.io.util.Utility;
@@ -20,6 +22,9 @@ public abstract class PlayerBehavior {
 
 	// The Location of the nextTarget to move to
 	protected Vector nextTarget;
+	
+	//The original Color
+	protected Color orgColor;
 
 	/**
 	 * Create new Behavior for the selected player
@@ -32,6 +37,7 @@ public abstract class PlayerBehavior {
 	public PlayerBehavior(Player player, Controller controller) {
 		this.parent = player;
 		this.controller = controller;
+		orgColor = player.getColor();
 	}
 
 	/**
@@ -43,40 +49,48 @@ public abstract class PlayerBehavior {
 	public abstract void update(float deltaT);
 
 	/**
-	 * Checks if the next Target can be eaten
+	 * Checks if Circles can be eaten
 	 */
-	protected void tryToEatNearestCircle() {
-		// Next Object
-		Circle nextCircle = controller.getNearestObject(parent);
-
-		// Bigger Circle eats smaller Circle, when half of the smaller circle is
-		// covered
-		double distance = Utility.getDistance(parent, nextCircle);
-
-		if (nextCircle.getSize() < parent.getSize() && (distance - nextCircle.getRadius()) <= parent.getRadius()) {
-			parent.setSize(parent.getSize() + nextCircle.getSize());
-			controller.deleteCircle(nextCircle);
+	protected void tryToEat() {
+		for (Circle c1 : controller.getObjectsInSight(parent)) {
+			// Bigger Circle eats smaller Circle, when half of the smaller
+			// circle is covered
+			double distance = Utility.getDistance(parent, c1);
+			if (c1.getSize() < parent.getSize() && (distance - parent.getRadius() <= 0)) {
+				// Adds size of other circle to this oneF
+				parent.setSize(parent.getSize() + c1.getSize());
+				controller.deleteCircle(c1);
+			}
 		}
 
 	}
-	
+
 	/**
 	 * Returns the current Target of the Player
+	 * 
 	 * @return Target
 	 */
-	public Vector getTarget(){
+	public Vector getTarget() {
 		return nextTarget;
 	}
 
 	/**
 	 * Sets the location of the parent one Step towards the targetLocation
 	 */
-	protected void moveToNewPosition() {
+	protected void moveToNewPosition(float deltaT) {
 		// The relative location of the target
-		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget);
+		float sizeDifference = Math.abs(parent.getSize() - controller.getPLAYER_START_SIZE()) / 1000;
+
+		float movementFactor = (float) ((deltaT / (0.5 * (Math.sqrt(sizeDifference) + 1)))
+				* controller.getMOVEMENT_SPEED());
+
+		// Creates the unit vector and multiplies it with the speed ( =
+		// movementFactor)
+		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget, movementFactor);
 
 		// Check Bounds
-		if (nextLoc.getX() > 0 && nextLoc.getX() < 1000 && nextLoc.getY() > 0 && nextLoc.getY() < 1000) {
+		if (nextLoc.getX() > 0 && nextLoc.getX() < controller.getFIELD_SIZE() && nextLoc.getY() > 0
+				&& nextLoc.getY() < controller.getFIELD_SIZE()) {
 			// Sets Location
 			parent.setLocation(nextLoc);
 		}
