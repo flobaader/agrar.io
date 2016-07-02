@@ -91,8 +91,7 @@ public class View extends JPanel {
 		calcOffsets(controller.getLocalPlayer());
 
 		// Testing the Zoom
-		// controller.getLocalPlayer().setSize(controller.getLocalPlayerScore()
-		// + 5);
+		//controller.getLocalPlayer().setSize(controller.getLocalPlayerScore() + 100);
 
 		drawArena(g2d); // Drawing the Game
 		drawHUD(g2d); // Drawing the HUD on top
@@ -145,7 +144,7 @@ public class View extends JPanel {
 				drawName(g, c);
 				drawTargetLine(g, c);
 			}
-			
+
 		}
 
 	}
@@ -168,12 +167,12 @@ public class View extends JPanel {
 
 		Line2D line = new Line2D.Float();
 
-		for (float x = oX; x < (float) (this.getWidth()) * zoomFactor; x += 40F * zoomFactor) {
+		for (float x = oX; x < this.getWidth(); x += 40F * zoomFactor) {
 
 			line.setLine(x, 0, x, this.getHeight());
 			g.draw(line);
 		}
-		for (float y = oY; y < (float) (this.getHeight()) * zoomFactor; y += 40F * zoomFactor) {
+		for (float y = oY; y < this.getHeight(); y += 40F * zoomFactor) {
 
 			line.setLine(0, y, this.getWidth(), y);
 			g.draw(line);
