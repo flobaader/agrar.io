@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.Timer;
 
@@ -45,18 +47,18 @@ public class Controller {
 		// Loads Players
 		InitializePlayer();
 
-		//Spawns Food and AI
+		// Spawns Food and AI
 		SpawnObjects();
 
 		graphicsRate = new Timer(1, new ActionListener() { // TODO: performance
 															// test, set back to
 															// 30
 
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						window.refresh();
-					}
-				});
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				window.refresh();
+			}
+		});
 
 		graphicsRate.start();
 
@@ -73,20 +75,17 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
-		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 1000), 5000,
-				Utility.getRandomColor(), "AI-Player");
+		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Utility.getRandomColor(), "AI-Player");
 		players.add(p);
 	}
 
 	private void SpawnFood() {
-		Food f = new Food(this, Utility.getRandomPoint(0, 1000), 200,
-				Utility.getRandomColor());
+		Food f = new Food(this, Utility.getRandomPoint(0, 1000), 200, Utility.getRandomColor());
 		food.add(f);
 	}
 
 	private void InitializePlayer() {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 1000),
-				5000, Color.blue, "LocalPlayer");
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Color.blue, "LocalPlayer");
 		players.add(localPlayer);
 	}
 
@@ -142,8 +141,7 @@ public class Controller {
 	}
 
 	public Vector getOffset() {
-		return new Vector(window.getSize().getWidth() / 2, window.getSize()
-				.getHeight() / 2);
+		return new Vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
 	}
 
 	public Player getNearestPlayer(Circle c1) {
@@ -195,7 +193,7 @@ public class Controller {
 
 	public ArrayList<Circle> getObjectsInSight(Circle c1) {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
-		//TODO: View Range
+		// TODO: View Range
 		for (Circle f : food) {
 			if (f != c1 && Utility.getDistance(f, c1) < 500) {
 				inSight.add(f);
@@ -220,5 +218,36 @@ public class Controller {
 
 	public Vector getMouseVector() {
 		return window.getView().getMouseVector();
+	}
+
+	public Score[] getLocalHighscores() {
+
+		//Sort the players so the best players are first
+		Collections.sort(players, new Comparator<Player>() {
+
+			//-1 => p1 < p2
+			//0  => p1 == p2
+			//1  => p1 > p2
+			@Override
+			public int compare(Player p1, Player p2) {
+
+				int s1 = p1.getSize(), s2 = p2.getSize();
+
+				if (s1 == s2) {
+					return 0;
+				} else if (s1 < s2) {
+				}
+			}
+
+		});
+
+		Score[] bestplayers = new Score[5];
+		
+		//Convert players to Scores 
+		for(int i = 0; i < Math.min(5, players.size()); i++){
+			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i).getName(), "baum");
+		}
+		
+		return bestplayers;
 	}
 }
