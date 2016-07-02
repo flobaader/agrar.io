@@ -53,7 +53,7 @@ public abstract class PlayerBehavior {
 		// covered
 		double distance = Utility.getDistance(parent, nextCircle);
 
-		if ((distance - nextCircle.getRadius()) <= parent.getRadius()) {
+		if (nextCircle.getSize() < parent.getSize() && (distance - nextCircle.getRadius()) <= parent.getRadius()) {
 			parent.setSize(parent.getSize() + nextCircle.getSize());
 			controller.deleteCircle(nextCircle);
 		}
@@ -65,17 +65,12 @@ public abstract class PlayerBehavior {
 	 */
 	protected void moveToNewPosition() {
 		// The relative location of the target
-		Vector nextLocRel = Utility.nextStepTowards(parent.getLocation(),
-				nextTarget);
-
-		// The absolute location of the target
-		Vector nextLocAbs = parent.getLocation().addVector(nextLocRel);
+		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget);
 
 		// Check Bounds
-		if (nextLocAbs.getX() > 0 && nextLocAbs.getX() < 1000
-				&& nextLocAbs.getY() > 0 && nextLocAbs.getY() < 1000) {
+		if (nextLoc.getX() > 0 && nextLoc.getX() < 1000 && nextLoc.getY() > 0 && nextLoc.getY() < 1000) {
 			// Sets Location
-			parent.setLocation(nextLocAbs);
+			parent.setLocation(nextLoc);
 		}
 
 	}
