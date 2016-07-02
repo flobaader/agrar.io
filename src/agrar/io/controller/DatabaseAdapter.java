@@ -61,7 +61,7 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When an exception occurs during the execution of the query
 	 */
-	private boolean checkPassword(Score s) throws SQLException {
+	public boolean checkPassword(Score s) throws SQLException {
 		// Reconnect if necessary
 		if (!isConnected()) {
 			connect();
@@ -90,7 +90,7 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When the query fails in some way
 	 */
-	private boolean existsInDatabase(Score s) throws SQLException {
+	public boolean existsInDatabase(Score s) throws SQLException {
 
 		// Reconnect if necessary
 		if (!isConnected()) {
@@ -213,6 +213,17 @@ public class DatabaseAdapter {
 
 		private static final long serialVersionUID = -6113477982164953412L;
 
+	}
+
+	/**
+	 * Disconnects from the DB
+	 */
+	public void disconnect() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

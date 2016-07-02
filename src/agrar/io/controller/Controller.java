@@ -17,7 +17,7 @@ import agrar.io.view.GameWindow;
 /**
  * The controller of the game, which starts, stops and manages the whole game
  * 
- * @author Flo
+ * @author Flo, Matthias
  *
  */
 public class Controller {
@@ -45,32 +45,46 @@ public class Controller {
 	private ArrayList<Circle> circlesToDelete = new ArrayList<Circle>();
 	private LocalPlayer localPlayer;
 
-
 	private DatabaseAdapter dbAdapter = new DatabaseAdapter();
 
-	
-	
 	private long lastUpdateTime;
 
+	public enum GameState {
+		Playing, Paused, Stopped
+	};
+
+	private GameState currentState = GameState.Stopped;
+
+	private Score score;
 
 	public Controller() {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
-		
 	}
 
-	public void StartGame() {
+	/**
+	 * Starts a new game
+	 * 
+	 * @param s
+	 * 
+	 */
+	public void StartGame(Score s) {
+
+		if (currentState != GameState.Stopped) {
+			throw new IllegalStateException("You can only start the game if it is stopped!");
+		}
+		currentState = GameState.Playing;
+		this.score = s;
+
 		// Loads Players
-		InitializePlayer();
+		InitializePlayer(s.getName());
 
 		// Spawns Food and AI
 		SpawnObjects();
 
-		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() { // TODO: performance
-															// test, set back to
-															// 30
+		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -80,9 +94,9 @@ public class Controller {
 
 		graphicsRate.start();
 
-		//Sets First Update Time
+		// Sets First Update Time
 		lastUpdateTime = System.currentTimeMillis();
-		
+
 		// Starts Game Refresh Timer
 		gameRate = new Timer(GAME_REFERSH_RATE, new ActionListener() {
 			@Override
@@ -94,11 +108,43 @@ public class Controller {
 
 	}
 
+	/**
+	 * Pause the game (to display menu etc.)
+	 */
+	public void pauseGame() {
+		currentState = GameState.Paused;
+		gameRate.stop();
+		graphicsRate.stop();
+	}
+
+	/**
+	 * resumes a paused game. Throws illegalStateException if the gamestate is
+	 * not paused
+	 */
+	public void resumeGame() {
+		if (currentState != GameState.Paused) {
+			throw new IllegalStateException("You can only resume a paused game!");
+		}
+		currentState = GameState.Playing;
+	}
+
+	/**
+	 * Stop the game and tidy up
+	 */
+	public void stopGame() {
+		if (currentState == GameState.Stopped) {
+			throw new IllegalStateException("The game is already stopped!");
+		}
+		currentState = GameState.Stopped;
+		gameRate.stop();
+		graphicsRate.stop();
+	}
+
 	private void SpawnPlayer() {
 		// Count AIPlayers
 
 		int level = Utility.getRandom(0, 10);
-		
+
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
 				Utility.getRandomColor(), "AI-Player", level);
 		players.add(p);
@@ -110,9 +156,8 @@ public class Controller {
 		food.add(f);
 	}
 
-	private void InitializePlayer() {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
-				"LocalPlayer");
+	private void InitializePlayer(String name) {
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue, name);
 		players.add(localPlayer);
 	}
 
@@ -139,7 +184,7 @@ public class Controller {
 
 	private void RunGameCycle() {
 		long timePassedSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
-		
+
 		// One Game Cycle
 		SpawnObjects();
 
@@ -155,7 +200,7 @@ public class Controller {
 			// System.out.println("Deleted Circle!");
 		}
 		circlesToDelete.clear();
-		
+
 		lastUpdateTime = System.currentTimeMillis();
 
 	}
@@ -250,7 +295,6 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
-
 	/**
 	 * Get the best players in the current game
 	 * 
@@ -289,7 +333,6 @@ public class Controller {
 
 		return bestplayers;
 	}
-
 
 	/**
 	 * Get the best players of all time from the database
@@ -339,5 +382,17 @@ public class Controller {
 	public double getMOVEMENT_SPEED() {
 		return MOVEMENT_SPEED;
 
+	}
+
+	/**
+	 * Stop the game, close Window & DB connection, then exit
+	 */
+	public void quit() {
+		if (currentState != GameState.Stopped) {
+			stopGame();
+		}
+		dbAdapter.disconnect();
+		window.dispose();
+		System.exit(0);
 	}
 }
