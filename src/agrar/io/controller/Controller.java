@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.Timer;
 import agrar.io.model.*;
@@ -89,6 +91,7 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
+
 		int level = Utility.getRandom(0, 10);
 		
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
@@ -98,6 +101,7 @@ public class Controller {
 
 	private void SpawnFood() {
 		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE), FOOD_SIZE, Utility.getRandomColor());
+
 		food.add(f);
 	}
 
@@ -241,6 +245,39 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
+
+	public Score[] getLocalHighscores() {
+
+		//Sort the players so the best players are first
+		Collections.sort(players, new Comparator<Player>() {
+
+			//-1 => p1 < p2
+			//0  => p1 == p2
+			//1  => p1 > p2
+			@Override
+			public int compare(Player p1, Player p2) {
+
+				int s1 = p1.getSize(), s2 = p2.getSize();
+
+				if (s1 == s2) {
+					return 0;
+				} else if (s1 < s2) {
+					return 1;
+				}
+				return -1;
+			}
+
+		});
+
+		Score[] bestplayers = new Score[5];
+		
+		//Convert players to Scores 
+		for(int i = 0; i < Math.min(5, players.size()); i++){
+			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i).getName(), "baum");
+		}
+		
+		return bestplayers;
+	}
 	/**
 	 * @return the pLAYER_START_SIZE
 	 */
