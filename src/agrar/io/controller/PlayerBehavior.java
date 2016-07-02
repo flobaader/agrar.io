@@ -71,12 +71,25 @@ public abstract class PlayerBehavior {
 	/**
 	 * Sets the location of the parent one Step towards the targetLocation
 	 */
-	protected void moveToNewPosition() {
+	protected void moveToNewPosition(float deltaT) {
 		// The relative location of the target
-		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget);
+		float sizeDifference = Math.abs(parent.getSize() - controller.getPLAYER_START_SIZE()) / 1000;
+		
+		
+		float movementFactor = (float) ((float) (deltaT / (Math.sqrt(sizeDifference) + 1)) * controller.getMOVEMENT_SPEED());
+		
+		//Ensures, that the factor is never below zero
+		if(movementFactor < 1){
+			movementFactor = 1;
+		}
+		
+		
+		//Creates the unit vector and multiplies it with the speed ( = movementFactor)
+		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget, movementFactor);
 
+		
 		// Check Bounds
-		if (nextLoc.getX() > 0 && nextLoc.getX() < 1000 && nextLoc.getY() > 0 && nextLoc.getY() < 1000) {
+		if (nextLoc.getX() > 0 && nextLoc.getX() < controller.getFIELD_SIZE() && nextLoc.getY() > 0 && nextLoc.getY() < controller.getFIELD_SIZE()) {
 			// Sets Location
 			parent.setLocation(nextLoc);
 		}

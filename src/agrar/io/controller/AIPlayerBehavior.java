@@ -46,7 +46,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		if (bestTarget != null) {
 			// Sets Location one step towards the target
 			nextTarget = bestTarget.getLocation();
-			moveToNewPosition();
+			moveToNewPosition(deltaT);
 		} else {
 			parent.setColor(Color.RED);
 		}

@@ -88,8 +88,8 @@ public class Vector {
 	}
 
 	/**
-	 * Substracts the given vector to the vector
-	 * @param v2 The vector to be substract
+	 * Subtracts the given vector to the vector
+	 * @param v2 The vector to be subtracted
 	 * @return new vector
 	 */
 	public Vector substractVector(Vector v2) {
@@ -97,7 +97,7 @@ public class Vector {
 	}
 
 	/**
-	 * Multiplys the vector with the given figure
+	 * Multiplies the vector with the given figure
 	 * @param figure The factor
 	 * @return new vector which length has changed by the factor
 	 */
@@ -115,7 +115,7 @@ public class Vector {
 	}
 
 	/**
-	 * Multiplys the vector with (-1) = Reverse direction
+	 * Multiplies the vector with (-1) = Reverse direction
 	 * @return new vector with changed direction
 	 */
 	public Vector reverseVector() {
