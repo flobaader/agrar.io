@@ -65,7 +65,9 @@ public class Controller {
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
 		
-		menuController = new MenuController(this, window.getMenuView());
+		menuController = new MenuController(this, window.getMenuView(), window);
+		
+		menuController.showMainMenu();
 	}
 
 	/**
@@ -81,6 +83,7 @@ public class Controller {
 		}
 		currentState = GameState.Playing;
 		this.score = s;
+		window.hideMenu();
 
 		// Loads Players
 		InitializePlayer(s.getName());
@@ -131,6 +134,8 @@ public class Controller {
 			throw new IllegalStateException("You can only resume a paused game!");
 		}
 		currentState = GameState.Playing;
+		
+		window.hideMenu();
 	}
 
 	/**

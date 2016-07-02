@@ -33,7 +33,7 @@ public class DatabaseAdapter {
 		scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
 		scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
 		scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
-		
+
 		return scores;
 		/*
 		 * if (!isConnected()) { connect(); }
@@ -174,15 +174,6 @@ public class DatabaseAdapter {
 
 	}
 
-	public static void main(String[] args) {
-		try {
-			new DatabaseAdapter().connect();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * (Re)establishes a connection to the database
 	 * 
@@ -200,7 +191,7 @@ public class DatabaseAdapter {
 	 */
 	public boolean isConnected() {
 		try {
-			return !conn.isClosed() && conn.isValid(3);
+			return !(conn == null) && !conn.isClosed() && conn.isValid(3);
 		} catch (SQLException e) {
 			return false;
 		}

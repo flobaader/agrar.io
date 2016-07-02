@@ -9,16 +9,19 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import agrar.io.model.Score;
+import agrar.io.view.GameWindow;
 import agrar.io.view.MenuView;
 
 public class MenuController {
 
 	private Controller parent;
 	private MenuView menuView;
+	private GameWindow window;
 
-	public MenuController(Controller parent, MenuView menuView) {
+	public MenuController(Controller parent, MenuView menuView, GameWindow window) {
 		this.parent = parent;
 		this.menuView = menuView;
+		this.window = window;
 	}
 
 	/**
@@ -26,6 +29,8 @@ public class MenuController {
 	 * @return The main menu of the game
 	 */
 	public void showMainMenu() {
+		
+		menuView.clear();
 
 		menuView.addImage("resources/banner.png");
 
@@ -45,6 +50,7 @@ public class MenuController {
 			}
 		});
 
+		window.showMenu();
 	}
 
 	/**
@@ -53,6 +59,8 @@ public class MenuController {
 	 */
 	public void showPauseMenu() {
 
+		menuView.clear();
+		
 		menuView.addLabel("Pausiert");
 
 		menuView.addButton("Weiter", new ActionListener() {
@@ -84,10 +92,13 @@ public class MenuController {
 			}
 		});
 
+		window.showMenu();
 	}
 
 	public void showNameMenu() {
 
+		menuView.clear();
+		
 		JTextField nameField = menuView.addTextField("Name");
 
 		JPasswordField passwordField = menuView.addPasswordField("Passwort");
@@ -123,6 +134,7 @@ public class MenuController {
 
 		});
 
+		window.showMenu();
 	}
 
 	private void startGame(Score s) {
