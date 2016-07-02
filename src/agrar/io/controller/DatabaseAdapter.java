@@ -28,20 +28,26 @@ public class DatabaseAdapter {
 		Score[] scores = new Score[5];
 		int count = 0;
 
-		if (!isConnected()) {
-			connect();
-		}
-
-		PreparedStatement stmt = conn
-				.prepareStatement("SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
-		ResultSet results = stmt.executeQuery();
-
-		while (results.next()) {
-			scores[count] = new Score(results.getInt("score"), results.getString("name"), "");
-			count++;
-		}
-
+		scores[0] = new Score(1234, "Horst", "aöldkfjasdlödkfj");
+		scores[1] = new Score(222, "Peter", "löksdjflöasdkfjk");
+		scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
+		scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
+		scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
+		
 		return scores;
+		/*
+		 * if (!isConnected()) { connect(); }
+		 * 
+		 * PreparedStatement stmt = conn .prepareStatement(
+		 * "SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
+		 * ResultSet results = stmt.executeQuery();
+		 * 
+		 * while (results.next()) { scores[count] = new
+		 * Score(results.getInt("score"), results.getString("name"), "");
+		 * count++; }
+		 * 
+		 * return scores;
+		 */
 
 	}
 
@@ -204,7 +210,7 @@ public class DatabaseAdapter {
 	 * Exception that indicates that a password is wrong
 	 */
 	public class InvalidPasswordException extends Exception {
-		
+
 		private static final long serialVersionUID = -6113477982164953412L;
 
 	}
