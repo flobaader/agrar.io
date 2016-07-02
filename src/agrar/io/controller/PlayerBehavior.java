@@ -59,6 +59,14 @@ public abstract class PlayerBehavior {
 		}
 
 	}
+	
+	/**
+	 * Returns the current Target of the Player
+	 * @return Target
+	 */
+	public Vector getTarget(){
+		return nextTarget;
+	}
 
 	/**
 	 * Sets the location of the parent one Step towards the targetLocation

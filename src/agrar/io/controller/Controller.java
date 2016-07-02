@@ -197,13 +197,13 @@ public class Controller {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
 		//TODO: View Range
 		for (Circle f : food) {
-			if (Utility.getDistance(f, c1) < 500) {
+			if (f != c1 && Utility.getDistance(f, c1) < 500) {
 				inSight.add(f);
 			}
 		}
 
 		for (Circle p : players) {
-			if (Utility.getDistance(p, c1) < 500) {
+			if (p != c1 && Utility.getDistance(p, c1) < 500) {
 				inSight.add(p);
 			}
 		}
