@@ -43,28 +43,28 @@ public abstract class PlayerBehavior {
 	public abstract void update(float deltaT);
 
 	/**
-	 * Checks if the next Target can be eaten
+	 * Checks if Circles can be eaten
 	 */
-	protected void tryToEatNearestCircle() {
-		// Next Object
-		Circle nextCircle = controller.getNearestObject(parent);
-
-		// Bigger Circle eats smaller Circle, when half of the smaller circle is
-		// covered
-		double distance = Utility.getDistance(parent, nextCircle);
-
-		if (nextCircle.getSize() < parent.getSize() && (distance - nextCircle.getRadius()) <= parent.getRadius()) {
-			parent.setSize(parent.getSize() + nextCircle.getSize());
-			controller.deleteCircle(nextCircle);
+	protected void tryToEat() {
+		for (Circle c1 : controller.getObjectsInSight(parent)) {
+			// Bigger Circle eats smaller Circle, when half of the smaller
+			// circle is covered
+			double distance = Utility.getDistance(parent, c1);
+			if (c1.getSize() < parent.getSize() && (distance - c1.getRadius()) <= parent.getRadius()) {
+				// Adds size of other circle to this oneF
+				parent.setSize(parent.getSize() + c1.getSize());
+				controller.deleteCircle(c1);
+			}
 		}
 
 	}
-	
+
 	/**
 	 * Returns the current Target of the Player
+	 * 
 	 * @return Target
 	 */
-	public Vector getTarget(){
+	public Vector getTarget() {
 		return nextTarget;
 	}
 
@@ -74,22 +74,17 @@ public abstract class PlayerBehavior {
 	protected void moveToNewPosition(float deltaT) {
 		// The relative location of the target
 		float sizeDifference = Math.abs(parent.getSize() - controller.getPLAYER_START_SIZE()) / 1000;
-		
-		
-		float movementFactor = (float) ((float) (deltaT / (Math.sqrt(sizeDifference) + 1)) * controller.getMOVEMENT_SPEED());
-		
-		//Ensures, that the factor is never below zero
-		if(movementFactor < 1){
-			movementFactor = 1;
-		}
-		
-		
-		//Creates the unit vector and multiplies it with the speed ( = movementFactor)
+
+		float movementFactor = (float) ((deltaT / (0.5 * (Math.sqrt(sizeDifference) + 1)))
+				* controller.getMOVEMENT_SPEED());
+
+		// Creates the unit vector and multiplies it with the speed ( =
+		// movementFactor)
 		Vector nextLoc = Utility.nextStepTowards(parent.getLocation(), nextTarget, movementFactor);
 
-		
 		// Check Bounds
-		if (nextLoc.getX() > 0 && nextLoc.getX() < controller.getFIELD_SIZE() && nextLoc.getY() > 0 && nextLoc.getY() < controller.getFIELD_SIZE()) {
+		if (nextLoc.getX() > 0 && nextLoc.getX() < controller.getFIELD_SIZE() && nextLoc.getY() > 0
+				&& nextLoc.getY() < controller.getFIELD_SIZE()) {
 			// Sets Location
 			parent.setLocation(nextLoc);
 		}

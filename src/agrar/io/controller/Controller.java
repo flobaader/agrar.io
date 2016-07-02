@@ -33,8 +33,8 @@ public class Controller {
 	private static int FOOD_COUNT = 100;
 	private static int FIELD_SIZE = 1000;
 	private static int VIEW_REFRESH_RATE = 1;
-	private static int GAME_REFERSH_RATE = 16;
-	private static double MOVEMENT_SPEED = 0.03;
+	private static int GAME_REFERSH_RATE = 8;
+	private static double MOVEMENT_SPEED = 0.1;
 
 	// Lists of Game Objects
 	private ArrayList<Player> players;
