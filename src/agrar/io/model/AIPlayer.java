@@ -8,9 +8,17 @@ import agrar.io.util.Vector;
 
 public class AIPlayer extends Player{
 
-	public AIPlayer(Controller parent, Vector loc, int size, Color col, String name) {
+	/**
+	 * 
+	 * @param parent
+	 * @param loc
+	 * @param size
+	 * @param col
+	 * @param name
+	 */
+	public AIPlayer(Controller parent, Vector loc, int size, Color col, String name, int Level) {
 		super(parent, loc, size, col, name);
-		this.behavior = new AIPlayerBehavior(this, parent,1);
+		this.behavior = new AIPlayerBehavior(this, parent,Level);
 	}
 
 

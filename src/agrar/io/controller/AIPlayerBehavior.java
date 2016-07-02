@@ -16,22 +16,46 @@ import agrar.io.util.Vector;
  */
 public class AIPlayerBehavior extends PlayerBehavior {
 
-	private int FEAR;
-	private int EXPERIENCE;
 	private int LEVEL;
-	
 	
 	/**
 	 * Creates new behavior for the given AIPlayer
 	 * 
-	 * @param parent
-	 *            The AIPlayer to control
+	 * @param parent  The AIPlayer to control
+	 * @param controller The controller of the game
+	 * @param The Level of Experience of the Player (from 0 to 10)
+	 * @throws Exception Throws Exception if the Level is not in range between 0 and 10
 	 */
 	public AIPlayerBehavior(AIPlayer player, Controller controller, int Level) {
 		super(player, controller);
-		LEVEL = Level;
+		
+		
+		if(Level < 0 || Level > 10){
+			Level = 1;
+		}else{
+			LEVEL = Level;	
+		}
+		
 	}
+	
 
+	private double misjudgeCircleSize(double Size){
+		
+		//Decreases with level
+		int range = 10 - LEVEL; //in Percent
+		
+		//Max and min of misjugment is 10 % of size
+		int randomFactor = Utility.getRandom(-1 * range, range); //in Percent
+		
+		double rndAbs = (double) randomFactor / 100; //Absolute not percent
+		
+		double estimatedSize = Size + Size * rndAbs; 
+		
+		return estimatedSize;
+	}
+	
+	
+	
 	@Override
 	public void update(float deltaT) {
 
@@ -102,14 +126,18 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		// The value increases with the size difference (parent > c)
 		// The value decreases with the size difference (parent < c)
 		// The value decreases with the distance
+		
+		//Value is negative if Target is bigger than parent
 		double isSmaller = 1;
-		if (c.getSize() > parent.getSize()) {
+		
+		double estimatedCircleSize = misjudgeCircleSize(c.getSize());
+		
+		//NOTE: uses misjudged Size of Circle
+		if (estimatedCircleSize > parent.getSize()) {
 			isSmaller = -1;
-		} else if (c.getSize() == parent.getSize()) {
-			isSmaller = 0;
 		}
 
-		double sizeFactor = c.getSize();
+		double sizeFactor = estimatedCircleSize;
 		double distanceFactor = (1 / Math.pow(Utility.getDistance(parent, c), 2));
 
 		return (isSmaller * sizeFactor * distanceFactor);

@@ -89,8 +89,10 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
+		int level = Utility.getRandom(0, 10);
+		
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), "AI-Player");
+				Utility.getRandomColor(), "AI-Player", level);
 		players.add(p);
 	}
 
