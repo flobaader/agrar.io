@@ -236,7 +236,9 @@ public class Controller {
 				if (s1 == s2) {
 					return 0;
 				} else if (s1 < s2) {
+					return 1;
 				}
+				return -1;
 			}
 
 		});

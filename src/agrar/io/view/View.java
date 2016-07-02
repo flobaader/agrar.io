@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import agrar.io.controller.Controller;
 import agrar.io.model.Circle;
 import agrar.io.model.Player;
+import agrar.io.model.Score;
 import agrar.io.util.Vector;
 
 public class View extends JPanel {
@@ -37,6 +38,7 @@ public class View extends JPanel {
 
 	// Objects for drawing
 	private BufferedImage scoreBackground;
+	private BufferedImage localHighscoreBackground;
 	private Rectangle scoreBackgroundSize;
 
 	// Arena Translations
@@ -72,6 +74,7 @@ public class View extends JPanel {
 
 		try {
 			scoreBackground = ImageIO.read(View.class.getResource("/bottom_left.png"));
+			localHighscoreBackground = ImageIO.read(View.class.getResource("/top_right.png"));
 		} catch (IOException e1) {
 		}
 
@@ -91,7 +94,8 @@ public class View extends JPanel {
 		calcOffsets(controller.getLocalPlayer());
 
 		// Testing the Zoom
-		//controller.getLocalPlayer().setSize(controller.getLocalPlayerScore() + 100);
+		// controller.getLocalPlayer().setSize(controller.getLocalPlayerScore()
+		// + 100);
 
 		drawArena(g2d); // Drawing the Game
 		drawHUD(g2d); // Drawing the HUD on top
@@ -124,6 +128,7 @@ public class View extends JPanel {
 		drawPlayerScore(g);
 		// drawHighscoreList(g);
 		drawFPS(g);
+		drawLocalHighscoreList(g);
 	}
 
 	/**
@@ -267,6 +272,53 @@ public class View extends JPanel {
 
 		g.drawString(score, getWidth() - (stringSize.width + 10), (int) (getHeight() - 10));
 
+	}
+
+	private void drawLocalHighscoreList(Graphics2D g) {
+		Score[] highscores = controller.getLocalHighscores();
+
+		// calculate the width of the background needed
+		int minwidth = 0; // the minimum width of the score list
+		int minheight = 0; // The minimum height of the score list
+
+		for (int i = 0; i < highscores.length; i++) {
+			if (null != highscores[i]) {
+
+				Dimension d = measureString(g, highscores[i].getName() + ": " + highscores[i].getScore());
+
+				minwidth = (int) Math.max(minwidth, d.getWidth());
+				minheight += d.getHeight() + 10;
+			}
+		}
+
+		int x = this.getWidth() - (minwidth + 15);
+		// widht + 30 px of padding multiplied by 110% because of the margin in
+		// the image
+		minwidth = (int) ((minwidth + 30) * 1.1F);
+
+		// height + 10 px of vertical padding * 5/70 because of the margin in
+		// the image
+		minheight = (int) ((minheight + 30) * (1 + (1F / 7F)));
+
+		// Create bounds for background
+		Rectangle dest = new Rectangle(this.getWidth() - minwidth, 0, minwidth, minheight);
+
+		// Draw background for list
+		drawImage(g, localHighscoreBackground, dest);
+
+		int y = 0;
+
+		Score s;
+		for (int i = 0; i < highscores.length; i++) {
+
+			if (highscores[i] != null) {
+				s = highscores[i];
+				String str = s.getName() + ": " + s.getScore();
+
+				y += measureString(g, str).getHeight() + 10;
+				g.drawString(str, x, y);
+			}
+		}
 	}
 
 	/**
