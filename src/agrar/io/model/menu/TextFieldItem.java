@@ -1,5 +1,10 @@
 package agrar.io.model.menu;
 
+import java.awt.Component;
+import java.awt.event.TextEvent;
+
+import javax.swing.JTextField;
+
 import agrar.io.model.menu.PasswordFieldItem.TextListener;
 
 public class TextFieldItem extends MenuItem {
@@ -25,5 +30,21 @@ public class TextFieldItem extends MenuItem {
 
 	public String getPlaceholder() {
 		return placeholder;
+	}
+
+	@Override
+	public Component getComponent() {
+
+		JTextField field = new JTextField();
+		textListener = new TextListener() {
+
+			@Override
+			public String getText() {
+				return field.getText();
+			}
+
+		};
+
+		return field;
 	}
 }

@@ -57,11 +57,15 @@ public class Controller {
 
 	private Score score;
 
+	private MenuController menuController;
+
 	public Controller() {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
+		
+		menuController = new MenuController(this);
 	}
 
 	/**
@@ -92,7 +96,7 @@ public class Controller {
 			}
 		});
 
-		graphicsRate.start();
+		
 
 		// Sets First Update Time
 		lastUpdateTime = System.currentTimeMillis();
@@ -104,8 +108,9 @@ public class Controller {
 				RunGameCycle();
 			}
 		});
+		
 		gameRate.start();
-
+		graphicsRate.start();
 	}
 
 	/**
@@ -292,7 +297,7 @@ public class Controller {
 	}
 
 	public Vector getMouseVector() {
-		return window.getView().getMouseVector();
+		return window.getMouseVector();
 	}
 
 	/**
@@ -394,5 +399,9 @@ public class Controller {
 		dbAdapter.disconnect();
 		window.dispose();
 		System.exit(0);
+	}
+
+	public void start() {
+		window.showMenu(menuController.getNameMenu());
 	}
 }

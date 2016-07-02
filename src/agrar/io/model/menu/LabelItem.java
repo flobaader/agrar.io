@@ -1,5 +1,9 @@
 package agrar.io.model.menu;
 
+import java.awt.Component;
+
+import javax.swing.JLabel;
+
 import agrar.io.model.menu.MenuItem;
 
 public class LabelItem extends MenuItem {
@@ -12,6 +16,11 @@ public class LabelItem extends MenuItem {
 
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public Component getComponent() {
+		return new JLabel(getText());
 	}
 	
 }

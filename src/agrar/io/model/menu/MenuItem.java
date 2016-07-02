@@ -1,9 +1,9 @@
 package agrar.io.model.menu;
 
+import java.awt.Component;
+
 public abstract class MenuItem {
 
-	public MenuItem() {
-		// TODO Auto-generated constructor stub
-	}
+	public abstract Component getComponent();
 
 }

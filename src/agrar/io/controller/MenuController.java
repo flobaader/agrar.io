@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 import agrar.io.model.Score;
+import agrar.io.model.menu.ButtonItem;
 import agrar.io.model.menu.ImageItem;
 import agrar.io.model.menu.LabelItem;
 import agrar.io.model.menu.Menu;
@@ -28,7 +29,7 @@ public class MenuController {
 	public Menu getMainMenu() {
 		Menu mainMenu = new Menu(this.parent);
 
-		ImageItem banner = new ImageItem("/banner.png");
+		ImageItem banner = new ImageItem("resources/banner.png");
 		mainMenu.add(banner);
 
 		ButtonItem startButton = new ButtonItem("Start");
@@ -36,7 +37,7 @@ public class MenuController {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				parent.StartGame();
+				parent.start();
 			}
 		});
 

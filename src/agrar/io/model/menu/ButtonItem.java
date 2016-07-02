@@ -1,8 +1,7 @@
-package agrar.io.controller;
+package agrar.io.model.menu;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
-
-import agrar.io.model.menu.MenuItem;
 
 public class ButtonItem extends MenuItem {
 
@@ -23,5 +22,11 @@ public class ButtonItem extends MenuItem {
 	
 	public ActionListener getAction(){
 		return action;
+	}
+
+	@Override
+	public Component getComponent() {
+		JButton button = new JButton(getText());
+		return button;
 	}
 }
