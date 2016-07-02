@@ -91,33 +91,23 @@ public class Controller {
 
 	private void SpawnPlayer() {
 		// Count AIPlayers
-<<<<<<< HEAD
-		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Utility.getRandomColor(), "AI-Player");
-=======
+
 		int level = Utility.getRandom(0, 10);
 		
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
 				Utility.getRandomColor(), "AI-Player", level);
->>>>>>> refs/remotes/origin/master
 		players.add(p);
 	}
 
 	private void SpawnFood() {
-<<<<<<< HEAD
-		Food f = new Food(this, Utility.getRandomPoint(0, 1000), 200, Utility.getRandomColor());
-=======
 		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE), FOOD_SIZE, Utility.getRandomColor());
->>>>>>> refs/remotes/origin/master
+
 		food.add(f);
 	}
 
 	private void InitializePlayer() {
-<<<<<<< HEAD
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, 1000), 5000, Color.blue, "LocalPlayer");
-=======
 		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
 				"LocalPlayer");
->>>>>>> refs/remotes/origin/master
 		players.add(localPlayer);
 	}
 
@@ -229,10 +219,6 @@ public class Controller {
 
 	public ArrayList<Circle> getObjectsInSight(Circle c1) {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
-<<<<<<< HEAD
-		// TODO: View Range
-=======
->>>>>>> refs/remotes/origin/master
 		for (Circle f : food) {
 			if (f != c1 && Utility.getDistance(f, c1) < VIEWRANGE) {
 				inSight.add(f);
@@ -259,7 +245,7 @@ public class Controller {
 		return window.getView().getMouseVector();
 	}
 
-<<<<<<< HEAD
+
 	public Score[] getLocalHighscores() {
 
 		//Sort the players so the best players are first
@@ -291,7 +277,7 @@ public class Controller {
 		}
 		
 		return bestplayers;
-=======
+	}
 	/**
 	 * @return the pLAYER_START_SIZE
 	 */
@@ -325,6 +311,5 @@ public class Controller {
 	 */
 	public double getMOVEMENT_SPEED() {
 		return MOVEMENT_SPEED;
->>>>>>> refs/remotes/origin/master
 	}
 }
