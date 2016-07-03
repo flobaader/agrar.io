@@ -2,7 +2,6 @@ package agrar.io.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -126,6 +125,7 @@ public class MenuController {
 
 		menuView.addButton("OK", new ActionListener() {
 
+			@SuppressWarnings("unused") //TODO remove all suppreswarnings
 			@Override
 			public void actionPerformed(ActionEvent e) {
 

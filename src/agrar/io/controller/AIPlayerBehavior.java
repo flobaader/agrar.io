@@ -2,7 +2,6 @@ package agrar.io.controller;
 
 import java.awt.Color;
 
-import agrar.io.controller.PlayerBehavior;
 import agrar.io.model.AIPlayer;
 import agrar.io.model.Circle;
 import agrar.io.util.Utility;

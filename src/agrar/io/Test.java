@@ -1,7 +1,6 @@
 package agrar.io;
 
 import java.awt.Dimension;
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -9,6 +8,8 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 
 public class Test extends JFrame implements WindowListener {
+
+	private static final long serialVersionUID = -5357175369501143429L;
 
 	public Test() throws HeadlessException {
 		this.setSize(new Dimension(400, 400));
