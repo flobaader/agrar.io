@@ -29,7 +29,7 @@ public class MenuController {
 	 * @return The main menu of the game
 	 */
 	public void showMainMenu() {
-		
+
 		menuView.clear();
 
 		menuView.addImage("resources/banner.png");
@@ -60,7 +60,7 @@ public class MenuController {
 	public void showPauseMenu() {
 
 		menuView.clear();
-		
+
 		menuView.addLabel("Pausiert");
 
 		menuView.addButton("Weiter", new ActionListener() {
@@ -83,22 +83,31 @@ public class MenuController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int sure = JOptionPane.showConfirmDialog(null,
-						"Wenn du Agrar.io beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
-						"Beenden?", JOptionPane.OK_CANCEL_OPTION);
+				int sure = confirmQuit();
 				if (sure == 0) {
 					parent.quit();
 				}
 			}
+
 		});
 
 		window.showMenu();
 	}
 
+	/**
+	 * Shows a menu to the user to confirm quitting the game
+	 * @return 0 if the user wants to quit, 1 otherwise
+	 */
+	protected int confirmQuit() {
+		return JOptionPane.showConfirmDialog(null,
+				"Wenn du Agrar.io beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
+				"Beenden?", JOptionPane.OK_CANCEL_OPTION);
+	}
+
 	public void showNameMenu() {
 
 		menuView.clear();
-		
+
 		JTextField nameField = menuView.addTextField("Name");
 
 		JPasswordField passwordField = menuView.addPasswordField("Passwort");

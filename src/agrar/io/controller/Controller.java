@@ -13,6 +13,7 @@ import agrar.io.model.*;
 import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 import agrar.io.view.GameWindow;
+import agrar.io.view.GameWindow.GameWindowListener;
 
 /**
  * The controller of the game, which starts, stops and manages the whole game
@@ -20,7 +21,7 @@ import agrar.io.view.GameWindow;
  * @author Flo, Matthias
  *
  */
-public class Controller {
+public class Controller implements GameWindowListener {
 	// Game Window
 	private GameWindow window;
 
@@ -55,7 +56,8 @@ public class Controller {
 
 	private GameState currentState = GameState.Stopped;
 
-	private Score score;
+	//Score that contains player name and password
+	private Score login;
 
 	private MenuController menuController;
 
@@ -64,9 +66,9 @@ public class Controller {
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
-		
+
 		menuController = new MenuController(this, window.getMenuView(), window);
-		
+
 		menuController.showMainMenu();
 	}
 
@@ -81,8 +83,8 @@ public class Controller {
 		if (currentState != GameState.Stopped) {
 			throw new IllegalStateException("You can only start the game if it is stopped!");
 		}
-		currentState = GameState.Playing;
-		this.score = s;
+
+		this.login = s;
 		window.hideMenu();
 
 		// Loads Players
@@ -99,8 +101,6 @@ public class Controller {
 			}
 		});
 
-		
-
 		// Sets First Update Time
 		lastUpdateTime = System.currentTimeMillis();
 
@@ -111,9 +111,14 @@ public class Controller {
 				RunGameCycle();
 			}
 		});
-		
+
+		//Start game timers
 		gameRate.start();
 		graphicsRate.start();
+		
+		//Switch to playing state
+		currentState = GameState.Playing;
+
 	}
 
 	/**
@@ -123,6 +128,7 @@ public class Controller {
 		currentState = GameState.Paused;
 		gameRate.stop();
 		graphicsRate.stop();
+		menuController.showPauseMenu();
 	}
 
 	/**
@@ -134,7 +140,7 @@ public class Controller {
 			throw new IllegalStateException("You can only resume a paused game!");
 		}
 		currentState = GameState.Playing;
-		
+
 		window.hideMenu();
 	}
 
@@ -148,6 +154,10 @@ public class Controller {
 		currentState = GameState.Stopped;
 		gameRate.stop();
 		graphicsRate.stop();
+	}
+
+	public GameState getState() {
+		return currentState;
 	}
 
 	private void SpawnPlayer() {
@@ -408,5 +418,31 @@ public class Controller {
 
 	public void start() {
 		menuController.showNameMenu();
+	}
+
+	@Override
+	public void closeWindow() {
+		switch (currentState) {
+		case Playing:
+			pauseGame();
+			break;
+		case Stopped:
+			quit();
+			break;
+		case Paused:
+			int sure = menuController.confirmQuit();
+			if (sure == 0) {
+				quit();
+			}
+			break;
+		}
+	}
+
+	@Override
+	public void minimizeWindow() {
+		if (currentState == GameState.Playing) {
+			pauseGame();
+		}
+
 	}
 }

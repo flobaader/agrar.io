@@ -13,6 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+/**
+ * JPanel that displays menus in the game
+ * 
+ * @author Matthias
+ *
+ */
 public class MenuView extends JPanel {
 
 	private static final long serialVersionUID = 7153771561685855339L;
@@ -27,6 +33,14 @@ public class MenuView extends JPanel {
 		c.gridy = 0;
 	}
 
+	/**
+	 * Adds a button to the next row of the menu
+	 * 
+	 * @param text
+	 *            The text on the button
+	 * @param l
+	 *            An action listener for the button
+	 */
 	public void addButton(String text, ActionListener l) {
 		JButton button = new JButton(text);
 		button.addActionListener(l);
@@ -36,6 +50,12 @@ public class MenuView extends JPanel {
 		c.gridy += 1;
 	}
 
+	/**
+	 * Adds a label to the next row of the menu
+	 * 
+	 * @param text
+	 *            The text on the label
+	 */
 	public void addLabel(String text) {
 		JLabel label = new JLabel(text);
 		c.gridx = 0;
@@ -44,49 +64,76 @@ public class MenuView extends JPanel {
 		c.gridy += 1;
 	}
 
+	/**
+	 * Adds a password field to the next row of the menu
+	 * 
+	 * @param text
+	 *            The text to place left of the field
+	 * @return The password field, used to get the content
+	 */
 	public JPasswordField addPasswordField(String text) {
 		JLabel label = new JLabel(text);
 		c.gridwidth = 1;
 		c.gridx = 0;
 		add(label, c);
-		
+
 		JPasswordField field = new JPasswordField(20);
-		c.gridx = 1; 
+		c.gridx = 1;
 		this.add(field, c);
-		
+
 		c.gridy += 1;
 		return field;
 	}
 
+	/**
+	 * Adds a JTextField to the next row of the menu, including a label left of
+	 * it to describe the purpose
+	 * 
+	 * @param text
+	 *            The name of the TextField, used for the label to the left
+	 * @return The Field, used for getting the content of the field
+	 */
 	public JTextField addTextField(String text) {
 		JLabel label = new JLabel(text);
 		c.gridwidth = 1;
 		c.gridx = 0;
 		add(label, c);
-		
+
 		JTextField field = new JTextField(20);
 		c.gridx = 1;
 		this.add(field, c);
-		
+
 		c.gridy += 1;
 		return field;
 	}
 
+	/**
+	 * Removes all contents from the menu and resets it
+	 */
 	public void clear() {
 		removeAll();
 		invalidate();
 		c.gridy = 0;
 	}
 
+	/**
+	 * Adds an image from the resources to the next row of the menu
+	 * 
+	 * @param string
+	 *            The path of the image, relative to the resource folder
+	 */
 	public void addImage(String string) {
-		ImageIcon image = new ImageIcon("resources/banner.png");
-		
+		ImageIcon image = new ImageIcon(string);
 		JLabel imageLabel = new JLabel("", image, JLabel.CENTER);
-		imageLabel.setSize(new Dimension(image.getIconWidth(), image.getIconHeight()));
+		
+		//Max size of the image is ~85% of the frame width and 20% of the height
+		Dimension size = new Dimension(Math.min(image.getIconHeight(), 550), Math.min(image.getIconHeight(), 80));
+		imageLabel.setSize(size);
+		
 		c.gridwidth = 2;
 		c.gridx = 0;
 		this.add(imageLabel, c);
-		
+
 		c.gridy += 1;
 	}
 }

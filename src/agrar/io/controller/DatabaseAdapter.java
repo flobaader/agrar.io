@@ -181,6 +181,7 @@ public class DatabaseAdapter {
 	 *             When establishing a connection fails somehow
 	 */
 	public void connect() throws SQLException {
+		DriverManager.setLoginTimeout(1);
 		conn = DriverManager.getConnection("jdbc:mysql://192.168.103.250/Q11_S26?user=Q11_S26&password=start");
 	}
 
@@ -210,10 +211,12 @@ public class DatabaseAdapter {
 	 * Disconnects from the DB
 	 */
 	public void disconnect() {
+		if(conn != null){
 		try {
 			conn.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
 		}
 	}
 

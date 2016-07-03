@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import agrar.io.controller.Controller;
+import agrar.io.controller.Controller.GameState;
 import agrar.io.model.Circle;
 import agrar.io.model.Player;
 import agrar.io.model.Score;
@@ -50,7 +51,6 @@ public class GameView extends JPanel {
 		scoreBackgroundSize = new Rectangle();
 		scoreBackgroundSize.height = 40;
 
-	
 		// load the images for the HUD
 		try {
 			bottomRight = ImageIO.read(GameView.class.getResource("/bottom_right.png"));
@@ -67,24 +67,24 @@ public class GameView extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 
-		// Setup drawing canvas
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
+		if (controller.getState() == GameState.Playing) {
+			// Setup drawing canvas
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.clearRect(0, 0, this.getWidth(), this.getHeight());
 
-		// The zoom must be calculated first
-		calculateZoom(controller.getLocalPlayer());
-		calcOffsets(controller.getLocalPlayer());
+			// The zoom must be calculated first
 
-		// Testing the Zoom
-		// controller.getLocalPlayer().setSize(controller.getLocalPlayerScore()
-		// + 100);
+			calculateZoom(controller.getLocalPlayer());
+			calcOffsets(controller.getLocalPlayer());
+			// Testing the Zoom
+			// controller.getLocalPlayer().setSize(controller.getLocalPlayerScore()
+			// + 100);
 
-		drawArena(g2d); // Drawing the Game
-		drawHUD(g2d); // Drawing the HUD on top
-		
-		System.out.println("paint");
+			drawArena(g2d); // Drawing the Game
+			drawHUD(g2d); // Drawing the HUD on top
 
+		}
 	}
 
 	/**
@@ -328,10 +328,10 @@ public class GameView extends JPanel {
 		// Start coordinates for the list
 		int x = 15; // 15 px of padding left
 		int y = (int) ((this.getHeight() - listSize.getHeight()) + lineHeight);
-		
-		for(String s: scores){
+
+		for (String s : scores) {
 			g.drawString(s, x, y);
-			
+
 			y += lineHeight + 10;
 		}
 	}
@@ -480,6 +480,5 @@ public class GameView extends JPanel {
 
 		return new Vector(tX, tY);
 	}
-
 
 }
