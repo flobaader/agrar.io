@@ -202,6 +202,12 @@ public class MenuView extends JPanel {
 		// repaint();
 	}
 
+	/**
+	 * Adds a JLabel with larger text in green color
+	 * 
+	 * @param text
+	 *            the text of the title
+	 */
 	public void addTitle(String text) {
 		JLabel title = new JLabel(text);
 		Font f = title.getFont();

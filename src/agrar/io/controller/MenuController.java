@@ -37,8 +37,7 @@ public class MenuController {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Action performed");
-				parent.start();
+				showNameMenu();
 			}
 		});
 

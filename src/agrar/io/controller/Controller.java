@@ -38,15 +38,33 @@ public class Controller implements GameWindowListener {
 	private Timer graphicsRate;
 
 	// Game Statics
-	private static int PLAYER_START_SIZE = 5000;
-	private static int FOOD_SIZE = 200;
-	private static int VIEWRANGE = 500;
-	private static int AI_PLAYER_COUNT = 10;
-	private static int FOOD_COUNT = 200;
-	private static int FIELD_SIZE = 2000;
-	private static int VIEW_REFRESH_RATE = 1;
-	private static int GAME_REFERSH_RATE = 1;
-	private static float MOVEMENT_SPEED = 0.4F;
+	/**
+	 * The size of a player when he starts
+	 */
+	public static final int PLAYER_START_SIZE = 5000;
+	/**
+	 * 
+	 */
+	public static final int FOOD_SIZE = 200;
+	/**
+	 * The view range for AI players
+	 */
+	public static final int VIEWRANGE = 500;
+	/**
+	 * Maximum amount of AI players
+	 */
+	public static final int AI_PLAYER_COUNT = 10;
+	public static final int FOOD_COUNT = 200;
+	/**
+	 * Size of the game arena
+	 */
+	public static final int FIELD_SIZE = 2000;
+	public static final int VIEW_REFRESH_RATE = 1;
+	public static final int GAME_REFERSH_RATE = 1;
+	/**
+	 * Movement speed factor
+	 */
+	public static final float MOVEMENT_SPEED = 0.4F;
 
 	// Lists of Game Objects
 	private ArrayList<Player> players;
@@ -68,6 +86,8 @@ public class Controller implements GameWindowListener {
 	private Score login;
 
 	private MenuController menuController;
+
+	private Score[] globalHighscores;
 
 	public Controller() {
 		players = new ArrayList<Player>();
@@ -91,6 +111,13 @@ public class Controller implements GameWindowListener {
 		// The game can only be started when it's stopped
 		if (currentState != GameState.Stopped) {
 			throw new IllegalStateException("You can only start the game if it is stopped!");
+		}
+
+		// update highscore list
+
+		try {
+			globalHighscores = dbAdapter.getHighscores();
+		} catch (SQLException e) {
 		}
 
 		// Save name & password for later
@@ -191,8 +218,7 @@ public class Controller implements GameWindowListener {
 	 * Spawns local Player
 	 */
 	private void initializeLocalPlayer(String name) {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
-				name);
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue, name);
 		players.add(localPlayer);
 	}
 
@@ -421,49 +447,7 @@ public class Controller implements GameWindowListener {
 	 * @return the 5 or less best players from the database
 	 */
 	public Score[] getGlobalHighscores() {
-		try {
-			return dbAdapter.getHighscores();
-		} catch (SQLException e) {
-			// TODO handle errors properly
-			return null;
-		}
-	}
-
-	/**
-	 * @return Returns the specified size of a player when he starts
-	 */
-	public int getPLAYER_START_SIZE() {
-		return PLAYER_START_SIZE;
-	}
-
-	/**
-	 * @return Returns the view range of a player in which other circles are
-	 *         recognized
-	 */
-	public int getVIEWRANGE() {
-		return VIEWRANGE;
-	}
-
-	/**
-	 * @return Returns the amount of AI Players
-	 */
-	public int getAI_PLAYER_COUNT() {
-		return AI_PLAYER_COUNT;
-	}
-
-	/**
-	 * @return Returns the length and width of the game field
-	 */
-	public int getFIELD_SIZE() {
-		return FIELD_SIZE;
-	}
-
-	/**
-	 * @return Returns the movement speed factor
-	 */
-	public double getMOVEMENT_SPEED() {
-		return MOVEMENT_SPEED;
-
+		return globalHighscores;
 	}
 
 	/**
@@ -478,9 +462,6 @@ public class Controller implements GameWindowListener {
 		System.exit(0);
 	}
 
-	public void start() {
-		menuController.showNameMenu();
-	}
 
 	@Override
 	public void windowClosed() {

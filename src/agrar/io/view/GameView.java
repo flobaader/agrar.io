@@ -110,7 +110,6 @@ public class GameView extends JPanel {
 	 */
 	private void drawHUD(Graphics2D g) {
 		drawPlayerScore(g);
-		// drawHighscoreList(g);
 		drawFPS(g);
 		drawScoreList(g);
 		drawHighscoreList(g);
