@@ -20,7 +20,8 @@ import agrar.io.view.GameWindow;
  *
  */
 public class Controller {
-	// Game Window
+	
+	//UI
 	private GameWindow window;
 
 	// Timers
@@ -36,7 +37,7 @@ public class Controller {
 	private static int FIELD_SIZE = 2000;
 	private static int VIEW_REFRESH_RATE = 1;
 	private static int GAME_REFERSH_RATE = 1;
-	private static float MOVEMENT_SPEED = 0.4;
+	private static float MOVEMENT_SPEED = 0.4F;
 
 	// Lists of Game Objects
 	private ArrayList<Player> players;
@@ -55,12 +56,15 @@ public class Controller {
 		window = new GameWindow(this);
 	}
 
-	public void StartGame() {
+	/**
+	 * Starts the game
+	 */
+	public void startGame() {
 		// Loads Players
-		InitializePlayer();
+		initializeLocalPlayer();
 
 		// Spawns Food and AI
-		SpawnObjects();
+		spawnAllGameObjects();
 
 		graphicsRate = new Timer(VIEW_REFRESH_RATE, new ActionListener() { // TODO:
 																			// performance
@@ -82,14 +86,26 @@ public class Controller {
 		gameRate = new Timer(GAME_REFERSH_RATE, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				RunGameCycle();
+				runGameCycle();
 			}
 		});
 		gameRate.start();
 
 	}
 
-	private void SpawnPlayer() {
+	/**
+	 * Spawns local Player
+	 */
+	private void initializeLocalPlayer() {
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
+				"LocalPlayer");
+		players.add(localPlayer);
+	}
+
+	/**
+	 * Spawns one Player
+	 */
+	private void spawnAIPlayer() {
 		// Count AIPlayers
 
 		int level = Utility.getRandom(0, 10);
@@ -99,129 +115,122 @@ public class Controller {
 		players.add(p);
 	}
 
-	private void SpawnFood() {
+	/**
+	 * Spawns one food circle
+	 */
+	private void spawnFood() {
 		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE), FOOD_SIZE, Utility.getRandomColor());
 
 		food.add(f);
 	}
 
-	private void InitializePlayer() {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue,
-				"LocalPlayer");
-		players.add(localPlayer);
-	}
-
-	public int getLocalPlayerScore() {
-		return localPlayer.getSize();
-	}
-
-	public Player getLocalPlayer() {
-		return localPlayer;
-	}
-
-	private void SpawnObjects() {
+	/**
+	 * Spawns Food and AI Players till the spawn limit is reached
+	 */
+	private void spawnAllGameObjects() {
 		// Spawns Players if necessary
 		while (players.size() < AI_PLAYER_COUNT) {
-			SpawnPlayer();
+			spawnAIPlayer();
 		}
 
 		// Spawns Food if necessary
 		while (food.size() < FOOD_COUNT) {
-			SpawnFood();
+			spawnFood();
 		}
 
 	}
 
-	private void RunGameCycle() {
+	/**
+	 * Simulates one Game Cycle, where every Player can move one time and eat other Players and objects are spawned and deleted
+	 */
+	private void runGameCycle() {
+		
+		//The time the last circle took
 		long millisSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
 
-		// One Game Cycle
-		SpawnObjects();
+		// Spawn AI Players and Food if necessary
+		spawnAllGameObjects();
 
 		// Every player can move one step
 		for (Player p : players) {
 			p.getBehavior().update(millisSinceLastUpdate);
 		}
 		
-		ClearDeletedCircles();
+		// Deletes eaten Circles
+		clearDeletedCircles();
 
+		//Sets update Time
 		lastUpdateTime = System.currentTimeMillis();
 
 	}
 
-	private void ClearDeletedCircles() {
-		// Deletes removed circles
+	/**
+	 * The Circles, which are requested to be removed, are saved in a list and will now be removed from the other lists
+	 */
+	private void clearDeletedCircles() {
+		//Iterates through all saved circles
 		for (Circle c : circlesToDelete) {
+			
+			//.remove Command only removes if the object exists
+			
+			//If the Circle is in of these lists he gets removed
 			players.remove(c);
 			food.remove(c);
-			// System.out.println("Deleted Circle!");
 		}
+		//Clears list
 		circlesToDelete.clear();
 
 	}
 
-	public ArrayList<Circle> getAllComponents() {
+	/**
+	 * Requests to delete the selected circle. The circle will be stored in a list and removed after the whole game cycle
+	 * @param c1 The circle to be deleted
+	 */
+	public void deleteCircle(Circle c1) {
+		circlesToDelete.add(c1);
+	}
+
+	/**
+	 * 
+	 * @return The LocalPlayer as a Player
+	 */
+	public Player getLocalPlayer() {
+		return localPlayer;
+	}
+
+	/**
+	 * 
+	 * @return The current Size of the localplayer
+	 */
+	public int getLocalPlayerScore() {
+		return localPlayer.getSize();
+	}
+
+	/**
+	 * 
+	 * @return All circles which are shown in the game
+	 */
+	public ArrayList<Circle> getAllGameObjects() {
 		ArrayList<Circle> comp = new ArrayList<Circle>();
 		comp.addAll(food);
 		comp.addAll(players);
 		return comp;
 	}
 
-	public void deleteCircle(Circle c1) {
-		circlesToDelete.add(c1);
-	}
-
+	/**
+	 * 
+	 * @return Returns the center of the screen as a vector
+	 */
 	public Vector getOffset() {
 		return new Vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
 	}
 
-	public Player getNearestPlayer(Circle c1) {
-		Player p1 = null;
-		double nearest_distance = Double.MAX_VALUE;
-		for (Player p : players) {
-			if (c1 != p && Utility.getDistance(c1, p) < nearest_distance) {
-				nearest_distance = Utility.getDistance(c1, p);
-				p1 = p;
-			}
-		}
 
-		if (p1 != null) {
-			return p1;
-		} else {
-			return localPlayer;
-		}
-
-	}
-
-	public Food getNearestFood(Circle c1) {
-		Food f1 = null;
-		double nearest_distance = Double.MAX_VALUE;
-		for (Food f : food) {
-			if (c1 != f && Utility.getDistance(c1, f) < nearest_distance) {
-				nearest_distance = Utility.getDistance(c1, f);
-				f1 = f;
-			}
-		}
-		return f1;
-
-	}
-
-	public Circle getNearestObject(Circle c1) {
-		Circle c2 = null;
-		double nearest_distance = Double.MAX_VALUE;
-		for (Circle c : getAllComponents()) {
-			if (c != c1) {
-				if (Utility.getDistance(c1, c) < nearest_distance) {
-					nearest_distance = Utility.getDistance(c1, c);
-					c2 = c;
-				}
-			}
-
-		}
-		return c2;
-
-	}
-
+	/**
+	 * Returns all objects which are in the view range of the circle
+	 * @param c1 The circle, which looks for other Objects
+	 * @return List of Objects with a distance <= view range
+	 */
 	public ArrayList<Circle> getObjectsInSight(Circle c1) {
 		ArrayList<Circle> inSight = new ArrayList<Circle>();
 		for (Circle f : food) {
@@ -246,6 +255,10 @@ public class Controller {
 		return dbAdapter;
 	}
 
+	/**
+	 * 
+	 * @return The vector from the center of the screen to the mouse
+	 */
 	public Vector getMouseVector() {
 		return window.getView().getMouseVector();
 	}
@@ -284,35 +297,35 @@ public class Controller {
 	}
 
 	/**
-	 * @return the pLAYER_START_SIZE
+	 * @return Returns the specified size of a player when he starts
 	 */
 	public int getPLAYER_START_SIZE() {
 		return PLAYER_START_SIZE;
 	}
 
 	/**
-	 * @return the vIEWRANGE
+	 * @return Returns the view range of a player in which other circles are recognized
 	 */
 	public int getVIEWRANGE() {
 		return VIEWRANGE;
 	}
 
 	/**
-	 * @return the aI_PLAYER_COUNT
+	 * @return Returns the amount of AI Players
 	 */
 	public int getAI_PLAYER_COUNT() {
 		return AI_PLAYER_COUNT;
 	}
 
 	/**
-	 * @return the length and width of the game field
+	 * @return Returns the length and width of the game field
 	 */
 	public int getFIELD_SIZE() {
 		return FIELD_SIZE;
 	}
 
 	/**
-	 * @return the mOVEMENT_SPEED
+	 * @return Returns the movement speed factor
 	 */
 	public double getMOVEMENT_SPEED() {
 		return MOVEMENT_SPEED;

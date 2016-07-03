@@ -141,7 +141,7 @@ public class View extends JPanel {
 		drawGrid(g);
 
 		// Draw circles
-		for (Circle c : controller.getAllComponents()) {
+		for (Circle c : controller.getAllGameObjects()) {
 
 			drawCircle(g, c);
 			// only players have a name

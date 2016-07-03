@@ -134,6 +134,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		//Value is negative if Target is bigger than parent
 		double isSmaller = 1;
 		
+		// The AI Player does not get the real size of the Circle, that would not be fair
 		double estimatedCircleSize = misjudgeCircleSize(c.getSize());
 		
 		//NOTE: uses misjudged Size of Circle
@@ -141,10 +142,9 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			isSmaller = -1;
 		}
 
-		double sizeFactor = estimatedCircleSize;
 		double distanceFactor = (1 / Math.pow(Utility.getDistance(parent, c), 2));
 
-		return (isSmaller * sizeFactor * distanceFactor);
+		return (isSmaller * estimatedCircleSize * distanceFactor);
 	}
 
 	/**
