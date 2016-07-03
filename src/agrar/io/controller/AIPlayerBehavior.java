@@ -16,7 +16,10 @@ import agrar.io.util.Vector;
  */
 public class AIPlayerBehavior extends PlayerBehavior {
 
+	//In a range from 0 to 10, the Level simulates the experience of the AI player to estimate the size of other players
 	private int LEVEL;
+	
+	//The flee threshold of the player
 	private int FLEE_THRESHOLD;
 	
 	/**
@@ -37,7 +40,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			LEVEL = Level;	
 		}
 		
-		//Ramdomizes the point, where 
+		//Ramdomizes the point, where the player decides to flee
 		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
 		
 	}
@@ -53,6 +56,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		
 		double rndAbs = (double) randomFactor / 100; //Absolute not percent
 		
+		//Estimated size
 		double estimatedSize = Size + Size * rndAbs; 
 		
 		return estimatedSize;
@@ -63,13 +67,13 @@ public class AIPlayerBehavior extends PlayerBehavior {
 	@Override
 	public void update(float deltaT) {
 
-		// The highest value of a Circle found near the Player
-		double bestValue = Double.MIN_VALUE;
-		double worstValue = Double.MAX_VALUE;
-
-		// The next target
+		// The circle with the highest value
 		Circle bestTarget = null;
+		double bestValue = Double.MIN_VALUE;
+		
+		// The circle with the lowest value
 		Circle worstTarget = null;
+		double worstValue = Double.MAX_VALUE;
 
 		// Iterates trough all given Objects in Sight and saves the best one and the worst one
 		for (Circle c : controller.getObjectsInSight(parent)) {
@@ -91,14 +95,17 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		}
 
 		if(bestTarget == null || worstTarget == null){
-			
 			//Did not find any Circle in Sight
+			
+			//Sets target to a random point
 			nextTarget = Utility.getRandomPoint(controller.getFIELD_SIZE(), controller.getFIELD_SIZE());
 			parent.setColor(Color.BLACK);
 			
 		}else if (bestValue > 0 && worstValue > FLEE_THRESHOLD){
 			
 			//Found a good Circle and is not in Danger
+			
+			//Sets target to the location of the best target
 			nextTarget = bestTarget.getLocation();
 			parent.setColor(orgColor);
 			
