@@ -2,18 +2,22 @@ package agrar.io.view;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeListener;
 
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import agrar.io.controller.Controller;
-
+import agrar.io.controller.Controller.GameState;
 import agrar.io.util.Vector;
 
 public class GameWindow extends JFrame {
@@ -55,10 +59,11 @@ public class GameWindow extends JFrame {
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-		this.setMinimumSize(new Dimension(640, 460));
-
+		gameView.setMinimumSize(new Dimension(640, 460));
+		this.setMinimumSize(new Dimension(640,460));
+		
 		// Report all keystrokes to the controller
-		this.addKeyListener(new KeyListener() {
+		gameView.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -70,9 +75,18 @@ public class GameWindow extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
+				
+				System.out.println("keypress");
+				
+				//pause the game when the escape key is pressed
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+					if(controller.getState() == GameState.Playing){
+						controller.pauseGame();
+					}
+				}
 			}
 		});
-
+		
 		// Report changes to the window state to the controller
 		// Only actions that hide / close the window need to be reported, the
 		// player can resume the game himself
@@ -85,7 +99,7 @@ public class GameWindow extends JFrame {
 
 			@Override
 			public void windowIconified(WindowEvent e) {
-				controller.minimizeWindow();
+				controller.windowMinimized();
 			}
 
 			@Override
@@ -95,12 +109,12 @@ public class GameWindow extends JFrame {
 
 			@Override
 			public void windowDeactivated(WindowEvent e) {
-				controller.minimizeWindow();
+				controller.windowMinimized();
 			}
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				controller.closeWindow();
+				controller.windowClosed();
 			}
 
 			@Override
@@ -157,10 +171,15 @@ public class GameWindow extends JFrame {
 
 	public void showMenu() {
 		cl.show(cardPanel, MENU);
+		menuView.doLayout();
+		cardPanel.doLayout();
+		menuView.requestFocus();
 	}
 
 	public void hideMenu() {
 		cl.show(cardPanel, GAME);
+		gameView.requestFocus();
+		cardPanel.repaint();
 	}
 
 	public Vector getMouseVector() {
@@ -173,9 +192,9 @@ public class GameWindow extends JFrame {
 
 	public interface GameWindowListener {
 
-		public void closeWindow();
+		public void windowClosed();
 
-		public void minimizeWindow();
+		public void windowMinimized();
 	}
 
 }

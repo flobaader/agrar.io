@@ -1,11 +1,17 @@
 package agrar.io.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,6 +54,9 @@ public class MenuView extends JPanel {
 		c.gridwidth = 2;
 		this.add(button, c);
 		c.gridy += 1;
+
+		invalidate();
+		repaint();
 	}
 
 	/**
@@ -62,6 +71,9 @@ public class MenuView extends JPanel {
 		c.gridwidth = 2;
 		this.add(label, c);
 		c.gridy += 1;
+
+		invalidate();
+		repaint();
 	}
 
 	/**
@@ -82,6 +94,10 @@ public class MenuView extends JPanel {
 		this.add(field, c);
 
 		c.gridy += 1;
+
+		invalidate();
+		repaint();
+
 		return field;
 	}
 
@@ -104,6 +120,10 @@ public class MenuView extends JPanel {
 		this.add(field, c);
 
 		c.gridy += 1;
+
+		invalidate();
+		repaint();
+
 		return field;
 	}
 
@@ -111,8 +131,12 @@ public class MenuView extends JPanel {
 	 * Removes all contents from the menu and resets it
 	 */
 	public void clear() {
+
+
 		removeAll();
 		invalidate();
+		repaint();
+
 		c.gridy = 0;
 	}
 
@@ -123,17 +147,81 @@ public class MenuView extends JPanel {
 	 *            The path of the image, relative to the resource folder
 	 */
 	public void addImage(String string) {
-		ImageIcon image = new ImageIcon(string);
-		JLabel imageLabel = new JLabel("", image, JLabel.CENTER);
-		
-		//Max size of the image is ~85% of the frame width and 20% of the height
-		Dimension size = new Dimension(Math.min(image.getIconHeight(), 550), Math.min(image.getIconHeight(), 80));
+
+		float scaleFactor = 1F;
+		BufferedImage origImage = null;
+		try {
+			origImage = ImageIO.read(getClass().getResource(string));
+		} catch (IOException e) {
+			// Should only happen when image is missing, so ignore it
+			e.printStackTrace();
+			return;
+		}
+
+		JLabel imageLabel = new JLabel("", JLabel.CENTER);
+
+		// Max size of the image is ~85% of the frame width and 50% of the
+		// height
+		// If it is larger, resize it
+		if (origImage.getWidth() > 550 || origImage.getHeight() > 230) {
+
+			float aspectRatio = origImage.getWidth() / origImage.getHeight();
+
+			// Aspect of max size (550/230)
+			float boxAspect = 2.391304347826087F;
+
+			// scale based on height
+			if (aspectRatio < boxAspect) {
+				scaleFactor = 230F / (float) origImage.getHeight(); // max.
+																	// height =
+																	// 230
+			} else {
+				// scale based on width
+//				scaleFactor = 550F / (float) origImage.getWidth(); // max. width
+																	// = 550
+			}
+		}
+
+		System.out.println(scaleFactor);
+		System.out.println(origImage.toString());
+
+		Dimension size = new Dimension((int) ((float) origImage.getWidth() * scaleFactor),
+				(int) ((float) origImage.getHeight() * scaleFactor));
+
+		System.out.println(size.toString());
+		// scale the image to fit the Label
+		ImageIcon image = new ImageIcon(
+				origImage.getScaledInstance((int) size.getWidth(), (int) size.getHeight(), BufferedImage.SCALE_SMOOTH));
+		imageLabel.setIcon(image);
+
+		// resize the label
 		imageLabel.setSize(size);
-		
+		imageLabel.setPreferredSize(size);
+
 		c.gridwidth = 2;
 		c.gridx = 0;
 		this.add(imageLabel, c);
 
 		c.gridy += 1;
+
+		invalidate();
+//		repaint();
 	}
+
+	public void addTitle(String text) {
+		JLabel title = new JLabel(text);
+		Font f = title.getFont();
+		title.setFont(new Font(f.getName(), f.getStyle(), f.getSize() * 4));
+		title.setForeground(Color.green);
+
+		c.gridx = 0;
+		c.gridwidth = 2;
+
+		this.add(title, c);
+
+		c.gridy++; 
+		
+		invalidate();
+	}
+
 }

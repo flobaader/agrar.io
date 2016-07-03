@@ -32,12 +32,13 @@ public class MenuController {
 
 		menuView.clear();
 
-		menuView.addImage("resources/banner.png");
+		menuView.addImage("/banner.jpg");
 
 		menuView.addButton("Start", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Action performed");
 				parent.start();
 			}
 		});
@@ -61,6 +62,8 @@ public class MenuController {
 
 		menuView.clear();
 
+		menuView.addTitle("Pausiert");
+
 		menuView.addLabel("Pausiert");
 
 		menuView.addButton("Weiter", new ActionListener() {
@@ -76,6 +79,12 @@ public class MenuController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				parent.stopGame();
+				int sure = JOptionPane.showConfirmDialog(null,
+						"Wenn du die Runde jetzt verlässt, wird dein Punktestand nicht gespeichert.",
+						"Wirklich beenden?", JOptionPane.OK_CANCEL_OPTION);
+				if (sure == 0) {
+					showMainMenu();
+				}
 			}
 		});
 
@@ -96,17 +105,20 @@ public class MenuController {
 
 	/**
 	 * Shows a menu to the user to confirm quitting the game
+	 * 
 	 * @return 0 if the user wants to quit, 1 otherwise
 	 */
-	protected int confirmQuit() {
+	public int confirmQuit() {
 		return JOptionPane.showConfirmDialog(null,
-				"Wenn du Agrar.io beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
+				"Wenn du Agrar.io jetzt beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
 				"Beenden?", JOptionPane.OK_CANCEL_OPTION);
 	}
 
 	public void showNameMenu() {
 
 		menuView.clear();
+
+		menuView.addTitle("Namen auswählen");
 
 		JTextField nameField = menuView.addTextField("Name");
 
@@ -116,38 +128,83 @@ public class MenuController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
 				String name = nameField.getText();
 				String passwd = String.valueOf(passwordField.getPassword());
+
+				// Check for empty name or password field
+				if (name.equals("") || passwd.equals("")) {
+					JOptionPane.showMessageDialog(null, "Passwort und Name dürfen nicht leer sein!",
+							"Passwort oder Name ist leer!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
 				Score s = new Score(0, name, passwd);
 
 				DatabaseAdapter dbAdapter = parent.getDatabaseAdapter();
 
-				try {
-					if (dbAdapter.existsInDatabase(s)) {
-						if (dbAdapter.checkPassword(s)) {
-							startGame(s);
-						} else {
-							JOptionPane.showMessageDialog(null,
-									"Das Passwort stimmt nicht mit dem gespeicherten überein.", "Falsches Passwort",
-									JOptionPane.ERROR_MESSAGE);
-						}
-					} else {
-						startGame(s);
-					}
-				} catch (SQLException e1) {
-					JOptionPane.showMessageDialog(null,
-							"Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal.",
-							"Verbindungsfehler", JOptionPane.ERROR_MESSAGE);
-				}
+				parent.StartGame(s);
+
+				/*
+				 * try { if (dbAdapter.existsInDatabase(s)) { if
+				 * (dbAdapter.checkPassword(s)) { startGame(s); } else {
+				 * showConnectionError();} } else { startGame(s); } } catch
+				 * (SQLException e1) { JOptionPane.showMessageDialog(null,
+				 * "Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal."
+				 * , "Verbindungsfehler", JOptionPane.ERROR_MESSAGE); }
+				 */
 			}
 
 		});
 
 		window.showMenu();
+
 	}
 
-	private void startGame(Score s) {
-		parent.StartGame(s);
+	/**
+	 * Shows the "game over" screen to the user
+	 * @param s Score containing player name and score
+	 */
+	public void showDeathMenu(Score s) {
+
+		menuView.clear();
+		
+		menuView.addTitle("Game over");
+
+		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
+
+		menuView.addButton("Zum Hauptmenü", new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showMainMenu();
+			}
+		});
+
+		menuView.addButton("Neue Runde", new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				parent.StartGame(s);
+			}
+		});
+
+		menuView.addButton("Beenden", new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				parent.quit();
+			}
+		});
+
+		window.showMenu();
 	}
 
+	/**
+	 * Shows a Dialog to notify the user that no connection to the DB could be established
+	 */
+	public void showConnectionError() {
+		JOptionPane.showMessageDialog(null, "Das Passwort stimmt nicht mit dem gespeicherten überein.",
+				"Falsches Passwort", JOptionPane.ERROR_MESSAGE);
+	}
 }
