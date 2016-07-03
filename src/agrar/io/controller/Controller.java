@@ -457,7 +457,6 @@ public class Controller implements GameWindowListener {
 	}
 
 	public void start() {
-		System.out.println("start()");
 		menuController.showNameMenu();
 	}
 

@@ -9,7 +9,9 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -173,9 +175,10 @@ public class GameView extends JPanel {
 		Vector target = ((Player) c).getBehavior().getTarget();
 
 		if (target != null) {
-			Point start = getTransformedPosition(c);
-			Vector end = getTransformedPosition(target);
-			g.drawLine(start.x, start.y, (int) end.getX(), (int) end.getY());
+			FloatPoint start = getTransformedPosition(c);
+			FloatPoint end = getTransformedPosition(target);
+			Line2D.Float line = new Line2D.Float(start.x, start.y,  end.x, end.y);
+			g.draw(line);
 		}
 	}
 
@@ -193,10 +196,10 @@ public class GameView extends JPanel {
 		String name = ((Player) c).getName();
 		Dimension d = measureString(g, name);
 
-		Point pos = getTransformedPosition(c);
+		FloatPoint pos = getTransformedPosition(c);
 
-		int x = pos.x - (int) (d.width / 2F);
-		int y = pos.y - (int) ((c.getRadius() * zoomFactor) + 10);
+		float x = pos.x - (d.width / 2F);
+		float y = pos.y - ((c.getRadius() * zoomFactor) + 10);
 
 		g.drawString(name, x, y);
 
@@ -213,12 +216,13 @@ public class GameView extends JPanel {
 	private void drawCircle(Graphics2D g, Circle c) {
 		g.setColor(c.getColor());
 
-		int radius = (int) (c.getRadius() * zoomFactor);
-		int diameter = (int) (radius * 2F);
+		float radius = c.getRadius() * zoomFactor;
+		float diameter = radius * 2F;
 
-		Point pos = getTransformedPosition(c);
+		FloatPoint pos = getTransformedPosition(c);
 
-		g.fillOval(pos.x - radius, pos.y - radius, diameter, diameter);
+		Ellipse2D.Float oval = new Ellipse2D.Float(pos.x - radius, pos.y - radius, diameter, diameter);
+		g.fill(oval);
 	}
 
 	/**
@@ -452,31 +456,53 @@ public class GameView extends JPanel {
 	 *            the circle to transform
 	 * @return a Point that contains the transformed position
 	 */
-	private Point getTransformedPosition(Circle c) {
+	private FloatPoint getTransformedPosition(Circle c) {
 
-		int x = (int) c.getLocation().getX();
-		int y = (int) c.getLocation().getY();
+		return getTransformedPosition((float) c.getLocation().getX(), (float) c.getLocation().getY());
+
+	}
+
+	/**
+	 * Applies translate and scale to a vector
+	 * @param v
+	 * @return
+	 */
+	private FloatPoint getTransformedPosition(Vector v) {
+		return getTransformedPosition((float) v.getX(), (float) v.getY());
+	}
+
+	/**
+	 * Applies zoom and translate to any point in the game arena
+	 * 
+	 * @param x
+	 *            x coordinate of the point to transform
+	 * @param y
+	 *            y coordinate of the point to transform
+	 * @return the transformed point
+	 */
+	private FloatPoint getTransformedPosition(float x, float y) {
 
 		// Translated position is the difference of localplayer and original
 		// Position multiplied with zoomFactor, then translated by the offset
 		float tX = (x * zoomFactor) + offsetX;
 		float tY = (y * zoomFactor) + offsetY;
 
-		return new Point((int) tX, (int) tY);
-
+		return new FloatPoint(tX, tY);
 	}
 
-	private Vector getTransformedPosition(Vector v) {
+	/**
+	 * container class for an x and y coordinate that is a float
+	 * 
+	 * @author Matthias
+	 *
+	 */
+	public class FloatPoint {
+		public float x;
+		public float y;
 
-		int x = (int) v.getX();
-		int y = (int) v.getY();
-
-		// Translated position is the difference of localplayer and original
-		// Position multiplied with zoomFactor, then translated by the offset
-		float tX = (x * zoomFactor) + offsetX;
-		float tY = (y * zoomFactor) + offsetY;
-
-		return new Vector(tX, tY);
+		public FloatPoint(float x, float y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
-
 }

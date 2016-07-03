@@ -131,7 +131,6 @@ public class MenuView extends JPanel {
 	 */
 	public void clear() {
 
-
 		removeAll();
 		invalidate();
 		repaint();
@@ -176,18 +175,14 @@ public class MenuView extends JPanel {
 																	// 230
 			} else {
 				// scale based on width
-//				scaleFactor = 550F / (float) origImage.getWidth(); // max. width
+				scaleFactor = 550F / (float) origImage.getWidth(); // max. width
 																	// = 550
 			}
 		}
 
-		System.out.println(scaleFactor);
-		System.out.println(origImage.toString());
-
 		Dimension size = new Dimension((int) ((float) origImage.getWidth() * scaleFactor),
 				(int) ((float) origImage.getHeight() * scaleFactor));
 
-		System.out.println(size.toString());
 		// scale the image to fit the Label
 		ImageIcon image = new ImageIcon(
 				origImage.getScaledInstance((int) size.getWidth(), (int) size.getHeight(), BufferedImage.SCALE_SMOOTH));
@@ -204,7 +199,7 @@ public class MenuView extends JPanel {
 		c.gridy += 1;
 
 		invalidate();
-//		repaint();
+		// repaint();
 	}
 
 	public void addTitle(String text) {
@@ -218,8 +213,8 @@ public class MenuView extends JPanel {
 
 		this.add(title, c);
 
-		c.gridy++; 
-		
+		c.gridy++;
+
 		invalidate();
 	}
 
