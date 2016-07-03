@@ -1,3 +1,4 @@
+
 package agrar.io.view;
 
 import java.awt.Color;
@@ -6,12 +7,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -127,7 +126,7 @@ public class GameView extends JPanel {
 		drawGrid(g);
 
 		// Draw circles
-		for (Circle c : controller.getAllComponents()) {
+		for (Circle c : controller.getAllGameObjects()) {
 
 			drawCircle(g, c);
 			// only players have a name
@@ -177,7 +176,7 @@ public class GameView extends JPanel {
 		if (target != null) {
 			FloatPoint start = getTransformedPosition(c);
 			FloatPoint end = getTransformedPosition(target);
-			Line2D.Float line = new Line2D.Float(start.x, start.y,  end.x, end.y);
+			Line2D.Float line = new Line2D.Float(start.x, start.y, end.x, end.y);
 			g.draw(line);
 		}
 	}
@@ -464,6 +463,7 @@ public class GameView extends JPanel {
 
 	/**
 	 * Applies translate and scale to a vector
+	 * 
 	 * @param v
 	 * @return
 	 */
