@@ -9,10 +9,13 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.swing.Timer;
+
+import agrar.io.controller.DatabaseAdapter.InvalidPasswordException;
 import agrar.io.model.*;
 import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 import agrar.io.view.GameWindow;
+import agrar.io.view.GameWindow.GameWindowListener;
 
 /**
  * The controller of the game, which starts, stops and manages the whole game
@@ -20,7 +23,7 @@ import agrar.io.view.GameWindow;
  * @author Flo, Matthias
  *
  */
-public class Controller {
+public class Controller implements GameWindowListener {
 	// Game Window
 	private GameWindow window;
 
@@ -55,13 +58,20 @@ public class Controller {
 
 	private GameState currentState = GameState.Stopped;
 
-	private Score score;
+	// Score that contains player name and password
+	private Score login;
+
+	private MenuController menuController;
 
 	public Controller() {
 		players = new ArrayList<Player>();
 		food = new ArrayList<Food>();
 		circlesToDelete = new ArrayList<Circle>();
 		window = new GameWindow(this);
+
+		menuController = new MenuController(this, window.getMenuView(), window);
+
+		menuController.showMainMenu();
 	}
 
 	/**
@@ -72,11 +82,19 @@ public class Controller {
 	 */
 	public void StartGame(Score s) {
 
+		// The game can only be started when it's stopped
 		if (currentState != GameState.Stopped) {
 			throw new IllegalStateException("You can only start the game if it is stopped!");
 		}
-		currentState = GameState.Playing;
-		this.score = s;
+
+		// Save name & password for later
+		this.login = s;
+
+		// Display the game arena
+		window.hideMenu();
+
+		// Sets First Update Time
+		lastUpdateTime = System.currentTimeMillis();
 
 		// Loads Players
 		InitializePlayer(s.getName());
@@ -90,12 +108,8 @@ public class Controller {
 			public void actionPerformed(ActionEvent arg0) {
 				window.refresh();
 			}
+
 		});
-
-		graphicsRate.start();
-
-		// Sets First Update Time
-		lastUpdateTime = System.currentTimeMillis();
 
 		// Starts Game Refresh Timer
 		gameRate = new Timer(GAME_REFERSH_RATE, new ActionListener() {
@@ -104,7 +118,13 @@ public class Controller {
 				RunGameCycle();
 			}
 		});
+
+		// Start game timers
 		gameRate.start();
+		graphicsRate.start();
+
+		// Switch to playing state
+		currentState = GameState.Playing;
 
 	}
 
@@ -112,19 +132,36 @@ public class Controller {
 	 * Pause the game (to display menu etc.)
 	 */
 	public void pauseGame() {
-		currentState = GameState.Paused;
+		
+		//Stop graphics and simulation cycle
 		gameRate.stop();
 		graphicsRate.stop();
+		
+		//show menu
+		menuController.showPauseMenu();
+		
+		currentState = GameState.Paused;//switch state last
 	}
 
 	/**
-	 * resumes a paused game. Throws illegalStateException if the gamestate is
+	 * resumes a paused game. Throws illegalStateException if the GameState is
 	 * not paused
 	 */
 	public void resumeGame() {
+		
+		//Only a paused game can be resumed
 		if (currentState != GameState.Paused) {
 			throw new IllegalStateException("You can only resume a paused game!");
 		}
+
+		//restart the timers
+		graphicsRate.restart();
+		gameRate.start();
+
+		//Hide menu, show game arena
+		window.hideMenu();
+
+		//switch to playing state last
 		currentState = GameState.Playing;
 	}
 
@@ -138,6 +175,10 @@ public class Controller {
 		currentState = GameState.Stopped;
 		gameRate.stop();
 		graphicsRate.stop();
+	}
+
+	public GameState getState() {
+		return currentState;
 	}
 
 	private void SpawnPlayer() {
@@ -213,7 +254,26 @@ public class Controller {
 	}
 
 	public void deleteCircle(Circle c1) {
+		
+		//Local Player eaten -> game over
+		if(c1 == localPlayer){
+			
+			gameOver(new Score(localPlayer.getSize(), login.getName(), login.getPassword()));
+		}
 		circlesToDelete.add(c1);
+	}
+
+	private void gameOver(Score score) {
+		stopGame();
+		menuController.showDeathMenu(score);
+		try {
+			dbAdapter.insert(score);
+		} catch (SQLException e) {
+			menuController.showConnectionError();
+		} catch (InvalidPasswordException e) {
+			//Should not happen since the password has been confirmed in the beginning
+			e.printStackTrace();
+		}
 	}
 
 	public Vector getOffset() {
@@ -292,7 +352,7 @@ public class Controller {
 	}
 
 	public Vector getMouseVector() {
-		return window.getView().getMouseVector();
+		return window.getMouseVector();
 	}
 
 	/**
@@ -394,5 +454,38 @@ public class Controller {
 		dbAdapter.disconnect();
 		window.dispose();
 		System.exit(0);
+	}
+
+	public void start() {
+		System.out.println("start()");
+		menuController.showNameMenu();
+	}
+
+	@Override
+	public void windowClosed() {
+		switch (currentState) {
+		case Playing:
+			pauseGame();//Pause the game if playing
+		case Paused:
+			//Ask user if he really wants to quit
+			int sure = menuController.confirmQuit();
+			if (sure == 0) {
+				quit();
+			}
+			break;
+		case Stopped:
+			//Just quit
+			quit();
+			break;
+	
+		}
+	}
+
+	@Override
+	public void windowMinimized() {
+		if (currentState == GameState.Playing) {
+			pauseGame();
+		}
+
 	}
 }
