@@ -335,7 +335,8 @@ public class Controller implements GameWindowListener {
 		try {
 			dbAdapter.insert(score);
 		} catch (SQLException e) {
-			menuController.showConnectionError();
+			e.printStackTrace();
+			menuController.showConnectionError(e);
 		} catch (InvalidPasswordException e) {
 			// Should not happen since the password has been confirmed in the
 			// beginning

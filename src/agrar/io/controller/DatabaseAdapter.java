@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import com.sun.java_cup.internal.runtime.Symbol;
+
 import agrar.io.model.Score;
 import agrar.io.util.Utility;
 
@@ -36,26 +38,24 @@ public class DatabaseAdapter {
 		Score[] scores = new Score[5];
 		int count = 0;
 
-		scores[0] = new Score(1234, "Horst", "aöldkfjasdlödkfj");
-		scores[1] = new Score(222, "Peter", "löksdjflöasdkfjk");
-		scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
-		scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
-		scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
+		// scores[0] = new Score(1234, "Horst", "aöldkfjasdlödkfj");
+		// scores[1] = new Score(222, "Peter", "löksdjflöasdkfjk");
+		// scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
+		// scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
+		// scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
+
+		connect();
+
+		PreparedStatement stmt = conn
+				.prepareStatement("SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
+		ResultSet results = stmt.executeQuery();
+
+		while (results.next()) {
+			scores[count] = new Score(results.getInt("score"), results.getString("name"), "");
+			count++;
+		}
 
 		return scores;
-		/*
-		 * connect();
-		 * 
-		 * PreparedStatement stmt = conn .prepareStatement(
-		 * "SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
-		 * ResultSet results = stmt.executeQuery();
-		 * 
-		 * while (results.next()) { scores[count] = new
-		 * Score(results.getInt("score"), results.getString("name"), "");
-		 * count++; }
-		 * 
-		 * return scores;
-		 */
 
 	}
 
@@ -79,8 +79,9 @@ public class DatabaseAdapter {
 		ResultSet res = stmt.executeQuery();
 
 		// The hash of the password, retrieved from the DB
+		res.next();
 		byte[] databasePassword = res.getBytes("password");
-
+		
 		// Compare the hashes of the entered password and the password from the
 		// DB
 		return Arrays.equals(databasePassword, s.getPasswordHash());
@@ -99,7 +100,7 @@ public class DatabaseAdapter {
 	public boolean existsInDatabase(Score s) throws SQLException {
 
 		// Reconnect if necessary
-		connect(); 
+		connect();
 
 		// The name might be entered by a user, protect against SQL injection
 		// with prepared statements
@@ -108,7 +109,8 @@ public class DatabaseAdapter {
 		ResultSet results = stmt.executeQuery();
 
 		// One row with the same name -> exists
-		return results.getInt("count") == 1;
+
+		return results.next() && results.getInt("count") == 1;
 	}
 
 	/**
@@ -165,13 +167,13 @@ public class DatabaseAdapter {
 
 		// Reconnect if necessary
 		connect();
-		
+
 		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=? AND score > ?;");
 		stmt.setInt(1, s.getScore());
 		stmt.setString(2, s.getName());
 		stmt.setInt(3, s.getScore());
 
-		stmt.executeQuery();
+		stmt.executeUpdate();
 
 	}
 

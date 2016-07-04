@@ -2,6 +2,7 @@ package agrar.io.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -124,7 +125,6 @@ public class MenuController {
 
 		menuView.addButton("OK", new ActionListener() {
 
-			@SuppressWarnings("unused") //TODO remove all suppreswarnings
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -142,16 +142,23 @@ public class MenuController {
 
 				DatabaseAdapter dbAdapter = parent.getDatabaseAdapter();
 
-				parent.StartGame(s);
+				try {
+					if (dbAdapter.existsInDatabase(s)) {
+						if (dbAdapter.checkPassword(s)) {
+							parent.StartGame(s);
+						} else {
+							showPasswordError(new Exception(""));
+						}
+					} else {
+						parent.StartGame(s);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null,
+							"Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal.",
+							"Verbindungsfehler", JOptionPane.ERROR_MESSAGE);
+				}
 
-				/*
-				 * try { if (dbAdapter.existsInDatabase(s)) { if
-				 * (dbAdapter.checkPassword(s)) { startGame(s); } else {
-				 * showConnectionError();} } else { startGame(s); } } catch
-				 * (SQLException e1) { JOptionPane.showMessageDialog(null,
-				 * "Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal."
-				 * , "Verbindungsfehler", JOptionPane.ERROR_MESSAGE); }
-				 */
 			}
 
 		});
@@ -162,12 +169,14 @@ public class MenuController {
 
 	/**
 	 * Shows the "game over" screen to the user
-	 * @param s Score containing player name and score
+	 * 
+	 * @param s
+	 *            Score containing player name and score
 	 */
 	public void showDeathMenu(Score s) {
 
 		menuView.clear();
-		
+
 		menuView.addTitle("Game over");
 
 		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
@@ -200,10 +209,16 @@ public class MenuController {
 	}
 
 	/**
-	 * Shows a Dialog to notify the user that no connection to the DB could be established
+	 * Shows a Dialog to notify the user that no connection to the DB could be
+	 * established
 	 */
-	public void showConnectionError() {
-		JOptionPane.showMessageDialog(null, "Das Passwort stimmt nicht mit dem gespeicherten überein.",
+	public void showConnectionError(Exception e) {
+		JOptionPane.showMessageDialog(null, "Fehler bei der Verbindung mit der Datenbank: " + e.getMessage(),
+				"Falsches Passwort", JOptionPane.ERROR_MESSAGE);
+	}
+
+	public void showPasswordError(Exception e) {
+		JOptionPane.showMessageDialog(null, "Das Passwort stimmt nicht mit dem gespeicherten überein." + e.getMessage(),
 				"Falsches Passwort", JOptionPane.ERROR_MESSAGE);
 	}
 }
