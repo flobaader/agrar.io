@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+import com.sun.java_cup.internal.runtime.Symbol;
+
 import agrar.io.model.Score;
 import agrar.io.util.Utility;
 
@@ -14,7 +16,15 @@ import agrar.io.util.Utility;
 
 public class DatabaseAdapter {
 
-	Connection conn;
+	private Connection conn;
+
+	public DatabaseAdapter() {
+		DriverManager.setLoginTimeout(1);
+		try {
+			connect();
+		} catch (SQLException e) {
+		}
+	}
 
 	/**
 	 * Get the 5 highest scoring players from the DB
@@ -23,31 +33,29 @@ public class DatabaseAdapter {
 	 *         scores
 	 * @throws SQLException
 	 */
-	private Score[] getHighscores() throws SQLException {
+	public Score[] getHighscores() throws SQLException {
 
 		Score[] scores = new Score[5];
 		int count = 0;
 
-		scores[0] = new Score(1234, "Horst", "aöldkfjasdlödkfj");
-		scores[1] = new Score(222, "Peter", "löksdjflöasdkfjk");
-		scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
-		scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
-		scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
-		
+		// scores[0] = new Score(1234, "Horst", "aöldkfjasdlödkfj");
+		// scores[1] = new Score(222, "Peter", "löksdjflöasdkfjk");
+		// scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
+		// scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
+		// scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
+
+		connect();
+
+		PreparedStatement stmt = conn
+				.prepareStatement("SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
+		ResultSet results = stmt.executeQuery();
+
+		while (results.next()) {
+			scores[count] = new Score(results.getInt("score"), results.getString("name"), "");
+			count++;
+		}
+
 		return scores;
-		/*
-		 * if (!isConnected()) { connect(); }
-		 * 
-		 * PreparedStatement stmt = conn .prepareStatement(
-		 * "SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
-		 * ResultSet results = stmt.executeQuery();
-		 * 
-		 * while (results.next()) { scores[count] = new
-		 * Score(results.getInt("score"), results.getString("name"), "");
-		 * count++; }
-		 * 
-		 * return scores;
-		 */
 
 	}
 
@@ -61,11 +69,9 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When an exception occurs during the execution of the query
 	 */
-	private boolean checkPassword(Score s) throws SQLException {
+	public boolean checkPassword(Score s) throws SQLException {
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
 		// Get the hash of the password from the database
 		PreparedStatement stmt = conn.prepareStatement("SELECT password FROM Highscores WHERE name = ?");
@@ -73,8 +79,9 @@ public class DatabaseAdapter {
 		ResultSet res = stmt.executeQuery();
 
 		// The hash of the password, retrieved from the DB
+		res.next();
 		byte[] databasePassword = res.getBytes("password");
-
+		
 		// Compare the hashes of the entered password and the password from the
 		// DB
 		return Arrays.equals(databasePassword, s.getPasswordHash());
@@ -90,12 +97,10 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When the query fails in some way
 	 */
-	private boolean existsInDatabase(Score s) throws SQLException {
+	public boolean existsInDatabase(Score s) throws SQLException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
 		// The name might be entered by a user, protect against SQL injection
 		// with prepared statements
@@ -104,7 +109,8 @@ public class DatabaseAdapter {
 		ResultSet results = stmt.executeQuery();
 
 		// One row with the same name -> exists
-		return results.getInt("count") == 1;
+
+		return results.next() && results.getInt("count") == 1;
 	}
 
 	/**
@@ -120,9 +126,7 @@ public class DatabaseAdapter {
 	public void insert(Score s) throws SQLException, InvalidPasswordException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
 		// If the score does not yet exist in the database, we can just insert
 		// it without checking the password
@@ -162,35 +166,29 @@ public class DatabaseAdapter {
 	private void update(Score s) throws SQLException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
-		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=?;");
+		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=? AND score > ?;");
 		stmt.setInt(1, s.getScore());
 		stmt.setString(2, s.getName());
+		stmt.setInt(3, s.getScore());
 
-		stmt.executeQuery();
+		stmt.executeUpdate();
 
-	}
-
-	public static void main(String[] args) {
-		try {
-			new DatabaseAdapter().connect();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
-	 * (Re)establishes a connection to the database
+	 * (Re)establishes a connection to the database if necessary
 	 * 
 	 * @throws SQLException
 	 *             When establishing a connection fails somehow
 	 */
 	public void connect() throws SQLException {
-		conn = DriverManager.getConnection("jdbc:mysql://192.168.103.250/Q11_S26?user=Q11_S26&password=start");
+
+		if (!isConnected()) {
+			conn = DriverManager.getConnection("jdbc:mysql://192.168.103.250/Q11_S26?user=Q11_S26&password=start");
+		}
+
 	}
 
 	/**
@@ -200,7 +198,7 @@ public class DatabaseAdapter {
 	 */
 	public boolean isConnected() {
 		try {
-			return !conn.isClosed() && conn.isValid(3);
+			return !(conn == null) && !conn.isClosed() && conn.isValid(3);
 		} catch (SQLException e) {
 			return false;
 		}
@@ -213,6 +211,19 @@ public class DatabaseAdapter {
 
 		private static final long serialVersionUID = -6113477982164953412L;
 
+	}
+
+	/**
+	 * Disconnects from the DB
+	 */
+	public void disconnect() {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -2,7 +2,6 @@ package agrar.io.controller;
 
 import java.awt.Color;
 
-import agrar.io.controller.PlayerBehavior;
 import agrar.io.model.AIPlayer;
 import agrar.io.model.Circle;
 import agrar.io.util.Utility;
@@ -16,77 +15,82 @@ import agrar.io.util.Vector;
  */
 public class AIPlayerBehavior extends PlayerBehavior {
 
-	//In a range from 0 to 10, the Level simulates the experience of the AI player to estimate the size of other players
+	// In a range from 0 to 10, the Level simulates the experience of the AI
+	// player to estimate the size of other players
 	private int LEVEL;
-	
-	//The flee threshold of the player
+
+	// The flee threshold of the player
 	private int FLEE_THRESHOLD;
-	
+
 	/**
 	 * Creates new behavior for the given AIPlayer
 	 * 
-	 * @param parent  The AIPlayer to control
-	 * @param controller The controller of the game
-	 * @param The Level of Experience of the Player (from 0 to 10)
-	 * @throws Exception Throws Exception if the Level is not in range between 0 and 10
+	 * @param parent
+	 *            The AIPlayer to control
+	 * @param controller
+	 *            The controller of the game
+	 * @param The
+	 *            Level of Experience of the Player (from 0 to 10)
+	 * @throws Exception
+	 *             Throws Exception if the Level is not in range between 0 and
+	 *             10
 	 */
 	public AIPlayerBehavior(AIPlayer player, Controller controller, int Level) {
 		super(player, controller);
-		
-		//Ensures that the level argument is in the range
-		if(Level < 0 || Level > 10){
-			Level = 1;
-		}else{
-			LEVEL = Level;	
-		}
-		
-		//Ramdomizes the point, where the player decides to flee
-		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
-		
-	}
-	
 
-	private double misjudgeCircleSize(double Size){
-		
-		//Decreases with level
-		int range = 10 - LEVEL; //in Percent
-		
-		//Max and min of misjugment is 10 % of size
-		int randomFactor = Utility.getRandom(-1 * range, range); //in Percent
-		
-		double rndAbs = (double) randomFactor / 100; //Absolute not percent
-		
-		//Estimated size
-		double estimatedSize = Size + Size * rndAbs; 
-		
+		// Ensures that the level argument is in the range
+		if (Level < 0 || Level > 10) {
+			Level = 1;
+		} else {
+			LEVEL = Level;
+		}
+
+		// Ramdomizes the point, where the player decides to flee
+		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
+
+	}
+
+	private double misjudgeCircleSize(double Size) {
+
+		// Decreases with level
+		int range = 10 - LEVEL; // in Percent
+
+		// Max and min of misjugment is 10 % of size
+		int randomFactor = Utility.getRandom(-1 * range, range); // in Percent
+
+		double rndAbs = (double) randomFactor / 100; // Absolute not percent
+
+		// Estimated size
+		double estimatedSize = Size + Size * rndAbs;
+
 		return estimatedSize;
 	}
-	
-	
-	
+
 	@Override
 	public void update(float deltaT) {
 
 		// The circle with the highest value
 		Circle bestTarget = null;
 		double bestValue = Double.MIN_VALUE;
-		
+
 		// The circle with the lowest value
 		Circle worstTarget = null;
 		double worstValue = Double.MAX_VALUE;
 
-		// Iterates trough all given Objects in Sight and saves the best one and the worst one
+		// Iterates trough all given Objects in Sight and saves the best one and
+		// the worst one
 		for (Circle c : controller.getObjectsInSight(parent)) {
-			
-			double curVal = evaluateCircle(c);// + 0.5 * evaluateLocationOfCircle(c);
-			
-			//Checks if this is currently the best one
+
+			double curVal = evaluateCircle(c);// + 0.5 *
+												// evaluateLocationOfCircle(c);
+
+			// Checks if this is currently the best one
 			if (curVal > bestValue) {
 				bestValue = curVal;
 				bestTarget = c;
 			}
 
-			//Checks if this is currently the worst one
+			// Checks if this is currently the worst one
 			if (curVal < worstValue) {
 				worstValue = curVal;
 				worstTarget = c;
@@ -94,32 +98,34 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 		}
 
-		if(bestTarget == null || worstTarget == null){
-			//Did not find any Circle in Sight
-			
-			//Sets target to a random point
-			nextTarget = Utility.getRandomPoint(controller.getFIELD_SIZE(), controller.getFIELD_SIZE());
+		if (bestTarget == null || worstTarget == null) {
+			// Did not find any Circle in Sight
+
+			// Sets target to a random point
+			nextTarget = Utility.getRandomPoint(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
 			parent.setColor(Color.BLACK);
-			
-		}else if (bestValue > 0 && worstValue > FLEE_THRESHOLD){
-			
-			//Found a good Circle and is not in Danger
-			
-			//Sets target to the location of the best target
+
+		} else if (bestValue > 0 && worstValue > FLEE_THRESHOLD) {
+
+			// Found a good Circle and is not in Danger
+
+			// Sets target to the location of the best target
 			nextTarget = bestTarget.getLocation();
 			parent.setColor(orgColor);
-			
-		}else{
-			
-			//is in Danger or did not find good target --> flees in opposite direction of the worst target
-			nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1).addVector(parent.getLocation());
+
+		} else {
+
+			// is in Danger or did not find good target --> flees in opposite
+			// direction of the worst target
+			nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1)
+					.addVector(parent.getLocation());
 			parent.setColor(Color.RED);
 		}
-		
-		//Moves the next step(s) to the selected target
+
+		// Moves the next step(s) to the selected target
 		moveToNewPosition(deltaT);
-		
-		//Checks if Circles can be eaten
+
+		// Checks if Circles can be eaten
 		tryToEat();
 
 	}
@@ -137,14 +143,15 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		// The value increases with the size difference (parent > c)
 		// The value decreases with the size difference (parent < c)
 		// The value decreases with the distance
-		
-		//Value is negative if Target is bigger than parent
+
+		// Value is negative if Target is bigger than parent
 		double isSmaller = 1;
-		
-		// The AI Player does not get the real size of the Circle, that would not be fair
+
+		// The AI Player does not get the real size of the Circle, that would
+		// not be fair
 		double estimatedCircleSize = misjudgeCircleSize(c.getSize());
-		
-		//NOTE: uses misjudged Size of Circle
+
+		// NOTE: uses misjudged Size of Circle
 		if (estimatedCircleSize > parent.getSize()) {
 			isSmaller = -1;
 		}
