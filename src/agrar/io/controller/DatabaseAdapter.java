@@ -14,7 +14,15 @@ import agrar.io.util.Utility;
 
 public class DatabaseAdapter {
 
-	Connection conn;
+	private Connection conn;
+
+	public DatabaseAdapter() {
+		DriverManager.setLoginTimeout(1);
+		try {
+			connect();
+		} catch (SQLException e) {
+		}
+	}
 
 	/**
 	 * Get the 5 highest scoring players from the DB
@@ -23,7 +31,7 @@ public class DatabaseAdapter {
 	 *         scores
 	 * @throws SQLException
 	 */
-	private Score[] getHighscores() throws SQLException {
+	public Score[] getHighscores() throws SQLException {
 
 		Score[] scores = new Score[5];
 		int count = 0;
@@ -33,10 +41,10 @@ public class DatabaseAdapter {
 		scores[2] = new Score(199, "Hans", "lökjlkkjölkjk");
 		scores[3] = new Score(99, "Deine Mudda", "öksjfölkasjflökakj");
 		scores[4] = new Score(1, "Flo", "lökjsödflkjaslökjf");
-		
+
 		return scores;
 		/*
-		 * if (!isConnected()) { connect(); }
+		 * connect();
 		 * 
 		 * PreparedStatement stmt = conn .prepareStatement(
 		 * "SELECT score, name FROM Highscores ORDER BY score DESC LIMIT 5");
@@ -61,11 +69,9 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When an exception occurs during the execution of the query
 	 */
-	private boolean checkPassword(Score s) throws SQLException {
+	public boolean checkPassword(Score s) throws SQLException {
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
 		// Get the hash of the password from the database
 		PreparedStatement stmt = conn.prepareStatement("SELECT password FROM Highscores WHERE name = ?");
@@ -90,12 +96,10 @@ public class DatabaseAdapter {
 	 * @throws SQLException
 	 *             When the query fails in some way
 	 */
-	private boolean existsInDatabase(Score s) throws SQLException {
+	public boolean existsInDatabase(Score s) throws SQLException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect(); 
 
 		// The name might be entered by a user, protect against SQL injection
 		// with prepared statements
@@ -120,9 +124,7 @@ public class DatabaseAdapter {
 	public void insert(Score s) throws SQLException, InvalidPasswordException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
+		connect();
 
 		// If the score does not yet exist in the database, we can just insert
 		// it without checking the password
@@ -162,35 +164,29 @@ public class DatabaseAdapter {
 	private void update(Score s) throws SQLException {
 
 		// Reconnect if necessary
-		if (!isConnected()) {
-			connect();
-		}
-
-		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=?;");
+		connect();
+		
+		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=? AND score > ?;");
 		stmt.setInt(1, s.getScore());
 		stmt.setString(2, s.getName());
+		stmt.setInt(3, s.getScore());
 
 		stmt.executeQuery();
 
 	}
 
-	public static void main(String[] args) {
-		try {
-			new DatabaseAdapter().connect();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	/**
-	 * (Re)establishes a connection to the database
+	 * (Re)establishes a connection to the database if necessary
 	 * 
 	 * @throws SQLException
 	 *             When establishing a connection fails somehow
 	 */
 	public void connect() throws SQLException {
-		conn = DriverManager.getConnection("jdbc:mysql://192.168.103.250/Q11_S26?user=Q11_S26&password=start");
+
+		if (!isConnected()) {
+			conn = DriverManager.getConnection("jdbc:mysql://192.168.103.250/Q11_S26?user=Q11_S26&password=start");
+		}
+
 	}
 
 	/**
@@ -200,7 +196,7 @@ public class DatabaseAdapter {
 	 */
 	public boolean isConnected() {
 		try {
-			return !conn.isClosed() && conn.isValid(3);
+			return !(conn == null) && !conn.isClosed() && conn.isValid(3);
 		} catch (SQLException e) {
 			return false;
 		}
@@ -213,6 +209,19 @@ public class DatabaseAdapter {
 
 		private static final long serialVersionUID = -6113477982164953412L;
 
+	}
+
+	/**
+	 * Disconnects from the DB
+	 */
+	public void disconnect() {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
