@@ -21,6 +21,9 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 	// The flee threshold of the player
 	private int FLEE_THRESHOLD;
+	
+	private int BOOST_THRESHOLD;
+	
 
 	/**
 	 * Creates new behavior for the given AIPlayer
@@ -45,8 +48,12 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			LEVEL = Level;
 		}
 
-		// Ramdomizes the point, where the player decides to flee
+		// Randomizes the point, where the player decides to flee
 		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
+		
+		// Randomizes the point, where the player decides to activate the boost
+		BOOST_THRESHOLD = Utility.getRandom(1, 5);
+		
 
 	}
 
@@ -55,7 +62,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 		// Decreases with level
 		int range = 10 - LEVEL; // in Percent
 
-		// Max and min of misjugment is 10 % of size
+		// Max and min of misjudgment is 10 % of size
 		int randomFactor = Utility.getRandom(-1 * range, range); // in Percent
 
 		double rndAbs = (double) randomFactor / 100; // Absolute not percent
@@ -103,7 +110,18 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 			// Sets target to a random point
 			nextTarget = Utility.getRandomPoint(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
-			parent.setColor(Color.BLACK);
+			
+			//Colors Circle if in Debug Mode
+			if(controller.isInDebugMode()){
+				parent.setColor(Color.BLACK);	
+			}
+			
+			
+			//Boost decision
+			//if high value and size difference is bigger than 1000 (boost takes 1000 points)
+			if(bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000){
+				activateBoost();
+			}
 
 		} else if (bestValue > 0 && worstValue > FLEE_THRESHOLD) {
 
@@ -111,7 +129,17 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 			// Sets target to the location of the best target
 			nextTarget = bestTarget.getLocation();
-			parent.setColor(orgColor);
+			
+			//Colors circle if in debug mode
+			if(controller.isInDebugMode()){
+				parent.setColor(orgColor);
+			}
+			
+			
+			//Boost Decision
+			if(worstValue < -1 * BOOST_THRESHOLD){
+				activateBoost();
+			}
 
 		} else {
 
@@ -119,7 +147,12 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			// direction of the worst target
 			nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1)
 					.addVector(parent.getLocation());
-			parent.setColor(Color.RED);
+			
+			//Colors Circle if in debug mode
+			if(controller.isInDebugMode()){
+				parent.setColor(Color.RED);	
+			}
+			
 		}
 
 		// Moves the next step(s) to the selected target

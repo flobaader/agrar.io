@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -34,7 +35,7 @@ public class MenuController {
 
 		menuView.addImage("/banner.jpg");
 
-		menuView.addButton("Start", new ActionListener() {
+		menuView.addButton("Start", new ActionListener() {	
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -122,6 +123,17 @@ public class MenuController {
 		JTextField nameField = menuView.addTextField("Name");
 
 		JPasswordField passwordField = menuView.addPasswordField("Passwort");
+		
+		menuView.addCheckBox("Debug View", new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JCheckBox checkbox =  (JCheckBox) arg0.getSource();
+				parent.setDebugMode(checkbox.isSelected());
+			}
+			
+		});
+		
 
 		menuView.addButton("OK", new ActionListener() {
 
@@ -157,6 +169,12 @@ public class MenuController {
 					JOptionPane.showMessageDialog(null,
 							"Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal.",
 							"Verbindungsfehler", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Du spielst jetzt offline!", "Verbindungsfehler",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					// Plays offline
+					parent.setPlayOffline(true);
+					parent.StartGame(s);
 				}
 
 			}
@@ -180,20 +198,20 @@ public class MenuController {
 		menuView.addTitle("Game over");
 
 		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
+		
+		menuView.addButton("Neue Runde", new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				parent.StartGame(s);
+			}
+		});
 
 		menuView.addButton("Zum Hauptmenü", new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showMainMenu();
-			}
-		});
-
-		menuView.addButton("Neue Runde", new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.StartGame(s);
 			}
 		});
 

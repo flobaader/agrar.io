@@ -13,6 +13,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -51,7 +52,28 @@ public class MenuView extends JPanel {
 		button.addActionListener(l);
 		c.gridx = 0;
 		c.gridwidth = 2;
+		c.gridy += 1;
+		
 		this.add(button, c);
+		
+		invalidate();
+		repaint();
+	}
+
+	/**
+	 * Adds a checkbox to the next row of the menu
+	 * 
+	 * @param text
+	 *            The text on the button
+	 * @param l
+	 *            the action listener
+	 */
+	public void addCheckBox(String text, ActionListener l) {
+		JCheckBox checkbox = new JCheckBox(text);
+		checkbox.addActionListener(l);
+		c.gridx = 0;
+		c.gridwidth = 2;
+		this.add(checkbox, c);
 		c.gridy += 1;
 
 		invalidate();

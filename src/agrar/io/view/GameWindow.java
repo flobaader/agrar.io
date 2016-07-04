@@ -72,13 +72,18 @@ public class GameWindow extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				
-				System.out.println("keypress");
+				//System.out.println("keypress");
 				
 				//pause the game when the escape key is pressed
 				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
 					if(controller.getState() == GameState.Playing){
 						controller.pauseGame();
 					}
+				}
+				
+				//Activates Boost if SpaceBar is pressed
+				if(e.getKeyCode() == KeyEvent.VK_SPACE){
+					controller.SpacebarPressed();
 				}
 			}
 		});

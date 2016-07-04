@@ -60,4 +60,12 @@ public abstract class Player extends Circle {
 	public PlayerBehavior getBehavior(){
 		return behavior;
 	}
+	
+	/**
+	 * Returns the score of the Player, which is equals to all gained size points
+	 * @return
+	 */
+	public int getScore(){
+		return behavior.getScore();
+	}
 }

@@ -31,11 +31,14 @@ public abstract class PlayerBehavior {
 	protected Color orgColor;
 
 	// The size of the player reduces if he does not get enough food
-	private int gainedSize = 0;
+	private int gainedSizeInLastMinute = 0;
 	private Timer monitorFeedingTimer;
 
-	// Saves the maximum Size of the Player
-	private int maxSize = 0;
+	// The score of the Player = All gained size points
+	private int score = 0;
+
+	// The time, where the boost was activated
+	private long lastBoostTime = 0;
 
 	/**
 	 * Create new Behavior for the selected player
@@ -78,14 +81,17 @@ public abstract class PlayerBehavior {
 			// circle is covered
 			double distance = Utility.getDistance(parent, c1);
 			if (c1.getSize() < parent.getSize() && (distance - parent.getRadius() <= 0)) {
-				// Adds size of other circle to this oneF
-				gainedSize += c1.getSize();
+				
+				// Adds size of other circle to this one
 				parent.setSize(parent.getSize() + c1.getSize());
+				
+				//Adds size to feeding indicator
+				gainedSizeInLastMinute += c1.getSize();
+				
+				//Adds gained size to score
+				score += c1.getSize();
 
-				if (parent.getSize() > maxSize) {
-					maxSize = parent.getSize();
-				}
-
+				//Deletes eaten circle from controller
 				controller.deleteCircle(c1);
 			}
 		}
@@ -108,7 +114,12 @@ public abstract class PlayerBehavior {
 		// The relative location of the target
 		float sizeFactor = (float) parent.getSize() / (float) Controller.PLAYER_START_SIZE;
 
-		float movementFactor = (float) ((deltaT / Math.pow(sizeFactor, 2)) * Controller.MOVEMENT_SPEED);
+		float boostFactor = 1;
+		if (isBoostActivated()) {
+			boostFactor = 2;
+		}
+
+		float movementFactor = (float) ((deltaT / Math.pow(sizeFactor, 0.5)) * Controller.MOVEMENT_SPEED * boostFactor);
 
 		// Creates the unit vector and multiplies it with the speed ( =
 		// movementFactor)
@@ -123,22 +134,69 @@ public abstract class PlayerBehavior {
 
 	}
 
+	/**
+	 * Ensures that the player had enough food during the last second and
+	 * reduces size if not
+	 */
 	private void monitorFeeding() {
 		// Size decreases if the feeding is less than 5% per Second
-		if ((gainedSize) < parent.getSize() * 0.05) {
-			parent.setSize((int) (parent.getSize() * 0.95));
+		if ((gainedSizeInLastMinute) < parent.getSize() * 0.05) {
+			parent.setSize((int) (parent.getSize() * 0.98));
 		}
 
-		//Resets gained Size
-		gainedSize = 0;
+		// Resets gained Size
+		gainedSizeInLastMinute = 0;
+
+		// Checks if size > 0
+		checkSize();
 
 	}
 
 	/**
 	 * @return the biggest size that the Player had
 	 */
-	public int getMaxSize() {
-		return maxSize;
+	public int getScore() {
+		return score;
+	}
+
+	/**
+	 * Activates the Boost and reduces the size of the player by 1000
+	 */
+	public void activateBoost() {
+		
+		if(!isBoostActivated()){
+			// Sets Boost time to now
+			lastBoostTime = System.currentTimeMillis();
+
+			// Reduces size by 1000 points
+			parent.setSize(parent.getSize() - 1000);
+
+			// Checks if size > 0
+			checkSize();
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @return Returns if the player has currently the boost enabled
+	 */
+	private boolean isBoostActivated() {
+		// millis since last activation
+		long millisElapsed = System.currentTimeMillis() - lastBoostTime;
+
+		// if last activation was longer than 500 millis ago the boost is over
+		return (millisElapsed < 500);
+	}
+
+	/**
+	 * Checks if the size is greater than zero and deletes circle if not
+	 */
+	private void checkSize() {
+		if (parent.getSize() <= 0) {
+			controller.deleteCircle(parent);
+		}
+
 	}
 
 }

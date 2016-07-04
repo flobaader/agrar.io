@@ -131,7 +131,12 @@ public class GameView extends JPanel {
 			// only players have a name
 			if (c.isPlayer()) {
 				drawName(g, c);
-				drawTargetLine(g, c);
+
+				// Draws target line if in debug mode
+				if (controller.isInDebugMode()) {
+					drawTargetLine(g, c);
+				}
+
 			}
 
 		}
@@ -170,9 +175,23 @@ public class GameView extends JPanel {
 
 	private void drawTargetLine(Graphics2D g, Circle c) {
 
+		// The target of the player
 		Vector target = ((Player) c).getBehavior().getTarget();
 
+		// If the target is the local player draws the mouse vector
+		/*	if (c == controller.getLocalPlayer()) {
+			Vector offset = controller.getOffset();
+			Vector mouseLocation = controller.getMouseVector().addVector(offset);
+
+			Line2D.Float line = new Line2D.Float((float) offset.getX(), (float) offset.getY(),
+					(float) mouseLocation.getX(), (float) mouseLocation.getY());
+			g.draw(line);
+
+		}*/	
+
 		if (target != null) {
+			// Draws line between circle and target
+
 			FloatPoint start = getTransformedPosition(c);
 			FloatPoint end = getTransformedPosition(target);
 			Line2D.Float line = new Line2D.Float(start.x, start.y, end.x, end.y);
@@ -310,6 +329,12 @@ public class GameView extends JPanel {
 	 * @param g
 	 */
 	private void drawHighscoreList(Graphics2D g) {
+
+		// Draws no highscore list if offline
+		if (controller.isOffline()) {
+			return;
+		}
+
 		String[] scores = createScoreList(controller.getGlobalHighscores());
 
 		Dimension listSize = measureScoreList(g, scores);
