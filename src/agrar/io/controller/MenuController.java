@@ -33,9 +33,11 @@ public class MenuController {
 
 		menuView.clear();
 
-		menuView.addImage("/banner.jpg");
+		//menuView.addImage("/background.png");
+		
+		menuView.addLabel("(c) Florian Baader, Matthias Weirich");
 
-		menuView.addButton("Start", new ActionListener() {	
+		menuView.addButton("Start",3, new ActionListener() {	
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -43,13 +45,15 @@ public class MenuController {
 			}
 		});
 
-		menuView.addButton("Beenden", new ActionListener() {
+		menuView.addButton("Beenden",3, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				parent.quit();
 			}
 		});
+		
+		
 
 		window.showMenu();
 	}
@@ -66,7 +70,7 @@ public class MenuController {
 
 		menuView.addLabel("Pausiert");
 
-		menuView.addButton("Weiter", new ActionListener() {
+		menuView.addButton("Weiter",2, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -74,7 +78,7 @@ public class MenuController {
 			}
 		});
 
-		menuView.addButton("Hauptmenu", new ActionListener() {
+		menuView.addButton("Hauptmenu",2, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -88,7 +92,7 @@ public class MenuController {
 			}
 		});
 
-		menuView.addButton("Beenden", new ActionListener() {
+		menuView.addButton("Beenden",2, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -135,7 +139,7 @@ public class MenuController {
 		});
 		
 
-		menuView.addButton("OK", new ActionListener() {
+		menuView.addButton("OK", 2,new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -199,7 +203,7 @@ public class MenuController {
 
 		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
 		
-		menuView.addButton("Neue Runde", new ActionListener() {
+		menuView.addButton("Neue Runde",3, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -207,7 +211,7 @@ public class MenuController {
 			}
 		});
 
-		menuView.addButton("Zum Hauptmenü", new ActionListener() {
+		menuView.addButton("Zum Hauptmenü",2, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -215,7 +219,7 @@ public class MenuController {
 			}
 		});
 
-		menuView.addButton("Beenden", new ActionListener() {
+		menuView.addButton("Beenden",2, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {

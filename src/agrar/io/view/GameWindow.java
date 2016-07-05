@@ -54,6 +54,8 @@ public class GameWindow extends JFrame {
 		this.setTitle("agrar.io - (c) Florian Baader, Matthias Weirich");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		
 
 		gameView.setMinimumSize(new Dimension(640, 460));
 		this.setMinimumSize(new Dimension(640,460));
@@ -197,5 +199,7 @@ public class GameWindow extends JFrame {
 
 		public void windowMinimized();
 	}
+	
 
 }
+

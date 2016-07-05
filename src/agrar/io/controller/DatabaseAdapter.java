@@ -229,6 +229,7 @@ public class DatabaseAdapter {
 	 * @return a name for an ai player
 	 */
 	public String getRandomPlayerName() {
+		
 
 		// list does not exist yet, get from database
 		if (playerNames == null || playerNames.length == 0) {

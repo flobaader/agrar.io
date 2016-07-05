@@ -391,9 +391,18 @@ public class Controller implements GameWindowListener {
 		// Count AIPlayers
 
 		int level = Utility.getRandom(0, 10);
-
+		
+		
+		String name;
+		//Uses random name from database if connected		
+		if(!isOffline()){
+			name = dbAdapter.getRandomPlayerName();
+		}else{
+			name = "AI_Player";
+		}
+		
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), dbAdapter.getRandomPlayerName(), level);
+				Utility.getRandomColor(), name , level);
 		players.add(p);
 	}
 

@@ -3,6 +3,7 @@ package agrar.io.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -37,6 +38,8 @@ public class MenuView extends JPanel {
 		c.fill = GridBagConstraints.NONE;
 		c.anchor = GridBagConstraints.CENTER;
 		c.gridy = 0;
+		
+		
 	}
 
 	/**
@@ -47,8 +50,10 @@ public class MenuView extends JPanel {
 	 * @param l
 	 *            An action listener for the button
 	 */
-	public void addButton(String text, ActionListener l) {
+	public void addButton(String text, int size, ActionListener l) {
 		JButton button = new JButton(text);
+		Font f = button.getFont();
+		button.setFont(new Font(f.getName(),f.getStyle(), f.getSize() * size));
 		button.addActionListener(l);
 		c.gridx = 0;
 		c.gridwidth = 2;
@@ -88,6 +93,7 @@ public class MenuView extends JPanel {
 	 */
 	public void addLabel(String text) {
 		JLabel label = new JLabel(text);
+		label.setForeground(Color.white);
 		c.gridx = 0;
 		c.gridwidth = 2;
 		this.add(label, c);
@@ -106,6 +112,7 @@ public class MenuView extends JPanel {
 	 */
 	public JPasswordField addPasswordField(String text) {
 		JLabel label = new JLabel(text);
+		label.setForeground(Color.white);
 		c.gridwidth = 1;
 		c.gridx = 0;
 		add(label, c);
@@ -132,6 +139,7 @@ public class MenuView extends JPanel {
 	 */
 	public JTextField addTextField(String text) {
 		JLabel label = new JLabel(text);
+		label.setForeground(Color.white);
 		c.gridwidth = 1;
 		c.gridx = 0;
 		add(label, c);
@@ -223,6 +231,7 @@ public class MenuView extends JPanel {
 		invalidate();
 		// repaint();
 	}
+	
 
 	/**
 	 * Adds a JLabel with larger text in green color
@@ -234,7 +243,7 @@ public class MenuView extends JPanel {
 		JLabel title = new JLabel(text);
 		Font f = title.getFont();
 		title.setFont(new Font(f.getName(), f.getStyle(), f.getSize() * 4));
-		title.setForeground(Color.green);
+		title.setForeground(Color.white);
 
 		c.gridx = 0;
 		c.gridwidth = 2;
@@ -244,6 +253,19 @@ public class MenuView extends JPanel {
 		c.gridy++;
 
 		invalidate();
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g){
+		super.paintComponent(g);
+		
+		try {
+			g.drawImage(ImageIO.read(MenuView.class.getResource("/background.png")), 0,0,this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }
