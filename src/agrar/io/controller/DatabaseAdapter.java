@@ -6,17 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-
-import com.sun.java_cup.internal.runtime.Symbol;
+import java.util.Random;
 
 import agrar.io.model.Score;
-import agrar.io.util.Utility;
-
-@SuppressWarnings("unused") // TODO remove
 
 public class DatabaseAdapter {
 
 	private Connection conn;
+	private String[] playerNames;
 
 	public DatabaseAdapter() {
 		DriverManager.setLoginTimeout(1);
@@ -81,7 +78,7 @@ public class DatabaseAdapter {
 		// The hash of the password, retrieved from the DB
 		res.next();
 		byte[] databasePassword = res.getBytes("password");
-		
+
 		// Compare the hashes of the entered password and the password from the
 		// DB
 		return Arrays.equals(databasePassword, s.getPasswordHash());
@@ -224,6 +221,63 @@ public class DatabaseAdapter {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Gets a random player name from the database of names
+	 * 
+	 * @return a name for an ai player
+	 */
+	public String getRandomPlayerName() {
+
+		// list does not exist yet, get from database
+		if (playerNames == null || playerNames.length == 0) {
+			try {
+				playerNames = getPlayerNames();
+			} catch (SQLException e) {
+
+				// There is no connection to the database and the offline list
+				// is empty
+				e.printStackTrace();
+				return "AI_Player";
+			}
+		}
+		
+		//return random entry
+		Random r = new Random();
+		return playerNames[r.nextInt(playerNames.length)];
+
+	}
+
+	/**
+	 * Get the list of player names from the DB
+	 * @return a String[] array of player names
+	 * @throws SQLException 
+	 */
+	private String[] getPlayerNames() throws SQLException {
+
+		// (re) connect
+		connect();
+
+		// get a max. of 100
+		ResultSet res = conn.prepareStatement("SELECT name FROM ai_names ORDER BY RAND() LIMIT 100;").executeQuery();
+
+		// get size of result set
+		res.last();
+		int size = res.getRow();
+		res.first();
+
+		// translate to String[]
+		int counter = 0;
+		String[] s = new String[size];
+
+		while (res.next()) {
+			s[counter] = res.getString("name");
+			counter++;
+		}
+
+		return s;
+
 	}
 
 }

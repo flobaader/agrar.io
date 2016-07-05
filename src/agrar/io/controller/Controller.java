@@ -231,7 +231,7 @@ public class Controller implements GameWindowListener {
 		int level = Utility.getRandom(0, 10);
 
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), "AI-Player", level);
+				Utility.getRandomColor(), dbAdapter.getRandomPlayerName(), level);
 		players.add(p);
 	}
 
