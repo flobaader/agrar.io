@@ -532,23 +532,42 @@ public class Controller implements GameWindowListener {
 		}
 	}
 
+	/**
+	 * Sets the game state to offline mode --> No further tries to connect to the database
+	 * @param status If True, sets game mode to offline
+	 */
 	public void setPlayOffline(boolean status) {
 		playOffline = status;
 	}
 
+	/**
+	 * 
+	 * @return Returns, if the game mode is set to offline
+	 */
 	public boolean isOffline() {
 		return playOffline;
 	}
 
+	/**
+	 * Activates the Player Boost on pressing the space bar
+	 */
 	public void SpacebarPressed() {
 		// activates Boost
 		localPlayer.getBehavior().activateBoost();
 	}
 
+	/**
+	 * 
+	 * @return Returns, if the application is in debug mode
+	 */
 	public boolean isInDebugMode() {
 		return inDebugMode;
 	}
 
+	/**
+	 * Sets the Debug Mode to true, which means that the AI behavior is displayed
+	 * @param mode If true, AI behavior is displayed
+	 */
 	public void setDebugMode(boolean mode) {
 		inDebugMode = mode;
 	}

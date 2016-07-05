@@ -10,6 +10,11 @@ import java.util.Random;
 
 import agrar.io.model.Score;
 
+/**
+ * Provides functions to retrieve / send informations to the gloabl database
+ * @author Matthias
+ *
+ */
 public class DatabaseAdapter {
 
 	private Connection conn;

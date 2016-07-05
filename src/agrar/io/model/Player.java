@@ -15,13 +15,19 @@ import agrar.io.util.Vector;
 public abstract class Player extends Circle {
 
 	private String name;
-	private Vector movementDirection;
 	protected PlayerBehavior behavior;
 
+	/**
+	 * Creates a new Player
+	 * @param parent The game controller
+	 * @param loc The spawn location
+	 * @param size The initial size
+	 * @param col The color
+	 * @param name The name of the player
+	 */
 	public Player(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col);
 		this.name = name;
-		this.movementDirection = new Vector(0, 0);
 	}
 
 	/**
@@ -30,10 +36,6 @@ public abstract class Player extends Circle {
 	@Override
 	public boolean isPlayer() {
 		return true;
-	}
-
-	public Vector getMovementDirection() {
-		return this.movementDirection;
 	}
 
 	/**

@@ -14,6 +14,9 @@ public class LocalPlayerBehavior extends PlayerBehavior {
 	}
 
 	@Override
+	/**
+	 * Updates The Location of the local player to the new postion accourding to the mouse location
+	 */
 	public void update(float deltaT) {
 		
 		//The next target is the mouse location

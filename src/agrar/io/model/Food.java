@@ -12,6 +12,13 @@ import agrar.io.util.Vector;
  */
 public class Food extends Circle {
 	
+	/**
+	 * Creates a new food circle
+	 * @param parent The game controller
+	 * @param loc The spawn location
+	 * @param size The initial size
+	 * @param col The color
+	 */
 	public Food(Controller parent, Vector loc, int size, Color col) {
 		super(parent, loc, size, col);
 	}

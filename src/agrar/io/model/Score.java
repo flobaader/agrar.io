@@ -2,6 +2,11 @@ package agrar.io.model;
 
 import agrar.io.util.Utility;
 
+/**
+ * Represents a Score, combined of score, name and password
+ * @author Matthias
+ *
+ */
 public class Score {
 
 	private int score;

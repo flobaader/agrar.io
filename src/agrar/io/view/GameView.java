@@ -24,16 +24,31 @@ import agrar.io.model.Player;
 import agrar.io.model.Score;
 import agrar.io.util.Vector;
 
+/**
+ * Displays the game environment and circles
+ * @author Matthias, Flo
+ *
+ */
 public class GameView extends JPanel {
 
 	private static final long serialVersionUID = 2126792581772053659L;
 
-	// FPS counter
+	/**
+	 * Time of the last paint
+	 */
 	private long lastPaint = 0;
+	/**
+	 * FPS Counter
+	 */
 	private double FPS;
+	/**
+	 * Option to display FPS
+	 */
 	private boolean showFPS = true;
 
-	// Controller
+	/**
+	 * Controller
+	 */
 	private Controller controller;
 
 	// Objects for drawing

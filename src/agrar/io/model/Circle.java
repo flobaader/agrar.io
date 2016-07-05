@@ -16,6 +16,13 @@ public abstract class Circle {
 	protected Controller parent;
 	protected float radius;
 	
+	/**
+	 * Creates a new circle
+	 * @param parent The game controller
+	 * @param loc The spawn location
+	 * @param size The initial size
+	 * @param col The color
+	 */
 	public Circle(Controller parent, Vector loc, int size, Color col){
 		this.parent = parent;
 		this.location = loc;

@@ -8,22 +8,28 @@ import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 
 /**
- * Simulates the behavior of another player
+ * Simulates the behavior of a player
  * 
  * @author Flo
  *
  */
 public class AIPlayerBehavior extends PlayerBehavior {
 
-	// In a range from 0 to 10, the Level simulates the experience of the AI
-	// player to estimate the size of other players
+	/**
+	 * In a range from 0 to 10, the Level simulates the experience of the AI
+	 * player to estimate the size of other players
+	 */
 	private int LEVEL;
 
-	// The flee threshold of the player
+	/**
+	 *  The flee threshold of the player
+	 */
 	private int FLEE_THRESHOLD;
-	
+
+	/**
+	 * The boost threshold of the player
+	 */
 	private int BOOST_THRESHOLD;
-	
 
 	/**
 	 * Creates new behavior for the given AIPlayer
@@ -50,13 +56,17 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 		// Randomizes the point, where the player decides to flee
 		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
-		
+
 		// Randomizes the point, where the player decides to activate the boost
 		BOOST_THRESHOLD = Utility.getRandom(1, 5);
-		
 
 	}
 
+	/**
+	 * Simulates the estimating of an other circles size
+	 * @param Size The real size of the other circle
+	 * @return The misjudged size regarding the LEVEL of the player
+	 */
 	private double misjudgeCircleSize(double Size) {
 
 		// Decreases with level
@@ -74,6 +84,9 @@ public class AIPlayerBehavior extends PlayerBehavior {
 	}
 
 	@Override
+	/**
+	 * Updates the location of the player to a new one
+	 */
 	public void update(float deltaT) {
 
 		// The circle with the highest value
@@ -110,16 +123,16 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 			// Sets target to a random point
 			nextTarget = Utility.getRandomPoint(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
-			
-			//Colors Circle if in Debug Mode
-			if(controller.isInDebugMode()){
-				parent.setColor(Color.BLACK);	
+
+			// Colors Circle if in Debug Mode
+			if (controller.isInDebugMode()) {
+				parent.setColor(Color.BLACK);
 			}
-			
-			
-			//Boost decision
-			//if high value and size difference is bigger than 1000 (boost takes 1000 points)
-			if(bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000){
+
+			// Boost decision
+			// if high value and size difference is bigger than 1000 (boost
+			// takes 1000 points)
+			if (bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000) {
 				activateBoost();
 			}
 
@@ -129,15 +142,14 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 			// Sets target to the location of the best target
 			nextTarget = bestTarget.getLocation();
-			
-			//Colors circle if in debug mode
-			if(controller.isInDebugMode()){
+
+			// Colors circle if in debug mode
+			if (controller.isInDebugMode()) {
 				parent.setColor(orgColor);
 			}
-			
-			
-			//Boost Decision
-			if(worstValue < -1 * BOOST_THRESHOLD){
+
+			// Boost Decision
+			if (worstValue < -1 * BOOST_THRESHOLD) {
 				activateBoost();
 			}
 
@@ -147,12 +159,12 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			// direction of the worst target
 			nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1)
 					.addVector(parent.getLocation());
-			
-			//Colors Circle if in debug mode
-			if(controller.isInDebugMode()){
-				parent.setColor(Color.RED);	
+
+			// Colors Circle if in debug mode
+			if (controller.isInDebugMode()) {
+				parent.setColor(Color.RED);
 			}
-			
+
 		}
 
 		// Moves the next step(s) to the selected target

@@ -16,6 +16,11 @@ import agrar.io.controller.Controller;
 import agrar.io.controller.Controller.GameState;
 import agrar.io.util.Vector;
 
+/**
+ * Displays a JFrame and contains the menu and the game view
+ * @author Matthias
+ *
+ */
 public class GameWindow extends JFrame {
 
 	private static final long serialVersionUID = -2967168291846161682L;

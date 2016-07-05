@@ -12,32 +12,51 @@ import agrar.io.util.Utility;
 import agrar.io.util.Vector;
 
 /**
- * Simulates the Behavior of a Player
+ * Provides basic behavior functions of a player
  * 
  * @author Flo
  *
  */
 public abstract class PlayerBehavior {
-	// The Circle to be controlled
+	/**
+	 * The circle to be controlled
+	 */
 	protected Player parent;
 
-	// The Game Controller
+	/**
+	 * The game controller
+	 */
 	protected Controller controller;
 
-	// The Location of the nextTarget to move to
+	/**
+	 * The Location of the nextTarget to move to
+	 */
 	protected Vector nextTarget;
 
-	// The original Color
+	/**
+	 * The original Color of the Circle
+	 */
 	protected Color orgColor;
 
-	// The size of the player reduces if he does not get enough food
+	/**
+	 * The size of the player reduces if he does not get enough food.
+	 * The gained size in the last minute is stored in this variable.
+	 */
 	private int gainedSizeInLastMinute = 0;
+	
+	/**
+	 * Timer to monitor, if the player has gained enough food
+	 */
 	private Timer monitorFeedingTimer;
 
-	// The score of the Player = All gained size points
+	/**
+	 * The score of the Player = All gained size points
+	 */
 	private int score = 0;
 
-	// The time, where the boost was activated
+	/**
+	 *  The time, where the boost was activated
+	 */
 	private long lastBoostTime = 0;
 
 	/**

@@ -67,6 +67,11 @@ public class Utility {
 		return new Vector(getRandom(min, max), getRandom(min, max));
 	}
 
+	/**
+	 * Returns the SHA-512 HASH of the given string
+	 * @param input The string to be hashed
+	 * @return The hash of the given string
+	 */
 	public static byte[] getHash(String input) {
 		
 		byte[] bytes = null;
