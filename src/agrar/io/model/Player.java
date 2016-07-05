@@ -8,16 +8,15 @@ import agrar.io.util.Vector;
 
 /**
  * Represents a Player
+ * 
  * @author FBaader
  *
  */
 public abstract class Player extends Circle {
 
 	private String name;
-	//TODO: Keep movementDirection or not?
 	private Vector movementDirection;
 	protected PlayerBehavior behavior;
-	
 
 	public Player(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col);
@@ -39,25 +38,29 @@ public abstract class Player extends Circle {
 
 	/**
 	 * Returns the name of the Circle, which is displayed in the UI
+	 * 
 	 * @return The Name as String
 	 */
 	public String getName() {
 		return this.name;
 	}
-	
+
 	/**
 	 * Sets Location of the Circle to the new given Location
-	 * @param newLoc the new given Location
+	 * 
+	 * @param newLoc
+	 *            the new given Location
 	 */
-	public void setLocation(Vector newLoc){
+	public void setLocation(Vector newLoc) {
 		this.location = newLoc;
 	}
-	
+
 	/**
 	 * Returns the Behavior of the Player
+	 * 
 	 * @return The player Behavior
 	 */
-	public PlayerBehavior getBehavior(){
+	public PlayerBehavior getBehavior() {
 		return behavior;
 	}
 	

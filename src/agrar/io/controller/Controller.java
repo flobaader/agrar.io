@@ -99,12 +99,12 @@ public class Controller implements GameWindowListener {
 	 * The current State of the Game
 	 */
 	private GameState currentState = GameState.Stopped;
-	
+
 	/**
 	 * If true, no scores are saved in the database
 	 */
 	private boolean playOffline;
-	
+
 	/**
 	 * If true, AI behavior is displayed in the view
 	 */
@@ -165,19 +165,20 @@ public class Controller implements GameWindowListener {
 	private void gameOver(Score score) {
 		stopGame();
 		menuController.showDeathMenu(score);
-		
-		if(!playOffline){
-			//Inserts Score to database if not offline
+
+		if (!playOffline) {
+			// Inserts Score to database if not offline
 			try {
 				dbAdapter.insert(score);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				menuController.showConnectionError(e);
 			} catch (InvalidPasswordException e) {
-				// Should not happen since the password has been confirmed in the
+				// Should not happen since the password has been confirmed in
+				// the
 				// beginning
 				e.printStackTrace();
-			}	
+			}
 		}
 	}
 
@@ -321,6 +322,7 @@ public class Controller implements GameWindowListener {
 		menuController.showPauseMenu();
 
 		currentState = GameState.Paused;// switch state last
+
 	}
 
 	/**
@@ -391,7 +393,7 @@ public class Controller implements GameWindowListener {
 		int level = Utility.getRandom(0, 10);
 
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), "AI-Player", level);
+				Utility.getRandomColor(), dbAdapter.getRandomPlayerName(), level);
 		players.add(p);
 	}
 
@@ -493,7 +495,6 @@ public class Controller implements GameWindowListener {
 		graphicsRate.stop();
 	}
 
-
 	@Override
 	public void windowClosed() {
 		switch (currentState) {
@@ -521,25 +522,25 @@ public class Controller implements GameWindowListener {
 			pauseGame();
 		}
 	}
-	
-	public void setPlayOffline(boolean status){
+
+	public void setPlayOffline(boolean status) {
 		playOffline = status;
 	}
-	
-	public boolean isOffline(){
+
+	public boolean isOffline() {
 		return playOffline;
 	}
-	
-	public void SpacebarPressed(){
-		//activates Boost
+
+	public void SpacebarPressed() {
+		// activates Boost
 		localPlayer.getBehavior().activateBoost();
 	}
-	
-	public boolean isInDebugMode(){
+
+	public boolean isInDebugMode() {
 		return inDebugMode;
 	}
-	
-	public void setDebugMode(boolean mode){
+
+	public void setDebugMode(boolean mode) {
 		inDebugMode = mode;
 	}
 }
