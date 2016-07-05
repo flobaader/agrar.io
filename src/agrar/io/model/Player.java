@@ -19,11 +19,17 @@ public abstract class Player extends Circle {
 
 	/**
 	 * Creates a new Player
-	 * @param parent The game controller
-	 * @param loc The spawn location
-	 * @param size The initial size
-	 * @param col The color
-	 * @param name The name of the player
+	 * 
+	 * @param parent
+	 *            The game controller
+	 * @param loc
+	 *            The spawn location
+	 * @param size
+	 *            The initial size
+	 * @param col
+	 *            The color
+	 * @param name
+	 *            The name of the player
 	 */
 	public Player(Controller parent, Vector loc, int size, Color col, String name) {
 		super(parent, loc, size, col);
@@ -65,12 +71,14 @@ public abstract class Player extends Circle {
 	public PlayerBehavior getBehavior() {
 		return behavior;
 	}
-	
+
 	/**
-	 * Returns the score of the Player, which is equals to all gained size points
+	 * Returns the score of the Player, which is equals to all gained size
+	 * points
+	 * 
 	 * @return
 	 */
-	public int getScore(){
+	public int getScore() {
 		return behavior.getScore();
 	}
 }
