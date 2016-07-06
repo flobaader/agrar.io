@@ -164,12 +164,16 @@ public class Controller implements GameWindowListener {
 
 	private void gameOver(Score score) {
 		stopGame();
-		menuController.showDeathMenu(score);
+
+		boolean isHighscore = score.getScore() > login.getScore();
+		menuController.showDeathMenu(score, isHighscore);
 
 		if (!playOffline) {
 			// Inserts Score to database if not offline
 			try {
-				dbAdapter.insert(score);
+				if (isHighscore) {
+					dbAdapter.insert(score);
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 				menuController.showConnectionError(e);
@@ -391,18 +395,17 @@ public class Controller implements GameWindowListener {
 		// Count AIPlayers
 
 		int level = Utility.getRandom(0, 10);
-		
-		
+
 		String name;
-		//Uses random name from database if connected		
-		if(!isOffline()){
+		// Uses random name from database if connected
+		if (!isOffline()) {
 			name = dbAdapter.getRandomPlayerName();
-		}else{
+		} else {
 			name = "AI_Player";
 		}
-		
+
 		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), name , level);
+				Utility.getRandomColor(), name, level);
 		players.add(p);
 	}
 
@@ -533,8 +536,11 @@ public class Controller implements GameWindowListener {
 	}
 
 	/**
-	 * Sets the game state to offline mode --> No further tries to connect to the database
-	 * @param status If True, sets game mode to offline
+	 * Sets the game state to offline mode --> No further tries to connect to
+	 * the database
+	 * 
+	 * @param status
+	 *            If True, sets game mode to offline
 	 */
 	public void setPlayOffline(boolean status) {
 		playOffline = status;
@@ -565,8 +571,11 @@ public class Controller implements GameWindowListener {
 	}
 
 	/**
-	 * Sets the Debug Mode to true, which means that the AI behavior is displayed
-	 * @param mode If true, AI behavior is displayed
+	 * Sets the Debug Mode to true, which means that the AI behavior is
+	 * displayed
+	 * 
+	 * @param mode
+	 *            If true, AI behavior is displayed
 	 */
 	public void setDebugMode(boolean mode) {
 		inDebugMode = mode;

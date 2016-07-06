@@ -11,6 +11,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import agrar.io.controller.Controller;
 import agrar.io.controller.Controller.GameState;
@@ -150,6 +152,16 @@ public class GameWindow extends JFrame {
 			}
 		});
 
+		//init mouseVector
+		mouseMovement = new Vector(0,0);
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	/**

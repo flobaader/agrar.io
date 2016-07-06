@@ -161,7 +161,8 @@ public class MenuController {
 				try {
 					if (dbAdapter.existsInDatabase(s)) {
 						if (dbAdapter.checkPassword(s)) {
-							parent.StartGame(s);
+							Score startScore = dbAdapter.getScore(s.getName());
+							parent.StartGame(startScore);
 						} else {
 							showPasswordError(new Exception(""));
 						}
@@ -195,11 +196,16 @@ public class MenuController {
 	 * @param s
 	 *            Score containing player name and score
 	 */
-	public void showDeathMenu(Score s) {
+	public void showDeathMenu(Score s, boolean isNewHighscore) {
 
 		menuView.clear();
 
 		menuView.addTitle("Game over");
+		if(isNewHighscore){
+			menuView.addTitle("Neuer Highscore!!");
+		}else{
+			menuView.addLabel("Leider kein neuer Highscore :(");
+		}
 
 		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
 		

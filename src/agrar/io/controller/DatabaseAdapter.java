@@ -12,6 +12,7 @@ import agrar.io.model.Score;
 
 /**
  * Provides functions to retrieve / send informations to the gloabl database
+ * 
  * @author Matthias
  *
  */
@@ -170,10 +171,12 @@ public class DatabaseAdapter {
 		// Reconnect if necessary
 		connect();
 
-		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=? AND score > ?;");
+		PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET score=? WHERE name=?;");
+		// PreparedStatement stmt = conn.prepareStatement("UPDATE Highscores SET
+		// score=? WHERE name=? AND score > ?;");
 		stmt.setInt(1, s.getScore());
 		stmt.setString(2, s.getName());
-		stmt.setInt(3, s.getScore());
+		// stmt.setInt(3, s.getScore());
 
 		stmt.executeUpdate();
 
@@ -234,7 +237,6 @@ public class DatabaseAdapter {
 	 * @return a name for an ai player
 	 */
 	public String getRandomPlayerName() {
-		
 
 		// list does not exist yet, get from database
 		if (playerNames == null || playerNames.length == 0) {
@@ -248,17 +250,23 @@ public class DatabaseAdapter {
 				return "AI_Player";
 			}
 		}
-		
-		//return random entry
+
+		// return random entry
 		Random r = new Random();
-		return playerNames[r.nextInt(playerNames.length)];
+		String name = playerNames[r.nextInt(playerNames.length)];
+		if (name != null && name != "") {
+			return name;
+		} else {
+			return "AI_Player";
+		}
 
 	}
 
 	/**
 	 * Get the list of player names from the DB
+	 * 
 	 * @return a String[] array of player names
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	private String[] getPlayerNames() throws SQLException {
 
@@ -286,4 +294,19 @@ public class DatabaseAdapter {
 
 	}
 
+	public Score getScore(String name) throws SQLException {
+
+		connect();
+		
+		PreparedStatement stmt = conn.prepareStatement("SELECT name, score FROM Highscores WHERE name = ?;");
+		stmt.setString(1,name);
+
+		ResultSet res = stmt.executeQuery();
+		res.next();
+		
+		Score s = new Score(res.getInt("score"), name, "asdf");
+		
+		return s;
+
+	}
 }

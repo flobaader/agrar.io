@@ -1,6 +1,7 @@
 
 package agrar.io.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,6 +12,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -26,6 +28,7 @@ import agrar.io.util.Vector;
 
 /**
  * Displays the game environment and circles
+ * 
  * @author Matthias, Flo
  *
  */
@@ -171,21 +174,34 @@ public class GameView extends JPanel {
 	private void drawGrid(Graphics2D g) {
 		g.setColor(Color.GRAY);
 
-		float oX = (offsetX) % (40F * zoomFactor);
-		float oY = (offsetY) % (40F * zoomFactor);
-
 		Line2D line = new Line2D.Float();
 
-		for (float x = oX; x < this.getWidth(); x += 40F * zoomFactor) {
+		FloatPoint topLeft = getTransformedPosition(0, 0);
+		FloatPoint bottomRight = getTransformedPosition(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
 
-			line.setLine(x, 0, x, this.getHeight());
+		float top = topLeft.y;
+		float left = topLeft.x;
+		float right = bottomRight.x;
+		float bottom = bottomRight.y;
+
+		// Vertical lines
+		for (float x = left; x < right; x += 40F * zoomFactor) {
+
+			line.setLine(x, top, x, bottom);
 			g.draw(line);
 		}
-		for (float y = oY; y < this.getHeight(); y += 40F * zoomFactor) {
 
-			line.setLine(0, y, this.getWidth(), y);
+		// horizontal lines
+		for (float y = top; y < bottom; y += 40F * zoomFactor) {
+
+			line.setLine(left, y, right, y);
 			g.draw(line);
 		}
+
+		g.setStroke(new BasicStroke(3));
+		g.setColor(Color.black);
+		Rectangle2D.Float bounds = new Rectangle2D.Float(left, top, right - left, bottom - top);
+		g.draw(bounds);
 	}
 
 	private void drawTargetLine(Graphics2D g, Circle c) {
@@ -194,15 +210,17 @@ public class GameView extends JPanel {
 		Vector target = ((Player) c).getBehavior().getTarget();
 
 		// If the target is the local player draws the mouse vector
-		/*	if (c == controller.getLocalPlayer()) {
-			Vector offset = controller.getOffset();
-			Vector mouseLocation = controller.getMouseVector().addVector(offset);
-
-			Line2D.Float line = new Line2D.Float((float) offset.getX(), (float) offset.getY(),
-					(float) mouseLocation.getX(), (float) mouseLocation.getY());
-			g.draw(line);
-
-		}*/	
+		/*
+		 * if (c == controller.getLocalPlayer()) { Vector offset =
+		 * controller.getOffset(); Vector mouseLocation =
+		 * controller.getMouseVector().addVector(offset);
+		 * 
+		 * Line2D.Float line = new Line2D.Float((float) offset.getX(), (float)
+		 * offset.getY(), (float) mouseLocation.getX(), (float)
+		 * mouseLocation.getY()); g.draw(line);
+		 * 
+		 * }
+		 */
 
 		if (target != null) {
 			// Draws line between circle and target
