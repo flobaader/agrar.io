@@ -22,7 +22,7 @@ public class AIPlayerBehavior extends PlayerBehavior {
 	private int LEVEL;
 
 	/**
-	 *  The flee threshold of the player
+	 * The flee threshold of the player
 	 */
 	private int FLEE_THRESHOLD;
 
@@ -64,7 +64,9 @@ public class AIPlayerBehavior extends PlayerBehavior {
 
 	/**
 	 * Simulates the estimating of an other circles size
-	 * @param Size The real size of the other circle
+	 * 
+	 * @param Size
+	 *            The real size of the other circle
 	 * @return The misjudged size regarding the LEVEL of the player
 	 */
 	private double misjudgeCircleSize(double Size) {
@@ -129,13 +131,6 @@ public class AIPlayerBehavior extends PlayerBehavior {
 				parent.setColor(Color.BLACK);
 			}
 
-			// Boost decision
-			// if high value and size difference is bigger than 1000 (boost
-			// takes 1000 points)
-			if (bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000) {
-				activateBoost();
-			}
-
 		} else if (bestValue > 0 && worstValue > FLEE_THRESHOLD) {
 
 			// Found a good Circle and is not in Danger
@@ -148,8 +143,10 @@ public class AIPlayerBehavior extends PlayerBehavior {
 				parent.setColor(orgColor);
 			}
 
-			// Boost Decision
-			if (worstValue < -1 * BOOST_THRESHOLD) {
+			// Boost decision
+			// if high value and size difference is bigger than 1000 (boost
+			// takes 1000 points)
+			if (bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000) {
 				activateBoost();
 			}
 
@@ -163,6 +160,11 @@ public class AIPlayerBehavior extends PlayerBehavior {
 			// Colors Circle if in debug mode
 			if (controller.isInDebugMode()) {
 				parent.setColor(Color.RED);
+			}
+
+			// Boost Decision
+			if (worstValue < -1 * BOOST_THRESHOLD) {
+				activateBoost();
 			}
 
 		}
