@@ -7,8 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.Timer;
+
+import com.sun.media.jfxmedia.events.PlayerTimeListener;
 
 import agrar.io.controller.DatabaseAdapter.InvalidPasswordException;
 import agrar.io.model.AIPlayer;
@@ -157,7 +160,8 @@ public class Controller implements GameWindowListener {
 
 		// Local Player eaten -> game over
 		if (c1 == localPlayer) {
-			gameOver(new Score(localPlayer.getScore(), login.getName(), login.getPassword()));
+			gameOver(new Score(localPlayer.getScore(), login.getName(),
+					login.getPassword()));
 		}
 		circlesToDelete.add(c1);
 	}
@@ -247,7 +251,8 @@ public class Controller implements GameWindowListener {
 		// Convert players to Scores
 		for (int i = 0; i < bestplayers.length; i++) {
 
-			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i).getName(), "baum");
+			bestplayers[i] = new Score(players.get(i).getSize(), players.get(i)
+					.getName(), "baum");
 		}
 
 		return bestplayers;
@@ -298,7 +303,8 @@ public class Controller implements GameWindowListener {
 	 * @return Returns the center of the screen as a vector
 	 */
 	public Vector getOffset() {
-		return new Vector(window.getSize().getWidth() / 2, window.getSize().getHeight() / 2);
+		return new Vector(window.getSize().getWidth() / 2, window.getSize()
+				.getHeight() / 2);
 	}
 
 	public GameState getState() {
@@ -309,7 +315,8 @@ public class Controller implements GameWindowListener {
 	 * Spawns local Player
 	 */
 	private void initializeLocalPlayer(String name) {
-		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE, Color.blue, name);
+		localPlayer = new LocalPlayer(this, Utility.getRandomPoint(0,
+				FIELD_SIZE), PLAYER_START_SIZE, Color.blue, name);
 		players.add(localPlayer);
 	}
 
@@ -349,7 +356,8 @@ public class Controller implements GameWindowListener {
 
 		// Only a paused game can be resumed
 		if (currentState != GameState.Paused) {
-			throw new IllegalStateException("You can only resume a paused game!");
+			throw new IllegalStateException(
+					"You can only resume a paused game!");
 		}
 
 		// restart the timers
@@ -370,21 +378,71 @@ public class Controller implements GameWindowListener {
 	private void runGameCycle() {
 
 		// The time the last circle took
-		long millisSinceLastUpdate = System.currentTimeMillis() - lastUpdateTime;
+		long millisSinceLastUpdate = System.currentTimeMillis()
+				- lastUpdateTime;
 
 		// Spawn AI Players and Food if necessary
 		spawnAllGameObjects();
 
 		// Every player can move one step
-		for (Player p : players) {
-			p.getBehavior().update(millisSinceLastUpdate);
-		}
+		/*
+		 * for (Player p : players) {
+		 * p.getBehavior().update(millisSinceLastUpdate); }
+		 */
+		simulatePlayersMultiThreaded(millisSinceLastUpdate);
 
 		// Deletes eaten Circles
 		clearDeletedCircles();
 
 		// Sets update Time
 		lastUpdateTime = System.currentTimeMillis();
+
+	}
+
+	private void simulatePlayersMultiThreaded(long deltaT) {
+		ArrayList<Thread> threads = new ArrayList<Thread>();
+		int playerPerThread = (int) Math.ceil((double) players.size() / 4);
+
+		for (int x = 0; x < 4; x++) {
+
+			try {
+				List<Player> playersToSimulate = players.subList(x
+						* playerPerThread, x * playerPerThread
+						+ playerPerThread);
+				if (playersToSimulate.size() > 0) {
+					threads.add(new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							for (Player p : playersToSimulate) {
+								p.getBehavior().update(deltaT);
+							}
+
+						}
+
+					}));
+
+				}
+			} catch (IndexOutOfBoundsException e) {
+			}
+		}
+
+		// Starts Threads
+		for (Thread t : threads) {
+			t.start();
+		}
+
+		// Wait to finish
+		for (Thread t : threads) {
+			try {
+				t.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				System.out.println(e.getMessage());
+			}
+		}
+
+		// Finished simulating all players
 
 	}
 
@@ -404,8 +462,8 @@ public class Controller implements GameWindowListener {
 			name = "AI_Player";
 		}
 
-		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE), PLAYER_START_SIZE,
-				Utility.getRandomColor(), name, level);
+		AIPlayer p = new AIPlayer(this, Utility.getRandomPoint(0, FIELD_SIZE),
+				PLAYER_START_SIZE, Utility.getRandomColor(), name, level);
 		players.add(p);
 	}
 
@@ -429,7 +487,8 @@ public class Controller implements GameWindowListener {
 	 * Spawns one food circle
 	 */
 	private void spawnFood() {
-		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE), FOOD_SIZE, Utility.getRandomColor());
+		Food f = new Food(this, Utility.getRandomPoint(0, FIELD_SIZE),
+				FOOD_SIZE, Utility.getRandomColor());
 
 		food.add(f);
 	}
@@ -444,7 +503,8 @@ public class Controller implements GameWindowListener {
 
 		// The game can only be started when it's stopped
 		if (currentState != GameState.Stopped) {
-			throw new IllegalStateException("You can only start the game if it is stopped!");
+			throw new IllegalStateException(
+					"You can only start the game if it is stopped!");
 		}
 
 		// update highscore list
