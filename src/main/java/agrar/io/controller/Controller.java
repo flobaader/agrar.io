@@ -148,8 +148,7 @@ public class Controller implements GameWindowListener {
 
         // Local Player eaten -> game over
         if (c1 == localPlayer) {
-            gameOver(new Score(localPlayer.getScore(), login.getName(),
-                    login.getPassword()));
+            gameOver(new Score(localPlayer.getScore(), login.getName()));
         }
         circlesToDelete.add(c1);
     }
@@ -216,7 +215,7 @@ public class Controller implements GameWindowListener {
         for (int i = 0; i < bestplayers.length; i++) {
 
             bestplayers[i] = new Score(players.get(i).getSize(), players.get(i)
-                    .getName(), "baum");
+                    .getName());
         }
 
         return bestplayers;

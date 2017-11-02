@@ -123,7 +123,6 @@ public class MenuController {
 
         JTextField nameField = menuView.addTextField("Name");
 
-        JPasswordField passwordField = menuView.addPasswordField("Passwort");
 
         menuView.addCheckBox("Debug View", new ActionListener() {
 
@@ -142,16 +141,9 @@ public class MenuController {
             public void actionPerformed(ActionEvent e) {
 
                 String name = nameField.getText();
-                String passwd = String.valueOf(passwordField.getPassword());
 
-                // Check for empty name or password field
-                if (name.equals("") || passwd.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Passwort und Name d�rfen nicht leer sein!",
-                            "Passwort oder Name ist leer!", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
 
-                Score s = new Score(0, name, passwd);
+                Score s = new Score(0, name);
 
 
                 parent.StartGame(s);
