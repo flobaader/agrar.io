@@ -363,35 +363,6 @@ public class GameView extends JPanel {
 	 */
 	private void drawHighscoreList(Graphics2D g) {
 
-		// Draws no highscore list if offline
-		if (controller.isOffline()) {
-			return;
-		}
-
-		String[] scores = createScoreList(controller.getGlobalHighscores());
-
-		Dimension listSize = measureScoreList(g, scores);
-
-		double lineHeight = measureString(g, scores[0]).getHeight();
-
-		// Add padding for the background
-		int width = (int) ((listSize.getWidth() + 30) * 1.1F);
-		int height = (int) ((listSize.getHeight() + 30) * (1 + (1F / 7F)));
-
-		Rectangle dest = new Rectangle(0, this.getHeight() - height, width, height);
-
-		// Draw Background
-		drawImage(g, bottomLeft, dest);
-
-		// Start coordinates for the list
-		int x = 15; // 15 px of padding left
-		int y = (int) ((this.getHeight() - listSize.getHeight()) + lineHeight);
-
-		for (String s : scores) {
-			g.drawString(s, x, y);
-
-			y += lineHeight + 10;
-		}
 	}
 
 	/**

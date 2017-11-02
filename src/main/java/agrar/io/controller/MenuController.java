@@ -15,238 +15,211 @@ import agrar.io.view.MenuView;
 
 public class MenuController {
 
-	private Controller parent;
-	private MenuView menuView;
-	private GameWindow window;
+    private Controller parent;
+    private MenuView menuView;
+    private GameWindow window;
 
-	public MenuController(Controller parent, MenuView menuView, GameWindow window) {
-		this.parent = parent;
-		this.menuView = menuView;
-		this.window = window;
-	}
+    public MenuController(Controller parent, MenuView menuView, GameWindow window) {
+        this.parent = parent;
+        this.menuView = menuView;
+        this.window = window;
+    }
 
-	/**
-	 * 
-	 * @return The main menu of the game
-	 */
-	public void showMainMenu() {
+    /**
+     * @return The main menu of the game
+     */
+    public void showMainMenu() {
 
-		menuView.clear();
+        menuView.clear();
 
-		//menuView.addImage("/background.png");
-		
-		menuView.addLabel("(c) Florian Baader, Matthias Weirich");
+        //menuView.addImage("/background.png");
 
-		menuView.addButton("Start",3, new ActionListener() {	
+        menuView.addLabel("(c) Florian Baader, Matthias Weirich");
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showNameMenu();
-			}
-		});
+        menuView.addButton("Start", 3, new ActionListener() {
 
-		menuView.addButton("Beenden",3, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                showNameMenu();
+            }
+        });
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.quit();
-			}
-		});
-		
-		
+        menuView.addButton("Beenden", 3, new ActionListener() {
 
-		window.showMenu();
-	}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.quit();
+            }
+        });
 
-	/**
-	 * 
-	 * @return A menu to display when the game is paused
-	 */
-	public void showPauseMenu() {
 
-		menuView.clear();
+        window.showMenu();
+    }
 
-		menuView.addTitle("Pausiert");
+    /**
+     * @return A menu to display when the game is paused
+     */
+    public void showPauseMenu() {
 
-		menuView.addLabel("Pausiert");
+        menuView.clear();
 
-		menuView.addButton("Weiter",2, new ActionListener() {
+        menuView.addTitle("Pausiert");
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				parent.resumeGame();
-			}
-		});
+        menuView.addLabel("Pausiert");
 
-		menuView.addButton("Hauptmenu",2, new ActionListener() {
+        menuView.addButton("Weiter", 2, new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.stopGame();
-				int sure = JOptionPane.showConfirmDialog(null,
-						"Wenn du die Runde jetzt verlässt, wird dein Punktestand nicht gespeichert.",
-						"Wirklich beenden?", JOptionPane.OK_CANCEL_OPTION);
-				if (sure == 0) {
-					showMainMenu();
-				}
-			}
-		});
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                parent.resumeGame();
+            }
+        });
 
-		menuView.addButton("Beenden",2, new ActionListener() {
+        menuView.addButton("Hauptmenu", 2, new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int sure = confirmQuit();
-				if (sure == 0) {
-					parent.quit();
-				}
-			}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.stopGame();
+                int sure = JOptionPane.showConfirmDialog(null,
+                        "Wenn du die Runde jetzt verlï¿½sst, wird dein Punktestand nicht gespeichert.",
+                        "Wirklich beenden?", JOptionPane.OK_CANCEL_OPTION);
+                if (sure == 0) {
+                    showMainMenu();
+                }
+            }
+        });
 
-		});
+        menuView.addButton("Beenden", 2, new ActionListener() {
 
-		window.showMenu();
-	}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int sure = confirmQuit();
+                if (sure == 0) {
+                    parent.quit();
+                }
+            }
 
-	/**
-	 * Shows a menu to the user to confirm quitting the game
-	 * 
-	 * @return 0 if the user wants to quit, 1 otherwise
-	 */
-	public int confirmQuit() {
-		return JOptionPane.showConfirmDialog(null,
-				"Wenn du Agrar.io jetzt beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
-				"Beenden?", JOptionPane.OK_CANCEL_OPTION);
-	}
+        });
 
-	public void showNameMenu() {
+        window.showMenu();
+    }
 
-		menuView.clear();
+    /**
+     * Shows a menu to the user to confirm quitting the game
+     *
+     * @return 0 if the user wants to quit, 1 otherwise
+     */
+    public int confirmQuit() {
+        return JOptionPane.showConfirmDialog(null,
+                "Wenn du Agrar.io jetzt beendest, wir das Spiel abgebrochen und dein Punktestand nicht gespeicher. Willst du wirklich beenden?",
+                "Beenden?", JOptionPane.OK_CANCEL_OPTION);
+    }
 
-		menuView.addTitle("Namen auswählen");
+    public void showNameMenu() {
 
-		JTextField nameField = menuView.addTextField("Name");
+        menuView.clear();
 
-		JPasswordField passwordField = menuView.addPasswordField("Passwort");
-		
-		menuView.addCheckBox("Debug View", new ActionListener(){
+        menuView.addTitle("Namen auswï¿½hlen");
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				JCheckBox checkbox =  (JCheckBox) arg0.getSource();
-				parent.setDebugMode(checkbox.isSelected());
-			}
-			
-		});
-		
+        JTextField nameField = menuView.addTextField("Name");
 
-		menuView.addButton("OK", 2,new ActionListener() {
+        JPasswordField passwordField = menuView.addPasswordField("Passwort");
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
+        menuView.addCheckBox("Debug View", new ActionListener() {
 
-				String name = nameField.getText();
-				String passwd = String.valueOf(passwordField.getPassword());
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                JCheckBox checkbox = (JCheckBox) arg0.getSource();
+                parent.setDebugMode(checkbox.isSelected());
+            }
 
-				// Check for empty name or password field
-				if (name.equals("") || passwd.equals("")) {
-					JOptionPane.showMessageDialog(null, "Passwort und Name dürfen nicht leer sein!",
-							"Passwort oder Name ist leer!", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
+        });
 
-				Score s = new Score(0, name, passwd);
 
-				DatabaseAdapter dbAdapter = parent.getDatabaseAdapter();
+        menuView.addButton("OK", 2, new ActionListener() {
 
-				try {
-					if (dbAdapter.existsInDatabase(s)) {
-						if (dbAdapter.checkPassword(s)) {
-							Score startScore = dbAdapter.getScore(s.getName());
-							parent.StartGame(startScore);
-						} else {
-							showPasswordError(new Exception(""));
-						}
-					} else {
-						parent.StartGame(s);
-					}
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null,
-							"Ein Fehler ist aufgetreten bei der Verbindung mit der Datenbank. Versuche es später nochmal.",
-							"Verbindungsfehler", JOptionPane.ERROR_MESSAGE);
-					JOptionPane.showMessageDialog(null, "Du spielst jetzt offline!", "Verbindungsfehler",
-							JOptionPane.INFORMATION_MESSAGE);
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
-					// Plays offline
-					parent.setPlayOffline(true);
-					parent.StartGame(s);
-				}
+                String name = nameField.getText();
+                String passwd = String.valueOf(passwordField.getPassword());
 
-			}
+                // Check for empty name or password field
+                if (name.equals("") || passwd.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Passwort und Name dï¿½rfen nicht leer sein!",
+                            "Passwort oder Name ist leer!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-		});
+                Score s = new Score(0, name, passwd);
 
-		window.showMenu();
 
-	}
+                parent.StartGame(s);
+            }
 
-	/**
-	 * Shows the "game over" screen to the user
-	 * 
-	 * @param s
-	 *            Score containing player name and score
-	 */
-	public void showDeathMenu(Score s, boolean isNewHighscore) {
 
-		menuView.clear();
+        });
 
-		menuView.addTitle("Game over");
-		if(isNewHighscore){
-			menuView.addTitle("Neuer Highscore!!");
-		}else{
-			menuView.addLabel("Leider kein neuer Highscore :(");
-		}
+        window.showMenu();
 
-		menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
-		
-		menuView.addButton("Neue Runde",3, new ActionListener() {
+    }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.StartGame(s);
-			}
-		});
+    /**
+     * Shows the "game over" screen to the user
+     *
+     * @param s Score containing player name and score
+     */
+    public void showDeathMenu(Score s, boolean isNewHighscore) {
 
-		menuView.addButton("Zum Hauptmenü",2, new ActionListener() {
+        menuView.clear();
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				showMainMenu();
-			}
-		});
+        menuView.addTitle("Game over");
+        if (isNewHighscore) {
+            menuView.addTitle("Neuer Highscore!!");
+        } else {
+            menuView.addLabel("Leider kein neuer Highscore :(");
+        }
 
-		menuView.addButton("Beenden",2, new ActionListener() {
+        menuView.addLabel("<html>Punktestand: <b>" + s.getScore() + "</b></hmtl>");
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.quit();
-			}
-		});
+        menuView.addButton("Neue Runde", 3, new ActionListener() {
 
-		window.showMenu();
-	}
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.StartGame(s);
+            }
+        });
 
-	/**
-	 * Shows a Dialog to notify the user that no connection to the DB could be
-	 * established
-	 */
-	public void showConnectionError(Exception e) {
-		JOptionPane.showMessageDialog(null, "Fehler bei der Verbindung mit der Datenbank: " + e.getMessage(),
-				"Falsches Passwort", JOptionPane.ERROR_MESSAGE);
-	}
+        menuView.addButton("Zum Hauptmenï¿½", 2, new ActionListener() {
 
-	public void showPasswordError(Exception e) {
-		JOptionPane.showMessageDialog(null, "Das Passwort stimmt nicht mit dem gespeicherten überein." + e.getMessage(),
-				"Falsches Passwort", JOptionPane.ERROR_MESSAGE);
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                showMainMenu();
+            }
+        });
+
+        menuView.addButton("Beenden", 2, new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.quit();
+            }
+        });
+
+        window.showMenu();
+    }
+
+    /**
+     * Shows a Dialog to notify the user that no connection to the DB could be
+     * established
+     */
+    public void showConnectionError(Exception e) {
+        JOptionPane.showMessageDialog(null, "Fehler bei der Verbindung mit der Datenbank: " + e.getMessage(),
+                "Falsches Passwort", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void showPasswordError(Exception e) {
+        JOptionPane.showMessageDialog(null, "Das Passwort stimmt nicht mit dem gespeicherten ï¿½berein." + e.getMessage(),
+                "Falsches Passwort", JOptionPane.ERROR_MESSAGE);
+    }
 }
