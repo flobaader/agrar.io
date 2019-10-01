@@ -9,221 +9,213 @@ import agrar.io.util.Vector;
 
 /**
  * Simulates the behavior of a player
- * 
- * @author Flo
  *
+ * @author Flo
  */
 public class AIPlayerBehavior extends PlayerBehavior {
 
-	/**
-	 * In a range from 0 to 10, the Level simulates the experience of the AI
-	 * player to estimate the size of other players
-	 */
-	private int LEVEL;
+    /**
+     * In a range from 0 to 10, the Level simulates the experience of the AI
+     * player to estimate the size of other players
+     */
+    private int LEVEL;
 
-	/**
-	 * The flee threshold of the player
-	 */
-	private int FLEE_THRESHOLD;
+    /**
+     * The flee threshold of the player
+     */
+    private int FLEE_THRESHOLD;
 
-	/**
-	 * The boost threshold of the player
-	 */
-	private int BOOST_THRESHOLD;
+    /**
+     * The boost threshold of the player
+     */
+    private int BOOST_THRESHOLD;
 
-	/**
-	 * Creates new behavior for the given AIPlayer
-	 * 
-	 * @param parent
-	 *            The AIPlayer to control
-	 * @param controller
-	 *            The controller of the game
-	 * @param The
-	 *            Level of Experience of the Player (from 0 to 10)
-	 * @throws Exception
-	 *             Throws Exception if the Level is not in range between 0 and
-	 *             10
-	 */
-	public AIPlayerBehavior(AIPlayer player, Controller controller, int Level) {
-		super(player, controller);
+    /**
+     * Creates new behavior for the given AIPlayer
+     *
+     * @param parent     The AIPlayer to control
+     * @param controller The controller of the game
+     * @param The        Level of Experience of the Player (from 0 to 10)
+     * @throws Exception Throws Exception if the Level is not in range between 0 and
+     *                   10
+     */
+    public AIPlayerBehavior(AIPlayer player, Controller controller, int Level) {
+        super(player, controller);
 
-		// Ensures that the level argument is in the range
-		if (Level < 0 || Level > 10) {
-			Level = 1;
-		} else {
-			LEVEL = Level;
-		}
+        // Ensures that the level argument is in the range
+        if (Level < 0 || Level > 10) {
+            Level = 1;
+        } else {
+            LEVEL = Level;
+        }
 
-		// Randomizes the point, where the player decides to flee
-		FLEE_THRESHOLD = Utility.getRandom(-3, -1);
+        // Randomizes the point, where the player decides to flee
+        FLEE_THRESHOLD = Utility.getRandom(-3, -1);
 
-		// Randomizes the point, where the player decides to activate the boost
-		BOOST_THRESHOLD = Utility.getRandom(1, 5);
+        // Randomizes the point, where the player decides to activate the boost
+        BOOST_THRESHOLD = Utility.getRandom(1, 5);
 
-	}
+    }
 
-	/**
-	 * Simulates the estimating of an other circles size
-	 * 
-	 * @param Size
-	 *            The real size of the other circle
-	 * @return The misjudged size regarding the LEVEL of the player
-	 */
-	private double misjudgeCircleSize(double Size) {
+    /**
+     * Updates the location of the player to a new one
+     */
+    @Override
+    public void update(float deltaT) {
 
-		// Decreases with level
-		int range = 10 - LEVEL; // in Percent
+        // The circle with the highest value
+        Circle bestTarget = null;
+        double bestValue = Double.MIN_VALUE;
 
-		// Max and min of misjudgment is 10 % of size
-		int randomFactor = Utility.getRandom(-1 * range, range); // in Percent
+        // The circle with the lowest value
+        Circle worstTarget = null;
+        double worstValue = Double.MAX_VALUE;
 
-		double rndAbs = (double) randomFactor / 100; // Absolute not percent
+        // Iterates trough all given Objects in Sight and saves the best one and
+        // the worst one
+        for (Circle c : controller.getObjectsInSight(parent)) {
 
-		// Estimated size
-		double estimatedSize = Size + Size * rndAbs;
+            double curVal = evaluateCircle(c);// + 0.5 *
+            // evaluateLocationOfCircle(c);
 
-		return estimatedSize;
-	}
+            // Checks if this is currently the best one
+            if (curVal > bestValue) {
+                bestValue = curVal;
+                bestTarget = c;
+            }
 
-	@Override
-	/**
-	 * Updates the location of the player to a new one
-	 */
-	public void update(float deltaT) {
+            // Checks if this is currently the worst one
+            if (curVal < worstValue) {
+                worstValue = curVal;
+                worstTarget = c;
+            }
 
-		// The circle with the highest value
-		Circle bestTarget = null;
-		double bestValue = Double.MIN_VALUE;
+        }
 
-		// The circle with the lowest value
-		Circle worstTarget = null;
-		double worstValue = Double.MAX_VALUE;
+        if (bestTarget == null || worstTarget == null) {
+            // Did not find any Circle in Sight
 
-		// Iterates trough all given Objects in Sight and saves the best one and
-		// the worst one
-		for (Circle c : controller.getObjectsInSight(parent)) {
+            // Sets target to a random point
+            nextTarget = Utility.getRandomPoint(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
 
-			double curVal = evaluateCircle(c);// + 0.5 *
-												// evaluateLocationOfCircle(c);
+            // Colors Circle if in Debug Mode
+            if (controller.isInDebugMode()) {
+                parent.setColor(Color.BLACK);
+            }
 
-			// Checks if this is currently the best one
-			if (curVal > bestValue) {
-				bestValue = curVal;
-				bestTarget = c;
-			}
+        } else if (bestValue > 0 && worstValue > FLEE_THRESHOLD) {
 
-			// Checks if this is currently the worst one
-			if (curVal < worstValue) {
-				worstValue = curVal;
-				worstTarget = c;
-			}
+            // Found a good Circle and is not in Danger
 
-		}
+            // Sets target to the location of the best target
+            nextTarget = bestTarget.getLocation();
 
-		if (bestTarget == null || worstTarget == null) {
-			// Did not find any Circle in Sight
+            // Colors circle if in debug mode
+            if (controller.isInDebugMode()) {
+                parent.setColor(orgColor);
+            }
 
-			// Sets target to a random point
-			nextTarget = Utility.getRandomPoint(Controller.FIELD_SIZE, Controller.FIELD_SIZE);
+            // Boost decision
+            // if high value and size difference is bigger than 1000 (boost
+            // takes 1000 points)
+            if (bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000) {
+                activateBoost();
+            }
 
-			// Colors Circle if in Debug Mode
-			if (controller.isInDebugMode()) {
-				parent.setColor(Color.BLACK);
-			}
+        } else {
 
-		} else if (bestValue > 0 && worstValue > FLEE_THRESHOLD) {
+            // is in Danger or did not find good target --> flees in opposite
+            // direction of the worst target
+            nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1)
+                                                                                    .addVector(parent.getLocation());
 
-			// Found a good Circle and is not in Danger
+            // Colors Circle if in debug mode
+            if (controller.isInDebugMode()) {
+                parent.setColor(Color.RED);
+            }
 
-			// Sets target to the location of the best target
-			nextTarget = bestTarget.getLocation();
+            // Boost Decision
+            if (worstValue < -1 * BOOST_THRESHOLD) {
+                activateBoost();
+            }
 
-			// Colors circle if in debug mode
-			if (controller.isInDebugMode()) {
-				parent.setColor(orgColor);
-			}
+        }
 
-			// Boost decision
-			// if high value and size difference is bigger than 1000 (boost
-			// takes 1000 points)
-			if (bestValue > BOOST_THRESHOLD && (parent.getSize() - bestTarget.getSize()) > 1000) {
-				activateBoost();
-			}
+        // Moves the next step(s) to the selected target
+        moveToNewPosition(deltaT);
 
-		} else {
+        // Checks if Circles can be eaten
+        tryToEat();
 
-			// is in Danger or did not find good target --> flees in opposite
-			// direction of the worst target
-			nextTarget = new Vector(parent.getLocation(), worstTarget.getLocation()).multiplyVector(-1)
-					.addVector(parent.getLocation());
+    }
 
-			// Colors Circle if in debug mode
-			if (controller.isInDebugMode()) {
-				parent.setColor(Color.RED);
-			}
+    /**
+     * Simulates the estimating of an other circles size
+     *
+     * @param Size The real size of the other circle
+     * @return The misjudged size regarding the LEVEL of the player
+     */
+    private double misjudgeCircleSize(double Size) {
 
-			// Boost Decision
-			if (worstValue < -1 * BOOST_THRESHOLD) {
-				activateBoost();
-			}
+        // Decreases with level
+        int range = 10 - LEVEL; // in Percent
 
-		}
+        // Max and min of misjudgment is 10 % of size
+        int randomFactor = Utility.getRandom(-1 * range, range); // in Percent
 
-		// Moves the next step(s) to the selected target
-		moveToNewPosition(deltaT);
+        double rndAbs = (double) randomFactor / 100; // Absolute not percent
 
-		// Checks if Circles can be eaten
-		tryToEat();
+        // Estimated size
+        double estimatedSize = Size + Size * rndAbs;
 
-	}
+        return estimatedSize;
+    }
 
-	/**
-	 * The function assigns a value to the given Circle, which represents the
-	 * Points and Distance relationship between Hunter and Target
-	 * 
-	 * @param c
-	 *            Circle to be evaluated
-	 * @return value from -infinity to +infinity
-	 */
-	public double evaluateCircle(Circle c) {
-		// Requirements:
-		// The value increases with the size difference (parent > c)
-		// The value decreases with the size difference (parent < c)
-		// The value decreases with the distance
+    /**
+     * The function assigns a value to the given Circle, which represents the
+     * Points and Distance relationship between Hunter and Target
+     *
+     * @param c Circle to be evaluated
+     * @return value from -infinity to +infinity
+     */
+    public double evaluateCircle(Circle c) {
+        // Requirements:
+        // The value increases with the size difference (parent > c)
+        // The value decreases with the size difference (parent < c)
+        // The value decreases with the distance
 
-		// Value is negative if Target is bigger than parent
-		double isSmaller = 1;
+        // Value is negative if Target is bigger than parent
+        double isSmaller = 1;
 
-		// The AI Player does not get the real size of the Circle, that would
-		// not be fair
-		double estimatedCircleSize = misjudgeCircleSize(c.getSize());
+        // The AI Player does not get the real size of the Circle, that would
+        // not be fair
+        double estimatedCircleSize = misjudgeCircleSize(c.getSize());
 
-		// NOTE: uses misjudged Size of Circle
-		if (estimatedCircleSize > parent.getSize()) {
-			isSmaller = -1;
-		}
+        // NOTE: uses misjudged Size of Circle
+        if (estimatedCircleSize > parent.getSize()) {
+            isSmaller = -1;
+        }
 
-		double distanceFactor = (1 / Math.pow(Utility.getDistance(parent, c), 2));
+        double distanceFactor = (1 / Math.pow(Utility.getDistance(parent, c), 2));
 
-		return (isSmaller * estimatedCircleSize * distanceFactor);
-	}
+        return (isSmaller * estimatedCircleSize * distanceFactor);
+    }
 
-	/**
-	 * Describes the value of the location of the given Circle with determines
-	 * if there is food or good targets around
-	 * 
-	 * @param c
-	 *            The Circle, which location should be evaluated
-	 * @return The Value of the Location
-	 */
-	public double evaluateLocationOfCircle(Circle c) {
-		double value = 0;
+    /**
+     * Describes the value of the location of the given Circle with determines
+     * if there is food or good targets around
+     *
+     * @param c The Circle, which location should be evaluated
+     * @return The Value of the Location
+     */
+    public double evaluateLocationOfCircle(Circle c) {
+        double value = 0;
 
-		for (Circle c1 : controller.getObjectsInSight(c)) {
-			value = value + evaluateCircle(c1);
-		}
+        for (Circle c1 : controller.getObjectsInSight(c)) {
+            value = value + evaluateCircle(c1);
+        }
 
-		value = value / controller.getObjectsInSight(c).size();
-		return value;
-	}
+        value = value / controller.getObjectsInSight(c).size();
+        return value;
+    }
 }

@@ -75,13 +75,13 @@ public class MenuController {
             }
         });
 
-        menuView.addButton("Hauptmenu", 2, new ActionListener() {
+        menuView.addButton("Hauptmenü", 2, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 parent.stopGame();
                 int sure = JOptionPane.showConfirmDialog(null,
-                        "Wenn du die Runde jetzt verl�sst, wird dein Punktestand nicht gespeichert.",
+                        "Wenn du die Runde jetzt verlässt, wird dein Punktestand nicht gespeichert.",
                         "Wirklich beenden?", JOptionPane.OK_CANCEL_OPTION);
                 if (sure == 0) {
                     showMainMenu();
@@ -119,7 +119,7 @@ public class MenuController {
 
         menuView.clear();
 
-        menuView.addTitle("Namen ausw�hlen");
+        menuView.addTitle("Namen auswählen");
 
         JTextField nameField = menuView.addTextField("Name");
 
@@ -182,7 +182,7 @@ public class MenuController {
             }
         });
 
-        menuView.addButton("Zum Hauptmen�", 2, new ActionListener() {
+        menuView.addButton("Zum Hauptmenü", 2, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
